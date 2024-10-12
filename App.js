@@ -15,88 +15,76 @@ import ForgotPasswordEmail from './src/modules/forgetPassword/forgotPasswordEmai
 import ForgotPasswordOTP from './src/modules/forgetPassword/forgotPasswordOTP/ForgotPasswordOTP';
 import ResetPassword from './src/modules/forgetPassword/resetPassword/ResetPassword';
 import ResetSuccess from './src/modules/forgetPassword/resetSuccess/ResetSuccess';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import ProfileDetails from './src/modules/profileDetails/ProfileDetails';
+import Colors from './src/constants/Colors';
+import Requests from './src/modules/requests/Requests';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// function DashboardTabs() {
-//   //const {t, i18n} = useTranslation();
+function DashboardTabs() {
+  //const {t, i18n} = useTranslation();
 
-//   return (
-//     <Tab.Navigator
-//       screenOptions={{
-//         tabBarActiveTintColor: '#131212',
-//         tabBarInactiveTintColor: Colors.verylightgray,
-//         tabBarLabelStyle: {fontSize: 13, fontWeight: '600'},
-//         tabBarStyle: {height: 60},
-//       }}>
-//       <Tab.Screen
-//         name="Home"
-//         component={DashBoard}
-//         options={{
-//           headerShown: false,
-//           tabBarIcon: ({focused}) => (
-//             <View style={focused ? styles.button : styles.button2}>
-//               <MaterialCommunityIcons
-//                 name="home-outline"
-//                 color={focused ? Colors.white : Colors.verylightgray}
-//                 size={25}
-//               />
-//             </View>
-//           ),
-//         }}
-//       />
-//       <Tab.Screen
-//         name="Itineraries"
-//         component={Itineraries}
-//         options={{
-//           headerShown: false,
-//           tabBarIcon: ({focused}) => (
-//             <View style={focused ? styles.button : styles.button2}>
-//               <Feather
-//                 name="user-plus"
-//                 color={focused ? Colors.white : Colors.verylightgray}
-//                 size={25}
-//               />
-//             </View>
-//           ),
-//         }}
-//       />
-//       <Tab.Screen
-//         name="Notifications"
-//         component={Notifications}
-//         options={{
-//           headerShown: false,
-//           tabBarIcon: ({focused}) => (
-//             <View style={focused ? styles.button : styles.button2}>
-//               <MaterialCommunityIcons
-//                 name="bell-badge-outline"
-//                 color={focused ? Colors.white : Colors.verylightgray}
-//                 size={25}
-//               />
-//             </View>
-//           ),
-//         }}
-//       />
-//       <Tab.Screen
-//         name="Profile"
-//         component={Profile}
-//         options={{
-//           headerShown: false,
-//           tabBarIcon: ({focused}) => (
-//             <View style={focused ? styles.button : styles.button2}>
-//               <FontAwesome
-//                 name="user-circle-o"
-//                 color={focused ? Colors.white : Colors.verylightgray}
-//                 size={25}
-//               />
-//             </View>
-//           ),
-//         }}
-//       />
-//     </Tab.Navigator>
-//   );
-// }
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        tabBarActiveTintColor: '#131212',
+        tabBarInactiveTintColor: Colors.verylightgray,
+        tabBarLabelStyle: {fontSize: 13, fontWeight: '600'},
+        tabBarStyle: {height: 60},
+      }}>
+      <Tab.Screen
+        name="Home"
+        component={ProfileDetails}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({focused}) => (
+            <View style={focused ? styles.button : styles.button2}>
+              <MaterialCommunityIcons
+                name="home-outline"
+                color={focused ? Colors.white : Colors.verylightgray}
+                size={25}
+              />
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Requests"
+        component={Requests}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({focused}) => (
+            <View style={focused ? styles.button : styles.button2}>
+              <MaterialCommunityIcons
+                name="account-circle-outline"
+                size={25}
+                color={focused ? Colors.white : Colors.verylightgray}
+              />
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileDetails}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({focused}) => (
+            <View style={focused ? styles.button : styles.button2}>
+              <MaterialCommunityIcons
+                name="account-circle-outline"
+                size={25}
+                color={focused ? Colors.white : Colors.verylightgray}
+              />
+            </View>
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
 function StackDrawer() {
   const dispatch = useDispatch();
 
@@ -153,6 +141,13 @@ function StackDrawer() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="DashBoard"
+        component={DashboardTabs}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 }
@@ -177,7 +172,7 @@ export default function App() {
 const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
-    //backgroundColor: Colors.red,
+    backgroundColor: Colors.black,
     borderRadius: 50,
     top: -15,
     height: 50,

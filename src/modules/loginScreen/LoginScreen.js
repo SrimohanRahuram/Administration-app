@@ -243,7 +243,9 @@ export default function LoginScreen({navigation}) {
         </View>
 
         <TouchableOpacity
-          onPress={() => checkOnlineStatusLogin()}
+          onPress={() => {
+            navigation.navigate('DashBoard');
+          }}
           style={styles.button}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
