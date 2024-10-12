@@ -12,19 +12,22 @@ export default function SplashScreen({navigation}) {
   }, []);
 
   return (
-    <ImageBackground
-      source={Images.backgroundImage}
-      resizeMode="stretch"
-      style={styles.backgroundImage}>
-      <View style={styles.container}>
-        <View>
-          <Image
-            style={styles.image}
-            resizeMode="center"
-            source={Images.logo}
-          />
-        </View>
-      </View>
-    </ImageBackground>
+    // <ImageBackground
+    //   source={Images.backgroundImage}
+    //   resizeMode="stretch"
+    //   style={styles.backgroundImage}>
+    //   <View style={styles.container}>
+    //     <View>
+    //       <Image
+    //         style={styles.image}
+    //         resizeMode="center"
+    //         source={Images.logo}
+    //       />
+    //     </View>
+    //   </View>
+    // </ImageBackground>
+    <View style={styles.container}>
+      <Image style={styles.image} resizeMode="center" source={Images.logo} />
+    </View>
   );
 }

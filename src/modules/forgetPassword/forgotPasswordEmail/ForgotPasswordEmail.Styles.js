@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
 
   mainText: {
     color: Colors.black,
-    fontSize: 17,
+    fontSize: 20,
     alignSelf: 'center',
     fontWeight: 'bold',
   },
@@ -54,33 +54,28 @@ const styles = StyleSheet.create({
     fontSize: 17,
     alignSelf: 'center',
     textAlign: 'center',
-    width:'80%'
+    width: '80%',
   },
 
   input: {
     height: 60,
-    marginTop: 30,
+    marginTop: 20,
     width: '90%',
     overflow: 'hidden',
     alignSelf: 'center',
-    borderRadius: 14,
+    borderRadius: 20,
     backgroundColor: Colors.white,
+    borderRadius:1,
+    borderColor:Colors.black
   },
 
   button: {
     marginTop: 30,
-    width: '85%',
-    height: '15%',
-    backgroundColor: Colors.red,
+    width: '90%',
+    height: 60,
+    backgroundColor: Colors.black,
     marginVertical: 10,
     borderRadius: 5,
-    shadowColor: '#1F41BB',
-    shadowOffset: {
-      width: 0,
-      height: 10,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
     alignSelf: 'center',
     justifyContent: 'center',
   },

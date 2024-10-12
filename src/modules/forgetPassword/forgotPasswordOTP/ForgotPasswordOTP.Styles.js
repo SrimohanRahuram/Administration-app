@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
 
   mainText: {
     color: Colors.black,
-    fontSize: 17,
+    fontSize: 20,
     alignSelf: 'center',
     fontWeight: 'bold',
   },
@@ -60,13 +60,14 @@ const styles = StyleSheet.create({
   registerText: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: Colors.black,
   },
 
   underlineStyleBase: {
     width: 55,
     height: 50,
     borderWidth: 4,
-    borderColor: Colors.red,
+    borderColor: Colors.black,
     backgroundColor: Colors.white,
     color: Colors.gray,
     fontSize: 18,
