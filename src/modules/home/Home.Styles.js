@@ -52,13 +52,13 @@ const stylesNew = StyleSheet.create({
     backgroundColor: Colors.rose,
     padding: 3,
     borderRadius: 5,
-    marginBottom:5,
-    width:'49%',
-    alignItems:'center',
-    borderWidth:1,
-    borderColor:Colors.black,
-    height:50,
-    justifyContent:'center'
+    marginBottom: 5,
+    width: '49%',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.black,
+    height: 50,
+    justifyContent: 'center',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -99,24 +99,30 @@ const stylesNew = StyleSheet.create({
     marginBottom: 5,
   },
   button: {
-    width: '30%',
+    width: '100%',
     height: 50,
     backgroundColor: Colors.black,
     borderRadius: 10,
     alignSelf: 'center',
     justifyContent: 'center',
   },
+  buttonView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  activeButtongreen: {
+    backgroundColor: Colors.green,
+  },
+  activeButtonred: {
+    backgroundColor: Colors.darkred,
+  },
   buttonText: {
     color: Colors.white,
     textAlign: 'center',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  calendertext: {
-    color: '#525050',
-    fontSize: 13,
-    marginLeft: 10,
-    fontWeight: '500',
+    fontSize: 15,
+    fontWeight: '800',
+    marginRight: 10,
   },
 });
 

@@ -15,10 +15,12 @@ import ForgotPasswordEmail from './src/modules/forgetPassword/forgotPasswordEmai
 import ForgotPasswordOTP from './src/modules/forgetPassword/forgotPasswordOTP/ForgotPasswordOTP';
 import ResetPassword from './src/modules/forgetPassword/resetPassword/ResetPassword';
 import ResetSuccess from './src/modules/forgetPassword/resetSuccess/ResetSuccess';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';AntDesign
 import ProfileDetails from './src/modules/profileDetails/ProfileDetails';
 import Colors from './src/constants/Colors';
 import Requests from './src/modules/requests/Requests';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Home from './src/modules/home/Home';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -36,7 +38,7 @@ function DashboardTabs() {
       }}>
       <Tab.Screen
         name="Home"
-        component={ProfileDetails}
+        component={Home}
         options={{
           headerShown: false,
           tabBarIcon: ({focused}) => (
@@ -57,8 +59,8 @@ function DashboardTabs() {
           headerShown: false,
           tabBarIcon: ({focused}) => (
             <View style={focused ? styles.button : styles.button2}>
-              <MaterialCommunityIcons
-                name="account-circle-outline"
+              <AntDesign
+                name="questioncircleo"
                 size={25}
                 color={focused ? Colors.white : Colors.verylightgray}
               />
@@ -178,7 +180,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     justifyContent: 'center',
-    elevation: 5,
+    //elevation: 5,
   },
   button2: {},
 });
