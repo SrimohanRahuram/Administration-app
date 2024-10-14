@@ -22,6 +22,7 @@ import Requests from './src/modules/requests/Requests';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Home from './src/modules/home/Home';
 import AdminHome from './src/modules/adminHome/AdminHome';
+import Shops from './src/modules/shops/Shops';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -154,6 +155,13 @@ function StackDrawer() {
        <Stack.Screen
         name="AdminHome"
         component={AdminHome}
+        options={{
+          headerShown: false,
+        }}
+      />
+       <Stack.Screen
+        name="Shops"
+        component={Shops}
         options={{
           headerShown: false,
         }}

@@ -57,8 +57,12 @@ export default function AdminHome({navigation}) {
           </TouchableOpacity>
         </View>
         <View style={styles.detailsBody}>
-          <View style={{flexDirection: 'row',justifyContent:'space-between'}}>
-            <TouchableOpacity style={styles.detailsBody2}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Shops');
+              }}
+              style={styles.detailsBody2}>
               <Text style={styles.head}>Shop</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.detailsBody2}>
