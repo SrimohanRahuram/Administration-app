@@ -69,8 +69,9 @@ const stylesNew = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     width: '100%',
-    justifyContent: 'flex-end',
     marginBottom: 10,
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   image: {
     alignSelf: 'center',
@@ -164,6 +165,34 @@ const stylesNew = StyleSheet.create({
     borderWidth: 2,
     borderColor: Colors.black,
     marginLeft: 10,
+  },
+  modaldetailsBody2: {
+    padding: 20,
+    borderWidth: 5,
+    borderColor: Colors.black,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  modalText: {
+    color: Colors.black,
+    backgroundColor: Colors.white,
+    fontWeight: '500',
+    fontSize: 15,
+    marginBottom: 10,
+  },
+  modalhead2: {
+    color: Colors.black,
+    fontWeight: '800',
+    fontSize: 17,
+    width: '30%',
+    textAlign: 'center',
+  },
+  modalhead3: {
+    color: Colors.black,
+    fontWeight: '500',
+    fontSize: 15,
+    width: '30%',
+    textAlign: 'center',
   },
 });
 
