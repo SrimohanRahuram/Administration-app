@@ -36,7 +36,7 @@ export default function Home({navigation}) {
             ...styles.inputContainer,
             justifyContent: 'space-between',
           }}>
-          <Text style={styles.header}>Home</Text>
+          <Text style={styles.header}>Gowrisan</Text>
           <TouchableOpacity
             onPress={() => {}}
             style={{

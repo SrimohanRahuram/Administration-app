@@ -21,6 +21,7 @@ import Colors from './src/constants/Colors';
 import Requests from './src/modules/requests/Requests';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Home from './src/modules/home/Home';
+import AdminHome from './src/modules/adminHome/AdminHome';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -98,7 +99,7 @@ function StackDrawer() {
     return netConnection;
   }, []);
   return (
-    <Stack.Navigator initialRouteName="SplashScreen">
+    <Stack.Navigator initialRouteName="AdminHome">
       <Stack.Screen
         name="SplashScreen"
         component={SplashScreen}
@@ -146,6 +147,13 @@ function StackDrawer() {
       <Stack.Screen
         name="DashBoard"
         component={DashboardTabs}
+        options={{
+          headerShown: false,
+        }}
+      />
+       <Stack.Screen
+        name="AdminHome"
+        component={AdminHome}
         options={{
           headerShown: false,
         }}
