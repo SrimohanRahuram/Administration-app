@@ -24,6 +24,7 @@ import Home from './src/modules/home/Home';
 import AdminHome from './src/modules/adminHome/AdminHome';
 import Shops from './src/modules/shops/Shops';
 import Admin from './src/modules/admin/Admin';
+import Employees from './src/modules/employees/Employees';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -169,6 +170,13 @@ function StackDrawer() {
        <Stack.Screen
         name="Admin"
         component={Admin}
+        options={{
+          headerShown: false,
+        }}
+      />
+       <Stack.Screen
+        name="Employees"
+        component={Employees}
         options={{
           headerShown: false,
         }}

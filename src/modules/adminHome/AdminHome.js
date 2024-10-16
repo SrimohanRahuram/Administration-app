@@ -65,7 +65,11 @@ export default function AdminHome({navigation}) {
               style={styles.detailsBody2}>
               <Text style={styles.head}>Shop</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.detailsBody2}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Employees');
+              }}
+              style={styles.detailsBody2}>
               <Text style={styles.head}>Employee</Text>
             </TouchableOpacity>
           </View>
