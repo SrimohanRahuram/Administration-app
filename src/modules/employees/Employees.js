@@ -156,7 +156,9 @@ export default function Employees({navigation}) {
                       padding: 3,
                       paddingBottom: 5,
                     }}
-                    onPress={() => {}}>
+                    onPress={() => {
+                      navigation.navigate('EmployeeDetails');
+                    }}>
                     <Text style={{...styles.modalhead3, color: Colors.white}}>
                       View more
                     </Text>
@@ -302,7 +304,6 @@ export default function Employees({navigation}) {
           </View>
         </View>
       </Modal>
-
       <Modal
         animationType="slide"
         transparent={true}
