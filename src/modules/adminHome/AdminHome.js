@@ -70,6 +70,9 @@ export default function AdminHome({navigation}) {
             </TouchableOpacity>
           </View>
           <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Admin');
+            }}
             style={{...styles.detailsBody2, alignSelf: 'center'}}>
             <Text style={styles.head}>Admin</Text>
           </TouchableOpacity>

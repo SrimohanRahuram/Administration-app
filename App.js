@@ -23,12 +23,12 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import Home from './src/modules/home/Home';
 import AdminHome from './src/modules/adminHome/AdminHome';
 import Shops from './src/modules/shops/Shops';
+import Admin from './src/modules/admin/Admin';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function DashboardTabs() {
-  //const {t, i18n} = useTranslation();
 
   return (
     <Tab.Navigator
@@ -162,6 +162,13 @@ function StackDrawer() {
        <Stack.Screen
         name="Shops"
         component={Shops}
+        options={{
+          headerShown: false,
+        }}
+      />
+       <Stack.Screen
+        name="Admin"
+        component={Admin}
         options={{
           headerShown: false,
         }}
