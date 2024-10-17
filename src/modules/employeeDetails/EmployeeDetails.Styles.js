@@ -70,7 +70,7 @@ const stylesNew = StyleSheet.create({
     width: '100%',
     marginBottom: 10,
     alignItems: 'center',
-    justifyContent:'space-between'
+    justifyContent: 'space-between',
   },
   image: {
     alignSelf: 'center',
@@ -140,8 +140,8 @@ const stylesNew = StyleSheet.create({
     width: '25%',
     alignItems: 'center',
     justifyContent: 'center',
-    height:40,
-    borderRadius:10
+    height: 40,
+    borderRadius: 10,
   },
   buttoncontainercolor: {
     backgroundColor: Colors.lightgray,
@@ -202,6 +202,14 @@ const stylesNew = StyleSheet.create({
     fontWeight: '500',
     fontSize: 15,
     textAlign: 'center',
+  },
+  requestbuttoncontiner: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.white,
+    borderRadius: 5,
+    padding: 3,
+    paddingBottom: 5,
   },
 });
 

@@ -21,7 +21,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 
 export default function EmployeeDetails({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
-  const [AddEmployeeModal, setAddEmployeeModal] = useState(false);
+  const [SalaryModal, setSalaryModal] = useState(false);
   const [name, setName] = React.useState('');
   const [Id, setId] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -40,6 +40,7 @@ export default function EmployeeDetails({navigation}) {
   const [Requests, setRequests] = React.useState(false);
 
   useEffect(() => {
+    //OnPressWorkPlace();
     BackHandler.addEventListener('hardwareBackPress', backAction);
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', backAction);
@@ -73,12 +74,27 @@ export default function EmployeeDetails({navigation}) {
     setHolidays(false);
     setRequests(true);
   };
-  const adminDetails = [
-    {key: '1', id: 'EA - 1', name: 'Gowrisan', phone: '0123456789'},
-    {key: '2', id: 'EA - 2', name: 'Gowrisan', phone: '0123456789'},
-    {key: '3', id: 'EA - 3', name: 'Gowrisan', phone: '0123456789'},
-    {key: '4', id: 'EA - 4', name: 'Gowrisan', phone: '0123456789'},
-    {key: '5', id: 'EA - 5', name: 'Gowrisan', phone: '0123456789'},
+  const requestsdata = [
+    {key: '1', name: 'Request $500 for Advance Amount?'},
+    {
+      key: '2',
+      name: 'Request for holiday 3 hours?',
+      in: '24/12/2024',
+      out: '24/12/2024',
+    },
+    {
+      key: '3',
+      name: 'Request for Leave?',
+      in: '24/12/2024',
+      out: '24/12/2024',
+    },
+    {key: '4', name: 'Request $200 for Advance Amount?'},
+    {
+      key: '5',
+      name: 'Request for holiday 32hours?',
+      in: '24/12/2024',
+      out: '24/12/2024',
+    },
   ];
   const workplacedata = [
     {key: '1', id: 'shop 1', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
@@ -107,12 +123,11 @@ export default function EmployeeDetails({navigation}) {
               <AntDesign name="arrowleft" size={25} color={Colors.black} />
             </TouchableOpacity>
             <View style={{...styles.button, backgroundColor: Colors.white}}>
-              <Text
-                style={{...styles.buttonText, color: Colors.black}}>
+              <Text style={{...styles.buttonText, color: Colors.black}}>
                 Gowrisan-En-101
               </Text>
             </View>
-            <View/>
+            <View />
           </View>
           <View
             style={{
@@ -121,7 +136,9 @@ export default function EmployeeDetails({navigation}) {
               alignItems: 'center',
               marginBottom: 10,
               borderRadius: 10,
-              elevation: 10,
+              elevation: 5,
+              borderWidth: 1,
+              borderColor: Colors.lightgray,
             }}>
             <TouchableOpacity
               style={[
@@ -280,18 +297,15 @@ export default function EmployeeDetails({navigation}) {
                     <Text style={{...styles.modalhead3, width: '10%'}}>
                       {item.salary}
                     </Text>
-
                     <TouchableOpacity
                       style={{
+                        ...styles.requestbuttoncontiner,
                         width: '29%',
-                        alignItems: 'center',
-                        justifyContent: 'center',
                         backgroundColor: Colors.black,
-                        borderRadius: 5,
-                        padding: 3,
-                        paddingBottom: 5,
                       }}
-                      onPress={() => {}}>
+                      onPress={() => {
+                        setSalaryModal(true);
+                      }}>
                       <Text style={{...styles.modalhead3, color: Colors.white}}>
                         View more
                       </Text>
@@ -369,139 +383,322 @@ export default function EmployeeDetails({navigation}) {
               </View>
             </>
           )}
-        </View>
-      </View>
-      <ProgressOverlay visible={isLoading} message={'Loading...'} />
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={AddEmployeeModal}
-        onRequestClose={() => {
-          setAddEmployeeModal(!AddEmployeeModal);
-        }}>
-        <View style={styles.body}>
-          <Text style={styles.header}>Add Employee</Text>
-          <View
-            style={{
-              ...styles.modalBody,
-              borderTopLeftRadius: 10,
-              borderTopRightRadius: 10,
-            }}>
+          {Requests && (
             <View
               style={{
                 ...styles.modalBody,
                 borderWidth: 5,
                 borderColor: Colors.black,
                 borderRadius: 10,
+                padding: 0,
+                width: '100%',
               }}>
-              <ScrollView>
-                <Image source={Images.logo} style={styles.image} />
-
-                <Text style={styles.modalhead}>Name</Text>
-                <View style={styles.inputView}>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={setName}
-                    value={name}
-                    placeholder="Enter Name"
-                  />
-                </View>
-                <Text style={styles.modalhead}>ID</Text>
-                <View style={styles.inputView}>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={setId}
-                    value={Id}
-                    placeholder="Enter Id"
-                  />
-                </View>
-                <Text style={styles.modalhead}>Create password</Text>
-                <View style={styles.inputView}>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={setPassword}
-                    value={password}
-                    placeholder="Enter Password"
-                  />
-                </View>
-                <Text style={styles.modalhead}>Share Code</Text>
-                <View style={styles.inputView}>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={setCode}
-                    value={code}
-                    placeholder="Enter Code"
-                  />
-                </View>
-                <Text style={styles.modalhead}>Contact-No</Text>
-                <View style={styles.inputView}>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={setContactNo}
-                    value={contactNo}
-                    placeholder="Enter ContactNo"
-                  />
-                </View>
-                <Text style={styles.modalhead}>Address</Text>
-                <View style={styles.inputView}>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={setAddress}
-                    value={address}
-                    placeholder="Enter Address"
-                  />
-                </View>
-                <Text style={styles.modalhead}>Max hours</Text>
-                <View style={styles.inputView}>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={setMaxHours}
-                    value={maxHours}
-                    placeholder="Enter Max hours"
-                  />
-                </View>
-                <Text style={styles.modalhead}>Per hour Salary $</Text>
-                <View style={styles.inputView}>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={setHourSalary}
-                    value={hourSalary}
-                    placeholder="Enter Salary"
-                  />
-                </View>
-                <Text style={styles.modalhead}>Max Holidays Hours</Text>
-                <View style={styles.inputView}>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={setmaxHolidays}
-                    value={maxHolidays}
-                    placeholder="Enter Hours"
-                  />
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-end',
-                    marginTop: 10,
-                  }}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setAddEmployeeModal(false);
-                    }}
+              <FlatList
+                data={requestsdata}
+                nestedScrollEnabled={true}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({item}) => (
+                  <View
                     style={{
-                      ...styles.modalbutton,
-                      backgroundColor: Colors.white,
+                      padding: 5,
+                      borderColor: Colors.black,
+                      borderBottomWidth: 2,
                     }}>
-                    <Text style={{...styles.buttonText, color: Colors.black}}>
-                      Cancel
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        borderColor: Colors.white,
+                        borderBottomWidth: 5,
+                        backgroundColor: Colors.white,
+                        height: 50,
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text style={styles.modalhead3}>{item.name}</Text>
+                    </View>
+                    {item.in && (
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginBottom: 10,
+                        }}>
+                        <View
+                          style={{
+                            ...styles.requestbuttoncontiner,
+                            width: '20%',
+                          }}>
+                          <Text style={styles.modalhead3}>From</Text>
+                        </View>
+                        <View
+                          style={{
+                            ...styles.requestbuttoncontiner,
+                            width: '30%',
+                            borderWidth: 1,
+                            borderColor: Colors.black,
+                          }}>
+                          <Text style={styles.modalhead3}>{item.in}</Text>
+                        </View>
+                        <View
+                          style={{
+                            ...styles.requestbuttoncontiner,
+                            width: '20%',
+                          }}>
+                          <Text style={styles.modalhead3}>To</Text>
+                        </View>
+                        <View
+                          style={{
+                            ...styles.requestbuttoncontiner,
+                            width: '30%',
+                            borderWidth: 1,
+                            borderColor: Colors.black,
+                          }}>
+                          <Text style={styles.modalhead3}>{item.in}</Text>
+                        </View>
+                      </View>
+                    )}
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: 5,
+                      }}>
+                      <TouchableOpacity
+                        style={{
+                          ...styles.requestbuttoncontiner,
+                          width: '49%',
+                          borderWidth: 1,
+                          borderColor: Colors.black,
+                        }}
+                        onPress={() => {}}>
+                        <Text style={styles.modalhead3}>Reject</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={{
+                          ...styles.requestbuttoncontiner,
+                          width: '49%',
+                          backgroundColor: Colors.black,
+                        }}
+                        onPress={() => {}}>
+                        <Text
+                          style={{...styles.modalhead3, color: Colors.white}}>
+                          Approve
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+              />
+            </View>
+          )}
+        </View>
+      </View>
+      <ProgressOverlay visible={isLoading} message={'Loading...'} />
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={SalaryModal}
+        onRequestClose={() => {
+          setSalaryModal(!SalaryModal);
+        }}>
+        <View style={styles.body}>
+          <Text style={styles.header}>Employee Details</Text>
+          <View style={styles.detailsBody}>
+            <View style={styles.inputContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  setSalaryModal(false);
+                }}>
+                <AntDesign name="arrowleft" size={25} color={Colors.black} />
+              </TouchableOpacity>
+              <View style={{...styles.button, backgroundColor: Colors.white}}>
+                <Text style={{...styles.buttonText, color: Colors.black}}>
+                  Gowrisan-En-101
+                </Text>
+              </View>
+              <View />
+            </View>
+            <View
+              style={{
+                backgroundColor: Colors.white,
+                width: '100%',
+                borderRadius: 10,
+                marginBottom: 5,
+                padding: 5,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                borderWidth: 2,
+                borderColor: Colors.black,
+              }}>
+              <View style={{width: '15%'}}>
+                <Text
+                  style={{
+                    ...styles.modalhead2,
+                    fontSize: 15,
+                    textAlign: 'left',
+                  }}>
+                  From :
+                </Text>
+                <Text
+                  style={{
+                    ...styles.modalhead2,
+                    fontSize: 15,
+                    textAlign: 'left',
+                  }}>
+                  To :
+                </Text>
+              </View>
+              <View style={{width: '30%'}}>
+                <Text
+                  style={{
+                    ...styles.modalhead2,
+                    fontSize: 15,
+                    textAlign: 'left',
+                  }}>
+                  10/12/2024
+                </Text>
+                <Text
+                  style={{
+                    ...styles.modalhead2,
+                    fontSize: 15,
+                    textAlign: 'left',
+                  }}>
+                  17/12/2024
+                </Text>
+              </View>
+              <View style={{width: '25%'}}>
+                <Text
+                  style={{
+                    ...styles.modalhead2,
+                    fontSize: 15,
+                    textAlign: 'left',
+                  }}>
+                  Total Hours :
+                </Text>
+                <Text
+                  style={{
+                    ...styles.modalhead2,
+                    fontSize: 15,
+                    textAlign: 'left',
+                  }}>
+                  Salary :
+                </Text>
+              </View>
+              <View style={{width: '30%'}}>
+                <Text
+                  style={{
+                    ...styles.modalhead2,
+                    fontSize: 15,
+                    textAlign: 'left',
+                  }}>
+                  56 Hours
+                </Text>
+                <Text
+                  style={{
+                    ...styles.modalhead2,
+                    fontSize: 15,
+                    textAlign: 'left',
+                  }}>
+                  50 Pounds
+                </Text>
+              </View>
+            </View>
+            <View
+              style={{
+                backgroundColor: Colors.rose,
+                width: '100%',
+                borderRadius: 10,
+                marginBottom: 5,
+                padding: 5,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingLeft: 10,
+              }}>
+              <Text style={{...styles.modalhead2, fontSize: 15}}>
+                Current Total Advance payment $1500
+              </Text>
+              <TouchableOpacity
+                style={{
+                  ...styles.requestbuttoncontiner,
+                  backgroundColor: Colors.black,
+                  paddingLeft: 10,
+                  paddingRight: 10,
+                }}
+                onPress={() => {}}>
+                <Text style={{...styles.modalhead3, color: Colors.white}}>
+                  Advance
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                ...styles.modalBody,
+                borderWidth: 5,
+                borderColor: Colors.black,
+                borderRadius: 10,
+                padding: 0,
+                width: '100%',
+              }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  borderColor: Colors.gray,
+                  borderBottomWidth: 2,
+                  height: 50,
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={{...styles.modalhead2, width: '33%'}}>Dates</Text>
+                <Text style={{...styles.modalhead2, width: '33%'}}>Hours</Text>
+                <Text style={{...styles.modalhead2, width: '33%'}}>Salary</Text>
+              </View>
+              <FlatList
+                data={salarydata}
+                nestedScrollEnabled={true}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({item}) => (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      borderColor: Colors.white,
+                      borderBottomWidth: 5,
+                      backgroundColor: Colors.lightgray,
+                      height: 50,
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text style={{...styles.modalhead3, width: '33%'}}>
+                      {item.out}
                     </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.modalbutton}>
-                    <Text style={styles.buttonText}>Create</Text>
-                  </TouchableOpacity>
-                </View>
-              </ScrollView>
+                    <Text style={{...styles.modalhead3, width: '33%'}}>
+                      {item.id}
+                    </Text>
+                    <Text style={{...styles.modalhead3, width: '33%'}}>
+                      {item.id}
+                    </Text>
+                  </View>
+                )}
+              />
+            </View>
+            <View
+              style={{
+                backgroundColor: Colors.rose,
+                width: '100%',
+                borderRadius: 10,
+                marginBottom: 5,
+                padding: 5,
+                flexDirection: 'row',
+                alignItems: 'center',                
+                marginTop:5,
+                justifyContent:'center',
+              }}>
+              <Text style={{...styles.modalhead2, fontSize: 15}}>
+                Also you exit Your total max Hours
+              </Text>
             </View>
           </View>
         </View>
