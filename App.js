@@ -26,6 +26,8 @@ import Shops from './src/modules/shops/Shops';
 import Admin from './src/modules/admin/Admin';
 import Employees from './src/modules/employees/Employees';
 import EmployeeDetails from './src/modules/employeeDetails/EmployeeDetails';
+import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -108,8 +110,8 @@ function AdminDashboardTabs() {
           headerShown: false,
           tabBarIcon: ({focused}) => (
             <View style={focused ? styles.button : styles.button2}>
-              <MaterialCommunityIcons
-                name="home-outline"
+              <Entypo
+                name="shop"
                 color={focused ? Colors.white : Colors.verylightgray}
                 size={25}
               />
@@ -124,8 +126,8 @@ function AdminDashboardTabs() {
           headerShown: false,
           tabBarIcon: ({focused}) => (
             <View style={focused ? styles.button : styles.button2}>
-              <AntDesign
-                name="questioncircleo"
+              <MaterialIcons
+                name="admin-panel-settings"
                 size={25}
                 color={focused ? Colors.white : Colors.verylightgray}
               />
@@ -141,7 +143,7 @@ function AdminDashboardTabs() {
           tabBarIcon: ({focused}) => (
             <View style={focused ? styles.button : styles.button2}>
               <MaterialCommunityIcons
-                name="account-circle-outline"
+                name="account-cash-outline"
                 size={25}
                 color={focused ? Colors.white : Colors.verylightgray}
               />
