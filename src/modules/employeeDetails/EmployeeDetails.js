@@ -22,25 +22,13 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 export default function EmployeeDetails({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
   const [SalaryModal, setSalaryModal] = useState(false);
-  const [name, setName] = React.useState('');
-  const [Id, setId] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [code, setCode] = React.useState('');
-  const [address, setAddress] = React.useState('');
-  const [contactNo, setContactNo] = React.useState('');
-  const [maxHours, setMaxHours] = React.useState('');
-  const [hourSalary, setHourSalary] = React.useState('');
-  const [maxHolidays, setmaxHolidays] = React.useState('');
-
-  const [EditEmployeeModal, setEditEmployeeModal] = useState(false);
-
   const [WorkPlace, setWorkPlace] = React.useState(false);
   const [Salary, setSalary] = React.useState(false);
   const [Holidays, setHolidays] = React.useState(false);
   const [Requests, setRequests] = React.useState(false);
 
   useEffect(() => {
-    //OnPressWorkPlace();
+    OnPressWorkPlace();
     BackHandler.addEventListener('hardwareBackPress', backAction);
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', backAction);
