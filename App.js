@@ -91,6 +91,67 @@ function DashboardTabs() {
     </Tab.Navigator>
   );
 }
+function AdminDashboardTabs() {
+
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        tabBarActiveTintColor: '#131212',
+        tabBarInactiveTintColor: Colors.verylightgray,
+        tabBarLabelStyle: {fontSize: 13, fontWeight: '600'},
+        tabBarStyle: {height: 60},
+      }}>
+      <Tab.Screen
+        name="Shops"
+        component={Shops}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({focused}) => (
+            <View style={focused ? styles.button : styles.button2}>
+              <MaterialCommunityIcons
+                name="home-outline"
+                color={focused ? Colors.white : Colors.verylightgray}
+                size={25}
+              />
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Admin"
+        component={Admin}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({focused}) => (
+            <View style={focused ? styles.button : styles.button2}>
+              <AntDesign
+                name="questioncircleo"
+                size={25}
+                color={focused ? Colors.white : Colors.verylightgray}
+              />
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Employees"
+        component={Employees}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({focused}) => (
+            <View style={focused ? styles.button : styles.button2}>
+              <MaterialCommunityIcons
+                name="account-circle-outline"
+                size={25}
+                color={focused ? Colors.white : Colors.verylightgray}
+              />
+            </View>
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
 function StackDrawer() {
   const dispatch = useDispatch();
 
@@ -102,7 +163,7 @@ function StackDrawer() {
     return netConnection;
   }, []);
   return (
-    <Stack.Navigator initialRouteName="AdminHome">
+    <Stack.Navigator initialRouteName="SplashScreen">
       <Stack.Screen
         name="SplashScreen"
         component={SplashScreen}
@@ -156,7 +217,7 @@ function StackDrawer() {
       />
        <Stack.Screen
         name="AdminHome"
-        component={AdminHome}
+        component={AdminDashboardTabs}
         options={{
           headerShown: false,
         }}

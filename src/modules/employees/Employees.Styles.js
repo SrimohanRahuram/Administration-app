@@ -70,7 +70,7 @@ const stylesNew = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     marginBottom: 10,
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
   },
   image: {

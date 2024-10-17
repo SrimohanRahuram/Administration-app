@@ -101,84 +101,6 @@ export default function LoginScreen({navigation}) {
     return true;
   };
 
-  // const saveLogin = async (email, password, rememberme, accessToken) => {
-  //   await AsyncStorage.setItem('login_email', email);
-  //   await AsyncStorage.setItem('rememberMe', rememberme);
-  //   await AsyncStorage.setItem('accessToken', accessToken);
-
-  //   if (rememberme === 'true') {
-  //     await SInfo.setItem('login_password', password, {
-  //       sharedPreferencesName: 'myAppPrefs',
-  //       keychainService: 'myAppKeychain',
-  //     });
-  //   } else {
-  //     await SInfo.deleteItem('login_password', {
-  //       sharedPreferencesName: 'myAppPrefs',
-  //       keychainService: 'myAppKeychain',
-  //     });
-  //   }
-  // };
-  // const login = async () => {
-  //   setIsLoading(true);
-  //   try {
-  //     const response = await SigninUser(email, password);
-  //     console.log('LOGIN RESPONSE :::::::: ' + JSON.stringify(response));
-
-  //     if (response !== 401) {
-  //       if (response.data.validate === 'success') {
-  //         if (response.data.http_status === 'ok') {
-  //           const id = response.data.user.id;
-  //           const name = response.data.user.name;
-  //           const user_name = response.data.user.user_name;
-  //           const role = response.data.user.user_type;
-  //           const user_role_id = response.data.user.user_role_id;
-  //           const registration_num = response.data.user.registration_num;
-  //           const nic = response.data.user.nic;
-  //           const gender = response.data.user.gender;
-  //           const province = response.data.user.province;
-  //           const district = response.data.user.district;
-  //           const dsd = response.data.user.dsd;
-  //           const gnd = response.data.user.gnd;
-  //           const address = response.data.user.address;
-  //           const user_image = response.data.user.user_image;
-  //           const email = response.data.user.email;
-  //           const created_at = response.data.user.created_at;
-  //           const mobile_number = response.data.user.mobile_number;
-  //           const accessToken = response.data.access_token;
-
-  //           dispatch(
-  //             addUserToRedux({
-  //               email: email,
-  //               name: name,
-  //               id: id,
-  //               address: address,
-  //               created_at: created_at,
-  //               registration_num: registration_num,
-  //               mobile_number: mobile_number,
-  //             }),
-  //           );
-  //           await saveLogin(email, password, '' + rememberme, accessToken);
-  //           navigation.navigate('Dashboard', { screen: 'HOME' });
-  //         } else {
-  //           ToastAlert.ShowToast('error', 'Alert', 'Server error');
-  //         }
-  //       } else {
-  //         ToastAlert.ShowToast(
-  //           'error',
-  //           'Alert',
-  //           'Error : ' + response.data.validate,
-  //         );
-  //       }
-  //     } else {
-  //       ToastAlert.ShowToast('error', 'Alert', '401 (Unauthorized)');
-  //     }
-  //   } catch (error) {
-  //     ToastAlert.ShowToast('error', 'Alert', 'Error : ' + error);
-  //     console.log('error', error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
   return (
     <View style={styles.container}>
       <Image style={styles.image} resizeMode="center" source={Images.logo} />
@@ -244,7 +166,11 @@ export default function LoginScreen({navigation}) {
 
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('DashBoard');
+            if (email === 'admin') {
+              navigation.navigate('AdminHome');
+            } else {
+              navigation.navigate('DashBoard');
+            }
           }}
           style={styles.button}>
           <Text style={styles.buttonText}>Login</Text>

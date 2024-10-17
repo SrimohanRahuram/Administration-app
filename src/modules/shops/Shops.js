@@ -58,15 +58,38 @@ export default function Shops({navigation}) {
   return (
     <View style={styles.container}>
       <View style={styles.body}>
-        <Text style={styles.header}>Shops</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+          <Text style={styles.header}>Gowrisan</Text>
+          <Text style={styles.header}>Shops</Text>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('LoginScreen');
+            }}
+            style={{
+              ...styles.button,
+              backgroundColor: Colors.white,
+              width: '25%',
+              height: 30,
+              marginRight: 20,
+            }}>
+            <Text
+              style={{
+                ...styles.buttonText,
+                color: Colors.black,
+                marginRight: 0,
+              }}>
+              Log out
+            </Text>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.detailsBody}>
           <View style={styles.inputContainer}>
-            <TouchableOpacity
-              onPress={() => {
-                backAction();
-              }}>
-              <AntDesign name="arrowleft" size={25} color={Colors.black} />
-            </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
                 setAddShopModal(true);

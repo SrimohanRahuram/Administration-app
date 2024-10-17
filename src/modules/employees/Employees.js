@@ -61,12 +61,6 @@ export default function Employees({navigation}) {
           <View style={styles.inputContainer}>
             <TouchableOpacity
               onPress={() => {
-                backAction();
-              }}>
-              <AntDesign name="arrowleft" size={25} color={Colors.black} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
                 setAddEmployeeModal(true);
               }}
               style={styles.button}>

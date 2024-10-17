@@ -54,12 +54,6 @@ export default function Admin({navigation}) {
           <View style={styles.inputContainer}>
             <TouchableOpacity
               onPress={() => {
-                backAction();
-              }}>
-              <AntDesign name="arrowleft" size={25} color={Colors.black} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
                 setAddAdminModal(true);
               }}
               style={styles.button}>

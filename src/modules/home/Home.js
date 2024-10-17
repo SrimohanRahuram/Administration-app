@@ -38,15 +38,22 @@ export default function Home({navigation}) {
           }}>
           <Text style={styles.header}>Gowrisan</Text>
           <TouchableOpacity
-            onPress={() => {}}
+            onPress={() => {
+              navigation.navigate('LoginScreen');
+            }}
             style={{
               ...styles.button,
               backgroundColor: Colors.white,
               width: '25%',
-              height:30,
-              marginRight:20
+              height: 30,
+              marginRight: 20,
             }}>
-            <Text style={{...styles.buttonText, color: Colors.black,marginRight:0}}>
+            <Text
+              style={{
+                ...styles.buttonText,
+                color: Colors.black,
+                marginRight: 0,
+              }}>
               Log out
             </Text>
           </TouchableOpacity>
