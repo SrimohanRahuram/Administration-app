@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "880659826646",
+    "project_id": "ukfoodcity-21294",
+    "storage_bucket": "ukfoodcity-21294.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:880659826646:android:e2b803f4e90c868b644677",
+        "android_client_info": {
+          "package_name": "com.administrationapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnTbu42S6G-7fw8LFrXqdaHYXdBmR_wP4" 
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

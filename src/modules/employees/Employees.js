@@ -18,11 +18,12 @@ import ToastAlert from '../../components/ToastAlert';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import firestoreEmployeeService from '../../handlers/firestoreEmployeeService';
 
 export default function Employees({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
   const [AddEmployeeModal, setAddEmployeeModal] = useState(false);
-  const [name, setName] = React.useState('');
+  const [userName, setUserName] = React.useState('');
   const [Id, setId] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [code, setCode] = React.useState('');
@@ -45,6 +46,15 @@ export default function Employees({navigation}) {
   const backAction = () => {
     navigation.navigate('AdminHome');
   };
+
+  const handleOnSubmit= async (e)=>{
+    e.preventDefault()
+   const status=await firestoreEmployeeService.saveEmployeeData(userName, Id,password,code,contactNo, address,maxHours,hourSalary,maxHolidays);
+   if(status=="Success"){
+    ToastAlert.ShowToast('error', 'Alert', 'Sucessfully Emoloyee created..');
+    setAddEmployeeModal(false);
+   }
+  }
 
   const adminDetails = [
     {key: '1', id: 'EA - 1', name: 'Gowrisan', phone: '0123456789'},
@@ -193,8 +203,8 @@ export default function Employees({navigation}) {
                 <View style={styles.inputView}>
                   <TextInput
                     style={styles.input}
-                    onChangeText={setName}
-                    value={name}
+                    onChangeText={setUserName}
+                    value={userName}
                     placeholder="Enter Name"
                   />
                 </View>
@@ -289,7 +299,7 @@ export default function Employees({navigation}) {
                       Cancel
                     </Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.modalbutton}>
+                  <TouchableOpacity style={styles.modalbutton} onPress={handleOnSubmit}>
                     <Text style={styles.buttonText}>Create</Text>
                   </TouchableOpacity>
                 </View>
@@ -327,8 +337,8 @@ export default function Employees({navigation}) {
                 <View style={styles.inputView}>
                   <TextInput
                     style={styles.input}
-                    onChangeText={setName}
-                    value={name}
+                    onChangeText={setUserName}
+                    value={userName}
                     placeholder="Enter Name"
                   />
                 </View>
@@ -435,3 +445,4 @@ export default function Employees({navigation}) {
     </View>
   );
 }
+

@@ -20,10 +20,11 @@ import ProgressOverlay from '../../components/ProgressOverlay';
 import SInfo from 'react-native-sensitive-info';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {promptForEnableLocationIfNeeded} from 'react-native-android-location-enabler';
+import firestoreLoginService from '../../handlers/firestoreLoginService';
 
 export default function LoginScreen({navigation}) {
   const dispatch = useDispatch();
-  const [email, onChangeEmail] = useState(null);
+  const [username, onChangeUsername] = useState(null);
   const [password, onChangePassword] = useState(null);
   const [hidePassword, setHidePassword] = useState(true);
   const [rememberme, setRememberMe] = useState(false);
@@ -34,6 +35,23 @@ export default function LoginScreen({navigation}) {
     setHidePassword(!hidePassword);
   };
 
+  const handleLogin= async ()=>{
+  const status = await firestoreLoginService.loginUser(username,password);
+  if(status=="Admin login successful!"){
+    console.log("thinesh>>"+status);
+    ToastAlert.ShowToast('error', 'Alert', 'Admin login successful!');
+    navigation.navigate('AdminHome');
+  }else if(status=="Employee login successful!"){
+    console.log("thinesh>>"+status);
+    ToastAlert.ShowToast('error', 'Alert', 'Employee login successful!');
+    navigation.navigate('DashBoard');
+  }
+  else{
+    ToastAlert.ShowToast('error', 'Alert', 'Wrong user name or password...!');
+  }
+  
+}
+
   useEffect(() => {
     fetchRememberMeData();
 
@@ -41,7 +59,7 @@ export default function LoginScreen({navigation}) {
       try {
         AsyncStorage.removeItem('accessToken');
         const rememberme = await AsyncStorage.getItem('rememberMe');
-        const email = await AsyncStorage.getItem('login_email');
+        const username = await AsyncStorage.getItem('login_username');
         if (rememberme === 'true') {
           setRememberMe(rememberme);
           const password = await SInfo.getItem('login_password', {
@@ -50,7 +68,7 @@ export default function LoginScreen({navigation}) {
           });
           if (password) {
             onChangePassword(password);
-            onChangeEmail(email);
+            onChangeUsername(username);
           }
         }
       } catch (error) {
@@ -64,21 +82,21 @@ export default function LoginScreen({navigation}) {
   }, []);
   const checkOnlineStatusLogin = () => {
     if (online_status == true) {
-      if (email) {
+      if (username) {
         if (password) {
           //login();
         } else {
           ToastAlert.ShowToast('error', 'Alert', 'Password is empty');
         }
       } else {
-        ToastAlert.ShowToast('error', 'Alert', 'Email is empty');
+        ToastAlert.ShowToast('error', 'Alert', 'username is empty');
       }
     } else {
       Alert.alert('Internet Connection...', t('No_internet_connection'), [
         {
           text: t('retry'),
-          onPress: () =>
-            navigation.reset({
+          onPress: () => 
+            navigation.reset({ 
               index: 0,
               routes: [{name: 'LoginScreen'}],
             }),
@@ -108,9 +126,9 @@ export default function LoginScreen({navigation}) {
       <View style={styles.card}>
         <TextInput
           style={styles.input}
-          onChangeText={email => onChangeEmail(email)}
-          value={email}
-          label={'Email'}
+          onChangeText={username => onChangeUsername(username)}
+          value={username}
+          label={'username'}
           mode="outlined"
           autoCapitalize="none"
           theme={{
@@ -158,20 +176,22 @@ export default function LoginScreen({navigation}) {
           <TouchableOpacity
             style={{width: '50%', alignItems: 'flex-end'}}
             onPress={() => {
-              navigation.navigate('ForgotPasswordEmail');
+              navigation.navigate('ForgotPasswordusername');
             }}>
             <Text style={styles.text}>Forgot password?</Text>
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity
-          onPress={() => {
-            if (email === 'admin') {
-              navigation.navigate('AdminHome');
-            } else {
-              navigation.navigate('DashBoard');
-            }
-          }}
+          onPress=
+          {handleLogin}
+          // {() => {
+          //   if (username === 'admin') {
+          //     navigation.navigate('AdminHome');
+          //   } else {
+          //     navigation.navigate('DashBoard');
+          //   }
+          // }}
           style={styles.button}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
