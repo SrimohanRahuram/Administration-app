@@ -1,3 +1,6 @@
+import firestoreAdminService from "../../handlers/firestoreAdminService";
+import firestoreEmployeeService from "../../handlers/firestoreEmployeeService";
+
 export const ADD_USER_INFO = 'ADD_USER_INFO';
 export const REMOVE_USER = 'REMOVE_USER';
 export const CHANGE_ONLINE_STATUS = 'CHANGE_ONLINE_STATUS';
@@ -7,6 +10,8 @@ export const ADD_IMAGES = 'ADD_IMAGES';
 export const REMOVE_IMAGE = 'REMOVE_IMAGE';
 export const CLEAR_IMAGES = 'CLEAR_IMAGES';
 export const TODAY_LOCATIONS = 'TODAY_LOCATIONS';
+export const FETCH_ADMIN_DATA = 'FETCH_ADMIN_DATA';
+export const FETCH_EMPLOYEE_DATA='FETCH_EMPLOYEE_DATA';
 
 export const addUserToRedux = data => dispatch => {
   // console.log('addUserToRedux ' + JSON.stringify(data));
@@ -75,5 +80,26 @@ export const addTodayLocationsRedux = data => dispatch => {
   dispatch({
     type: TODAY_LOCATIONS,
     payload: data,
+  });
+};
+
+//thinesh
+export const fetchAdminData  = () => async dispatch => {
+  const adminData = await  firestoreAdminService.getAllAdmins();
+  console.log('Fetched Admin Data:', adminData); 
+
+  dispatch({
+    type: FETCH_ADMIN_DATA,
+    payload: adminData,
+  });
+};
+
+export const fetchEmployeeData  = () => async dispatch => {
+  const employeeData = await  firestoreEmployeeService.getAllEmployees();
+  console.log('Fetched Employee Data:', employeeData); 
+
+  dispatch({
+    type: FETCH_EMPLOYEE_DATA,
+    payload: employeeData,
   });
 };

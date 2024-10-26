@@ -42,6 +42,24 @@ const firestoreEmployeeService = {
       throw error;
     }
   },
+
+
+  getAllEmployees: async () => {
+    try {
+      const employeeCollection = await firestore().collection('Employee').get();
+      const employees = employeeCollection.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      console.log('Retrieved all employee data:', employees);
+      return employees;
+    } catch (error) {
+      console.error('Error retrieving admin data: ', error);
+      throw error;
+    }
+  },
+
 }
   
 
