@@ -8,12 +8,12 @@ const firestoreEmployeeService = {
   saveEmployeeData: async (userName, ID,password,shareCode,contactNo, Address,maxHours,perHourSalary,maxHoliday) => {
     try {
 
-      const userDoc = await firestore().collection('Employee').doc(userName).get();
+      const userDoc = await firestore().collection('Employee').doc(ID).get();
       
       if (userDoc.exists) {
 
-        Alert.alert('Error', 'Username already exists. Please choose another username.');
-        return 'Username already exists';
+        Alert.alert('Error', 'ID already exists. Please choose another ID.');
+        return 'ID already exists';
       }
 
       const saltRounds = 10;
@@ -22,7 +22,7 @@ const firestoreEmployeeService = {
 
       await firestore()
         .collection('Employee')
-        .doc(userName)
+        .doc(ID)
         .set({
           userName: userName,
           ID:ID,
