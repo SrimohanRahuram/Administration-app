@@ -14,6 +14,12 @@ export const TODAY_LOCATIONS = 'TODAY_LOCATIONS';
 export const FETCH_ADMIN_DATA = 'FETCH_ADMIN_DATA';
 export const FETCH_EMPLOYEE_DATA='FETCH_EMPLOYEE_DATA';
 export const FETCH_SHOP_DATA='FETCH_SHOP_DATA';
+export const UPDATE_ADMIN_DATA='UPDATE_ADMIN_DATA';
+export const DELETE_ADMIN_DATA='DELETE_ADMIN_DATA';
+export const UPDATE_EMPLOYEE_DATA='UPDATE_EMPLOYEE_DATA';
+export const DELETE_EMPLOYEE_DATA='DELETE_EMPLOYEE_DATA';
+export const UPDATE_SHOP_DATA='UPDATE_SHOP_DATA';
+export const DELETE_SHOP_DATA='DELETE_SHOP_DATA';
 
 export const addUserToRedux = data => dispatch => {
   // console.log('addUserToRedux ' + JSON.stringify(data));
@@ -114,4 +120,120 @@ export const fetchShopData  = () => async dispatch => {
     type: FETCH_SHOP_DATA,
     payload: shopData,
   });
+};
+
+export const updateAdminData = (username, updatedData) => async dispatch => {
+  try {
+    const updatedAdminData = await firestoreAdminService.editAdminData(username, updatedData);
+    console.log('Updated Admin Data:', updatedAdminData);
+
+    dispatch({
+      type: UPDATE_ADMIN_DATA,
+      payload: {
+        username,
+        ...updatedData,
+      },
+    });
+
+    return 'Success';
+  } catch (error) {
+    console.error('Error updating admin data:', error);
+    return 'Error';
+  }
+};
+
+
+export const deleteAdminData = (username) => async (dispatch) => {
+  try {
+    await firestoreAdminService.deleteAdminData(username);
+    console.log('Deleted Admin:', username);
+
+    dispatch({
+      type: DELETE_ADMIN_DATA,
+      payload: username,
+    });
+
+    return 'Success';
+  } catch (error) {
+    console.error('Error deleting admin data:', error);
+    return 'Error';
+  }
+};
+
+
+export const updateEmployeeData = (username, updatedData) => async dispatch => {
+  try {
+    const updatedEmployeeData = await firestoreEmployeeService.editEmplyeeData(username, updatedData);
+    console.log('Updated Employee Data:', updatedEmployeeData);
+
+    dispatch({
+      type: UPDATE_EMPLOYEE_DATA,
+      payload: {
+        username,
+        ...updatedData,
+      },
+    });
+
+    return 'Success';
+  } catch (error) {
+    console.error('Error updating admin data:', error);
+    return 'Error';
+  }
+};
+
+
+export const deleteEmployeeData = (username) => async (dispatch) => {
+  try {
+    await firestoreEmployeeService.deleteEmployeeData(username);
+    console.log('Deleted Employee:', username);
+
+    dispatch({
+      type: DELETE_EMPLOYEE_DATA,
+      payload: username,
+    });
+
+    return 'Success';
+  } catch (error) {
+    console.error('Error deleting Employee data:', error);
+    return 'Error';
+  }
+};
+
+
+export const updateShopData = (id, updatedData) => async dispatch => {
+  try {
+    const updatedShopData = await firestoreShopService.editShopData(id, updatedData);
+    console.log('Updated Shop Data:', updatedShopData);
+
+    dispatch({
+      type: UPDATE_SHOP_DATA,
+      payload: {
+        id,
+        ...updatedData,
+      },
+    });
+
+    return 'Success';
+  } catch (error) {
+    console.error('Error updating employee data:', error);
+    return 'Error';
+  }
+};
+
+
+export const deleteShopData = (id) => async (dispatch) => {
+  try {
+    await firestoreShopService.deleteShopData(id);
+    console.log('Deleted shop:', id);
+
+    dispatch({
+      type: DELETE_SHOP_DATA,
+      payload: id,
+    });
+
+    return 'Success';
+  } catch (error) {
+    console.error('Error deleting Shop data:', error);
+    return 'Error';
+  }
 };

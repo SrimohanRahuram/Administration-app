@@ -46,7 +46,48 @@ const firestoreShopService={
           console.error('Error retrieving Shop data: ', error);
           throw error;
         }
-      },  
+      },
+      
+      
+
+      editShopData: async (id, updatedData) => {
+        try {
+          const shopDocRef = firestore().collection('Shop').doc(id);
+          const shopDoc = await shopDocRef.get();
+    
+          if (!shopDoc.exists) {
+            Alert.alert('Error', 'shop does not exist.');
+            return 'shop not found';
+          }
+    
+          await shopDocRef.update(updatedData);
+          console.log('shop data updated successfully!');
+          return 'Success';
+        } catch (error) {
+          console.error('Error updating shop data: ', error);
+          throw error;
+        }
+      },
+    
+      deleteShopData: async (id) => {
+        try {
+          const shopDocRef = firestore().collection('Shop').doc(id);
+          const shopDoc = await shopDocRef.get();
+    
+          if (!shopDoc.exists) {
+            Alert.alert('Error', 'shop does not exist.');
+            return 'shop not found';
+          }
+    
+          await shopDocRef.delete();
+          console.log('shop data deleted successfully!');
+          return 'Success';
+        } catch (error) {
+          console.error('Error deleting shop data: ', error);
+          throw error;
+        }
+      },
+
 
 }
 
