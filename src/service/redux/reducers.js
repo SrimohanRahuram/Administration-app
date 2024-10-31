@@ -16,6 +16,7 @@ import { UPDATE_EMPLOYEE_DATA } from './actions';
 import { DELETE_EMPLOYEE_DATA } from './actions';
 import { UPDATE_SHOP_DATA } from './actions';
 import { DELETE_SHOP_DATA } from './actions';
+import { FETCH_EMPLOYEE_DATA_BY_ID } from './actions';
 
 const initialState = {
   adminInfo: [],
@@ -116,7 +117,13 @@ function myReducers(state = initialState, action) {
             return {
               ...state,
               shop: state.shop.filter(shop => shop.id !== action.payload),
-            };    
+            };
+            
+            case FETCH_EMPLOYEE_DATA_BY_ID:
+            return {
+            ...state,
+            employeeInfo: action.payload, 
+            };
 
     default:
       return state;

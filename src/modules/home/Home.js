@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   Text,
@@ -6,16 +7,24 @@ import {
   BackHandler,
   TextInput,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './Home.Styles';
 import Colors from '../../constants/Colors';
 import Images from '../../constants/images';
 import ProgressOverlay from '../../components/ProgressOverlay';
 import ToastAlert from '../../components/ToastAlert';
 import Entypo from 'react-native-vector-icons/Entypo';
+import { fetchEmployeeDataById } from '../../service/redux/actions';
 
 export default function Home({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
+
+  const [userName, setUserName] = React.useState('');
+  const [Id, setId] = React.useState('');
+  const [contactNo, setContactNo] = React.useState('');
+  const [currentDateTime, setCurrentDateTime] = useState(''); 
+ 
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backAction);
@@ -28,6 +37,43 @@ export default function Home({navigation}) {
     navigation.navigate('Notifications');
   };
 
+  const dispatch = useDispatch();
+  const employeeData = useSelector((state) => state.myReducers.employeeInfo);
+  useEffect(() => {
+    
+    // Fetch admin data when the component mounts
+    dispatch(fetchEmployeeDataById());
+    console.log("Fetch dispatched");
+  }, [dispatch]);
+
+ 
+  useEffect(() => {
+    const updateDateTime = () => {
+      const date = new Date();
+      const formattedDateTime = date.toLocaleString('en-GB', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+      setCurrentDateTime(formattedDateTime);
+    };
+
+    updateDateTime();
+    const intervalId = setInterval(updateDateTime, 1000); // Update every second
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  }, []);
+
+
+
+
+
+
+
   return (
     <View style={styles.container}>
       <View style={styles.body}>
@@ -36,9 +82,10 @@ export default function Home({navigation}) {
             ...styles.inputContainer,
             justifyContent: 'space-between',
           }}>
-          <Text style={styles.header}>Gowrisan</Text>
+          <Text style={styles.header}>{employeeData.userName}</Text>
           <TouchableOpacity
-            onPress={() => {
+            onPress={async () => {
+              await AsyncStorage.removeItem('employeeId');
               navigation.navigate('LoginScreen');
             }}
             style={{
@@ -69,7 +116,7 @@ export default function Home({navigation}) {
                 justifyContent: 'space-between',
               }}>
               <Text style={{...styles.head, marginBottom: 10, fontSize: 15}}>
-                Monday 18 April 2024
+               {currentDateTime}
               </Text>
               <Text
                 style={{
