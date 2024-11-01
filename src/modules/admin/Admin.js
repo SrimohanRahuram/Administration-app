@@ -17,12 +17,12 @@ import ToastAlert from '../../components/ToastAlert';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import firestoreAdminService from '../../handlers/firestoreAdminService';
 
 export default function Admin({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
   const [AddAdminModal, setAddAdminModal] = useState(false);
-  const [name, setName] = React.useState('');
-  const [shopId, setShopId] = React.useState('');
+  const [userName, setUserName] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [contactNo, setContactNo] = React.useState('');
   const [EditAdminModal, setEditAdminModal] = useState(false);
@@ -38,6 +38,16 @@ export default function Admin({navigation}) {
   const backAction = () => {
     navigation.navigate('AdminHome');
   };
+
+  const handleOnSumbit= async (e)=>{
+    e.preventDefault()
+   const status=await firestoreAdminService.saveAdminData(userName,password,contactNo);
+   if(status=="Success"){
+    ToastAlert.ShowToast('error', 'Alert', 'Sucessfully Admin created..');
+    setAddAdminModal(false);
+   }
+  }
+
 
   const adminDetails = [
     {key: '1', id: 'EA - 1', name: 'Gowrisan', phone: '0123456789'},
@@ -168,16 +178,16 @@ export default function Admin({navigation}) {
               }}>
               <Image source={Images.logo} style={styles.image} />
 
-              <Text style={styles.modalhead}>Name</Text>
+              <Text style={styles.modalhead}>UserName</Text>
               <View style={styles.inputView}>
                 <TextInput
                   style={styles.input}
-                  onChangeText={setName}
-                  value={name}
+                  onChangeText={setUserName}
+                  value={userName}
                   placeholder="Enter Name"
                 />
               </View>
-              <Text style={styles.modalhead}>Shop- ID</Text>
+              {/* <Text style={styles.modalhead}>Shop- ID</Text>
               <View style={styles.inputView}>
                 <TextInput
                   style={styles.input}
@@ -185,7 +195,7 @@ export default function Admin({navigation}) {
                   value={shopId}
                   placeholder="Enter ShopId"
                 />
-              </View>
+              </View> */}
               <Text style={styles.modalhead}>Password</Text>
               <View style={styles.inputView}>
                 <TextInput
@@ -222,7 +232,9 @@ export default function Admin({navigation}) {
                     Cancel
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.modalbutton}>
+                <TouchableOpacity 
+                style={styles.modalbutton} 
+                onPress={handleOnSumbit} >
                   <Text style={styles.buttonText}>Create</Text>
                 </TouchableOpacity>
               </View>
@@ -255,16 +267,16 @@ export default function Admin({navigation}) {
               }}>
               <Image source={Images.logo} style={styles.image} />
 
-              <Text style={styles.modalhead}>Name</Text>
+              <Text style={styles.modalhead}>UserName</Text>
               <View style={styles.inputView}>
                 <TextInput
                   style={styles.input}
-                  onChangeText={setName}
-                  value={name}
+                  onChangeText={setUserName}
+                  value={userName}
                   placeholder="Enter Name"
                 />
               </View>
-              <Text style={styles.modalhead}>Shop- ID</Text>
+              {/* <Text style={styles.modalhead}>Shop- ID</Text>
               <View style={styles.inputView}>
                 <TextInput
                   style={styles.input}
@@ -272,7 +284,7 @@ export default function Admin({navigation}) {
                   value={shopId}
                   placeholder="Enter ShopId"
                 />
-              </View>
+              </View> */}
               <Text style={styles.modalhead}>Password</Text>
               <View style={styles.inputView}>
                 <TextInput
