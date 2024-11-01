@@ -1,5 +1,6 @@
 import firestoreAdminService from "../../handlers/firestoreAdminService";
 import firestoreEmployeeService from "../../handlers/firestoreEmployeeService";
+import firestoreShopService from "../../handlers/firestoreShopService";
 
 export const ADD_USER_INFO = 'ADD_USER_INFO';
 export const REMOVE_USER = 'REMOVE_USER';
@@ -12,6 +13,7 @@ export const CLEAR_IMAGES = 'CLEAR_IMAGES';
 export const TODAY_LOCATIONS = 'TODAY_LOCATIONS';
 export const FETCH_ADMIN_DATA = 'FETCH_ADMIN_DATA';
 export const FETCH_EMPLOYEE_DATA='FETCH_EMPLOYEE_DATA';
+export const FETCH_SHOP_DATA='FETCH_SHOP_DATA';
 
 export const addUserToRedux = data => dispatch => {
   // console.log('addUserToRedux ' + JSON.stringify(data));
@@ -101,5 +103,15 @@ export const fetchEmployeeData  = () => async dispatch => {
   dispatch({
     type: FETCH_EMPLOYEE_DATA,
     payload: employeeData,
+  });
+};
+
+export const fetchShopData  = () => async dispatch => {
+  const shopData = await  firestoreShopService.getAllShops();
+  console.log('Fetched Shops Data:', shopData); 
+
+  dispatch({
+    type: FETCH_SHOP_DATA,
+    payload: shopData,
   });
 };

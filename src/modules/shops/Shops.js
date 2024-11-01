@@ -9,6 +9,7 @@ import {
   Image,
   TextInput,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './Shops.Styles';
 import Colors from '../../constants/Colors';
 import Images from '../../constants/images';
@@ -17,18 +18,48 @@ import ToastAlert from '../../components/ToastAlert';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import firestoreShopService from '../../handlers/firestoreShopService';
+import { fetchShopData } from '../../service/redux/actions';
 
 export default function Shops({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
   const [AddShopModal, setAddShopModal] = useState(false);
   const [name, setName] = React.useState('');
-  const [shopId, setShopId] = React.useState('');
+  const [shopID, setShopID] = React.useState('');
   const [address, setAddress] = React.useState('');
   const [contactNo, setContactNo] = React.useState('');
 
   const [ShopModal, setShopModal] = useState(false);
   const [EditShopModal, setEditShopModal] = useState(false);
   const [summaryModal, setSummaryModal] = useState(false);
+
+  const handleOnSubmit= async (e)=>{
+    e.preventDefault()
+   const status=await firestoreShopService.saveShopData(name, shopID, address,contactNo);
+   if(status=="Success"){
+    ToastAlert.ShowToast('error', 'Alert', 'Sucessfully Shop created..');
+    dispatch(fetchShopData()); 
+    setAddShopModal(false);
+   }
+  }
+
+  const dispatch = useDispatch();
+  
+  // Accessing shopInfo from your Redux store
+  const showoutletList = useSelector((state) => state.myReducers.shopInfo);
+
+  useEffect(() => {
+    // Fetch shop data when the component mounts
+    dispatch(fetchShopData());
+    console.log("Fetch dispatched");
+  }, [dispatch]);
+
+  // Logging the admin data to see changes
+  useEffect(() => {
+    console.log("shop data updated:", showoutletList);
+  }, [showoutletList]);
+
+
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backAction);
@@ -41,13 +72,15 @@ export default function Shops({navigation}) {
     navigation.navigate('AdminHome');
   };
 
-  const showoutletList = [
-    {key: '1', value: 'shop 1'},
-    {key: '2', value: 'shop 2'},
-    {key: '3', value: 'shop 3'},
-    {key: '4', value: 'shop 4'},
-    {key: '5', value: 'shop 5'},
-  ];
+  // const showoutletList = [
+  //   {key: '1', value: 'shop 1'},
+  //   {key: '2', value: 'shop 2'},
+  //   {key: '3', value: 'shop 3'},
+  //   {key: '4', value: 'shop 4'},
+  //   {key: '5', value: 'shop 5'},
+  // ];
+
+
   const shopsummary = [
     {key: '1', id: 'shop 1', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
     {key: '2', id: 'shop 2', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
@@ -104,14 +137,14 @@ export default function Shops({navigation}) {
             numColumns={2}
             contentContainerStyle={{justifyContent: 'space-between'}}
             nestedScrollEnabled={true}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(item) => item.id}
             renderItem={({item}) => (
               <TouchableOpacity
                 onPress={() => {
                   setShopModal(true);
                 }}
                 style={styles.detailsBody2}>
-                <Text style={styles.head}>{item.value}</Text>
+                <Text style={styles.head}>{item.name}</Text>
               </TouchableOpacity>
             )}
           />
@@ -155,8 +188,8 @@ export default function Shops({navigation}) {
               <View style={styles.inputView}>
                 <TextInput
                   style={styles.input}
-                  onChangeText={setShopId}
-                  value={shopId}
+                  onChangeText={setShopID}
+                  value={shopID}
                   placeholder="Enter ShopId"
                 />
               </View>
@@ -197,7 +230,12 @@ export default function Shops({navigation}) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.modalbutton}>
-                  <Text style={styles.buttonText}>Create</Text>
+                  <Text 
+                  style={styles.buttonText}
+                  onPress={handleOnSubmit}
+                  >
+                    Create
+                    </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -303,8 +341,8 @@ export default function Shops({navigation}) {
               <View style={styles.inputView}>
                 <TextInput
                   style={styles.input}
-                  onChangeText={setShopId}
-                  value={shopId}
+                  onChangeText={setShopID}
+                  value={shopID}
                   placeholder="Enter ShopId"
                 />
               </View>

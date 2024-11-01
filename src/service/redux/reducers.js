@@ -9,10 +9,12 @@ import {CLEAR_IMAGES} from './actions';
 import {TODAY_LOCATIONS} from './actions';
 import { FETCH_ADMIN_DATA } from './actions';
 import { FETCH_EMPLOYEE_DATA } from './actions';
+import { FETCH_SHOP_DATA } from './actions';
 
 const initialState = {
   adminInfo: [],
   employeeInfo: [],
+  shopInfo:[],
   jobinfo: [],
   online_status: false,
   itinerarylistinfo: [],
@@ -59,7 +61,8 @@ function myReducers(state = initialState, action) {
       case FETCH_EMPLOYEE_DATA:
         return { ...state, employeeInfo: action.payload };  
       
-
+      case FETCH_SHOP_DATA:
+          return { ...state, shopInfo: action.payload };    
 
     default:
       return state;
