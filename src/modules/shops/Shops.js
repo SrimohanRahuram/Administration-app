@@ -32,6 +32,7 @@ export default function Shops({navigation}) {
   const [ShopModal, setShopModal] = useState(false);
   const [EditShopModal, setEditShopModal] = useState(false);
   const [summaryModal, setSummaryModal] = useState(false);
+  const [selectedShop, setSelectedShop] = useState(null);
 
   const handleOnSubmit= async (e)=>{
     e.preventDefault()
@@ -71,6 +72,64 @@ export default function Shops({navigation}) {
   const backAction = () => {
     navigation.navigate('AdminHome');
   };
+
+  useEffect(() => {
+    if (selectedShop) {
+      setAddress(selectedShop.address);
+      setContactNo(selectedShop.contactNo);
+      setName(selectedShop.name);
+      setShopID(selectedShop.shopID);
+      
+    }
+  }, [selectedShop]);
+
+
+  const handleOnUpdate = async (e) => {
+    e.preventDefault();
+    
+    // Define updated data as an object
+    const updatedData = {
+      name:name,
+      address:address,
+      contactNo: contactNo,
+    };
+  
+    try {
+      const status = await firestoreShopService.editShopData(shopID, updatedData);
+      if (status === "Success") {
+        ToastAlert.ShowToast('success', 'Alert', 'Successfully updated shop.');
+        dispatch(fetchShopData()); // Refresh admin data
+        setEditShopModal(false);    // Close the modal
+      }
+    } catch (error) {
+      ToastAlert.ShowToast('error', 'Alert', 'Failed to update shop.');
+      console.error('Error updating shop:', error);
+    }
+  };
+
+  const resetFields = () => {
+    setAddress(''),
+    setContactNo(''),
+    setName(''),
+    setShopID('')
+  };
+
+  const handleOnDelete = async (e) => {
+    try {
+      const status = await firestoreShopService.deleteShopData(shopID); // Call your delete function
+      if (status === "Success") {
+        ToastAlert.ShowToast('success', 'Alert', 'Successfully deleted shop.');
+        setShopModal(false);
+        dispatch(fetchShopData()); 
+      } else {
+        ToastAlert.ShowToast('error', 'Alert', 'Failed to delete shop.');
+      }
+    } catch (error) {
+      ToastAlert.ShowToast('error', 'Alert', 'Failed to delete shop.');
+      console.error('Error deleting shop:', error);
+    }
+  };
+
 
   // const showoutletList = [
   //   {key: '1', value: 'shop 1'},
@@ -125,6 +184,7 @@ export default function Shops({navigation}) {
           <View style={styles.inputContainer}>
             <TouchableOpacity
               onPress={() => {
+                resetFields();
                 setAddShopModal(true);
               }}
               style={styles.button}>
@@ -141,6 +201,7 @@ export default function Shops({navigation}) {
             renderItem={({item}) => (
               <TouchableOpacity
                 onPress={() => {
+                  setSelectedShop(item);
                   setShopModal(true);
                 }}
                 style={styles.detailsBody2}>
@@ -272,8 +333,20 @@ export default function Shops({navigation}) {
                 onPress={() => {
                   setEditShopModal(true);
                 }}
-                style={{...styles.button, width: '49%'}}>
+                style={{...styles.button, width: '20%'}}>
                 <Text style={styles.buttonText}>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setSummaryModal(true);
+                }}
+                style={{...styles.button, width: '25%'}}>
+                <Text style={styles.buttonText}
+                onPress={() => {
+               
+                  handleOnDelete();
+                }}
+                >Delete</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
@@ -287,10 +360,10 @@ export default function Shops({navigation}) {
               Shops Details
             </Text>
             <View style={styles.modaldetailsBody2}>
-              <Text style={styles.modalText}>Shop Name: London</Text>
-              <Text style={styles.modalText}>Shop Address:</Text>
-              <Text style={styles.modalText}>Shop ID:</Text>
-              <Text style={styles.modalText}>Shop Contact-No:</Text>
+              <Text style={styles.modalText}>Shop Name: {name}</Text>
+              <Text style={styles.modalText}>Shop Address:{address}</Text>
+              <Text style={styles.modalText}>Shop ID:{shopID}</Text>
+              <Text style={styles.modalText}>Shop Contact-No:{contactNo}</Text>
             </View>
 
             <Text style={{...styles.modalText, fontSize: 20}}>
@@ -382,8 +455,8 @@ export default function Shops({navigation}) {
                     Cancel
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.modalbutton}>
-                  <Text style={styles.buttonText}>Create</Text>
+                <TouchableOpacity style={styles.modalbutton}  onPress={handleOnUpdate}>
+                  <Text style={styles.buttonText}>update</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -398,6 +471,7 @@ export default function Shops({navigation}) {
           setSummaryModal(!summaryModal);
         }}>
         <View style={styles.body}>
+      
           <Text style={styles.header}>Shop Summary</Text>
           <View
             style={{

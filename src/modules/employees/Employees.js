@@ -37,6 +37,7 @@ export default function Employees({navigation}) {
 
   const [EditEmployeeModal, setEditEmployeeModal] = useState(false);
   const [search, setSearch] = React.useState('');
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backAction);
@@ -75,6 +76,78 @@ export default function Employees({navigation}) {
   }, [employeeData]);
  
 
+  
+  useEffect(() => {
+    if (selectedEmployee) {
+      setUserName(selectedEmployee.userName);
+      setAddress(selectedEmployee.Address);
+      setCode(selectedEmployee.shareCode);
+      setHourSalary(selectedEmployee.perHourSalary);
+      setId(selectedEmployee.ID);
+      setMaxHours(selectedEmployee.maxHours) 
+      setPassword('');
+      setmaxHolidays(selectedEmployee.maxHoliday); 
+      setContactNo(selectedEmployee.contactNo); 
+    }
+  }, [selectedEmployee]);
+
+
+  const handleOnUpdate = async (e) => {
+    e.preventDefault();
+    
+    // Define updated data as an object
+    const updatedData = {
+      userName:userName,
+      Address:address,
+      shareCode:code,
+      perHourSalary:hourSalary,
+      maxHours:maxHours,
+      password:password,
+      maxHoliday:maxHolidays,
+      contactNo: contactNo,
+    };
+  
+    try {
+      const status = await firestoreEmployeeService.editEmplyeeData(Id, updatedData);
+      if (status === "Success") {
+        ToastAlert.ShowToast('success', 'Alert', 'Successfully updated employee.');
+        dispatch(fetchEmployeeData()); 
+        setEditEmployeeModal(false);   
+      }
+    } catch (error) {
+      ToastAlert.ShowToast('error', 'Alert', 'Failed to update Employee.');
+      console.error('Error updating employee:', error);
+    }
+  };
+
+  const handleOnDelete = async (e) => {
+    try {
+      const status = await firestoreEmployeeService.deleteEmployeeData(Id); // Call your delete function
+      if (status === "Success") {
+        ToastAlert.ShowToast('success', 'Alert', 'Successfully deleted Employee.');
+        dispatch(fetchEmployeeData()); // Refresh admin data after deletion
+      } else {
+        ToastAlert.ShowToast('error', 'Alert', 'Failed to delete Employee.');
+      }
+    } catch (error) {
+      ToastAlert.ShowToast('error', 'Alert', 'Failed to delete employee.');
+      console.error('Error deleting employee:', error);
+    }
+  };
+
+  const resetFields = () => {
+    setUserName('');
+    setPassword('');
+    setContactNo('');
+    setAddress('');
+    setCode(''),
+    setHourSalary(''),
+    setMaxHours(''),
+    setId('')
+    setmaxHolidays('')
+  };  
+
+
   // const adminDetails = [
   //   {key: '1', id: 'EA - 1', name: 'Gowrisan', phone: '0123456789'},
   //   {key: '2', id: 'EA - 2', name: 'Gowrisan', phone: '0123456789'},
@@ -90,6 +163,7 @@ export default function Employees({navigation}) {
           <View style={styles.inputContainer}>
             <TouchableOpacity
               onPress={() => {
+                resetFields();
                 setAddEmployeeModal(true);
               }}
               style={styles.button}>
@@ -156,6 +230,7 @@ export default function Employees({navigation}) {
                       justifyContent: 'center',
                     }}
                     onPress={() => {
+                      setSelectedEmployee(item);
                       setEditEmployeeModal(true);
                     }}>
                     <Feather name="edit" size={25} color={Colors.black} />
@@ -166,7 +241,10 @@ export default function Employees({navigation}) {
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
-                    onPress={() => {}}>
+                    onPress={() => {
+                      setSelectedEmployee(item);
+                      handleOnDelete();
+                    }}>
                     <AntDesign name="delete" size={25} color={Colors.darkred} />
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -366,6 +444,7 @@ export default function Employees({navigation}) {
                   <TextInput
                     style={styles.input}
                     onChangeText={setId}
+                    editable={false}
                     value={Id}
                     placeholder="Enter Id"
                   />
@@ -452,7 +531,11 @@ export default function Employees({navigation}) {
                       Cancel
                     </Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.modalbutton}>
+                  <TouchableOpacity 
+                  style={styles.modalbutton}
+                  onPress={handleOnUpdate}
+
+                  >
                     <Text style={styles.buttonText}>Save</Text>
                   </TouchableOpacity>
                 </View>

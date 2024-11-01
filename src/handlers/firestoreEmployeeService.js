@@ -60,6 +60,53 @@ const firestoreEmployeeService = {
     }
   },
 
+  editEmplyeeData: async (ID, updatedData) => {
+    try {
+      const employeeDocRef = firestore().collection('Employee').doc(ID);
+      const employeeDoc = await employeeDocRef.get();
+
+      if (!employeeDoc.exists) {
+        Alert.alert('Error', 'Employee does not exist.');
+        return 'Employee not found';
+      }
+
+      // Update admin data
+      if (updatedData.password) {
+        const saltRounds = 10;
+        const salt = bcrypt.genSaltSync(saltRounds);
+        updatedData.password = bcrypt.hashSync(updatedData.password, salt);
+      }
+
+      await employeeDocRef.update(updatedData);
+      console.log('Employee data updated successfully!');
+     
+      return 'Success';
+    } catch (error) {
+      console.error('Error updating Employee data: ', error);
+      throw error;
+    }
+  },
+
+  deleteEmployeeData: async (ID) => {
+    try {
+      const employeeDocRef = firestore().collection('Employee').doc(ID);
+      const employeeDoc = await employeeDocRef.get();
+
+      if (!employeeDoc.exists) {
+        Alert.alert('Error', 'Employee does not exist.');
+        return 'Employee not found';
+      }
+
+      await employeeDocRef.delete();
+      console.log('Employee data deleted successfully!');
+      return 'Success';
+    } catch (error) {
+      console.error('Error deleting Employee data: ', error);
+      throw error;
+    }
+  },
+
+
 }
   
 

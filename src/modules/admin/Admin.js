@@ -29,6 +29,7 @@ export default function Admin({navigation}) {
   const [contactNo, setContactNo] = React.useState('');
   const [EditAdminModal, setEditAdminModal] = useState(false);
   const [search, setSearch] = React.useState('');
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
   
   const dispatch = useDispatch();
   
@@ -57,6 +58,15 @@ export default function Admin({navigation}) {
   }, []);
 
 
+  useEffect(() => {
+    if (selectedAdmin) {
+      setUserName(selectedAdmin.username); // Set username from selectedAdmin
+      setPassword(''); // Start with empty password for security
+      setContactNo(selectedAdmin.contactNo); // Set contact number from selectedAdmin
+    }
+  }, [selectedAdmin]);
+
+
   const backAction = () => {
     navigation.navigate('AdminHome');
   };
@@ -71,7 +81,50 @@ export default function Admin({navigation}) {
    }
   }
 
+  const handleOnUpdate = async (e) => {
+    e.preventDefault();
+    
+    // Define updated data as an object
+    const updatedData = {
+      password:password,
+      contactNo: contactNo,
+    };
+  
+    try {
+      const status = await firestoreAdminService.editAdminData(userName, updatedData);
+      if (status === "Success") {
+        ToastAlert.ShowToast('success', 'Alert', 'Successfully updated admin.');
+        dispatch(fetchAdminData()); // Refresh admin data
+        setEditAdminModal(false);    // Close the modal
+      }
+    } catch (error) {
+      ToastAlert.ShowToast('error', 'Alert', 'Failed to update admin.');
+      console.error('Error updating admin:', error);
+    }
+  };
 
+  const resetFields = () => {
+    setUserName('');
+    setPassword('');
+    setContactNo('');
+  };
+
+
+  const handleOnDelete = async (e) => {
+    try {console.log("iraibaa>>>"+userName);
+      const status = await firestoreAdminService.deleteAdminData(userName); // Call your delete function
+      if (status === "Success") {
+        ToastAlert.ShowToast('success', 'Alert', 'Successfully deleted admin.');
+        dispatch(fetchAdminData()); // Refresh admin data after deletion
+      } else {
+        ToastAlert.ShowToast('error', 'Alert', 'Failed to delete admin.');
+      }
+    } catch (error) {
+      ToastAlert.ShowToast('error', 'Alert', 'Failed to delete admin.');
+      console.error('Error deleting admin:', error);
+    }
+  };
+  
 
   return (
     <View style={styles.container}>
@@ -81,6 +134,7 @@ export default function Admin({navigation}) {
           <View style={styles.inputContainer}>
             <TouchableOpacity
               onPress={() => {
+                resetFields();
                 setAddAdminModal(true);
               }}
               style={styles.button}>
@@ -139,7 +193,7 @@ export default function Admin({navigation}) {
                     {item.username}
                   </Text>
                   <Text style={{...styles.modalhead3, width: '30%'}}>
-                    {item.contactNumber}
+                    {item.contactNo}
                   </Text>
                   <TouchableOpacity
                     style={{
@@ -148,6 +202,7 @@ export default function Admin({navigation}) {
                       justifyContent: 'center',
                     }}
                     onPress={() => {
+                      setSelectedAdmin(item);
                       setEditAdminModal(true);
                     }}>
                     <Feather name="edit" size={25} color={Colors.black} />
@@ -158,7 +213,11 @@ export default function Admin({navigation}) {
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
-                    onPress={() => {}}>
+                    onPress={() => {
+                      setSelectedAdmin(item);
+                      handleOnDelete();
+                    }}
+                    >
                     <AntDesign name="delete" size={25} color={Colors.darkred} />
                   </TouchableOpacity>
                 </View>
@@ -286,6 +345,7 @@ export default function Admin({navigation}) {
                 <TextInput
                   style={styles.input}
                   onChangeText={setUserName}
+                  editable={false}
                   value={userName}
                   placeholder="Enter Name"
                 />
@@ -304,6 +364,7 @@ export default function Admin({navigation}) {
                 <TextInput
                   style={styles.input}
                   onChangeText={setPassword}
+                 
                   value={password}
                   placeholder="Enter Password"
                 />
@@ -335,8 +396,15 @@ export default function Admin({navigation}) {
                     Cancel
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.modalbutton}>
-                  <Text style={styles.buttonText}>Save</Text>
+                <TouchableOpacity style={styles.modalbutton}
+                
+                >
+                  <Text 
+                  style={styles.buttonText}
+                  
+                  onPress={handleOnUpdate}
+                  >Save
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
