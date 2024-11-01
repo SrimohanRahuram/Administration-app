@@ -36,6 +36,22 @@ const firestoreAdminService = {
     }
   },
 
+  getAllAdmins: async () => {
+    try {
+      const adminCollection = await firestore().collection('Admin').get();
+      const admins = adminCollection.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      console.log('Retrieved all admin data:', admins);
+      return admins;
+    } catch (error) {
+      console.error('Error retrieving admin data: ', error);
+      throw error;
+    }
+  },
+
 };
 
 export default firestoreAdminService;

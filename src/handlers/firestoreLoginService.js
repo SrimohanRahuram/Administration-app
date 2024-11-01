@@ -9,7 +9,6 @@ const firestoreLoginService = {
       let userDoc;
       let collectionName;
 
-
       userDoc = await firestore().collection('Admin').doc(username).get();
       collectionName = 'Admin';
 

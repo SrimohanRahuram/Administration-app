@@ -10,6 +10,7 @@ import {
   TextInput,
   ScrollView,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './Employees.Styles';
 import Colors from '../../constants/Colors';
 import Images from '../../constants/images';
@@ -19,6 +20,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import firestoreEmployeeService from '../../handlers/firestoreEmployeeService';
+import { fetchEmployeeData } from '../../service/redux/actions';
 
 export default function Employees({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
@@ -52,17 +54,34 @@ export default function Employees({navigation}) {
    const status=await firestoreEmployeeService.saveEmployeeData(userName, Id,password,code,contactNo, address,maxHours,hourSalary,maxHolidays);
    if(status=="Success"){
     ToastAlert.ShowToast('error', 'Alert', 'Sucessfully Emoloyee created..');
+    dispatch(fetchEmployeeData()); 
     setAddEmployeeModal(false);
    }
   }
+  const dispatch = useDispatch();
+  
+  // Accessing adminInfo from your Redux store
+  const employeeData = useSelector((state) => state.myReducers.employeeInfo);
 
-  const adminDetails = [
-    {key: '1', id: 'EA - 1', name: 'Gowrisan', phone: '0123456789'},
-    {key: '2', id: 'EA - 2', name: 'Gowrisan', phone: '0123456789'},
-    {key: '3', id: 'EA - 3', name: 'Gowrisan', phone: '0123456789'},
-    {key: '4', id: 'EA - 4', name: 'Gowrisan', phone: '0123456789'},
-    {key: '5', id: 'EA - 5', name: 'Gowrisan', phone: '0123456789'},
-  ];
+  useEffect(() => {
+    // Fetch admin data when the component mounts
+    dispatch(fetchEmployeeData());
+    console.log("Fetch dispatched");
+  }, [dispatch]);
+
+  // Logging the admin data to see changes
+  useEffect(() => {
+    console.log("employee data updated:", employeeData);
+  }, [employeeData]);
+ 
+
+  // const adminDetails = [
+  //   {key: '1', id: 'EA - 1', name: 'Gowrisan', phone: '0123456789'},
+  //   {key: '2', id: 'EA - 2', name: 'Gowrisan', phone: '0123456789'},
+  //   {key: '3', id: 'EA - 3', name: 'Gowrisan', phone: '0123456789'},
+  //   {key: '4', id: 'EA - 4', name: 'Gowrisan', phone: '0123456789'},
+  //   {key: '5', id: 'EA - 5', name: 'Gowrisan', phone: '0123456789'},
+  // ];
   return (
     <View style={styles.container}>
       <View style={styles.body}>
@@ -110,9 +129,9 @@ export default function Employees({navigation}) {
               <Text style={{...styles.modalhead2, width: '30%'}}>More</Text>
             </View>
             <FlatList
-              data={adminDetails}
+              data={employeeData}
               nestedScrollEnabled={true}
-              keyExtractor={(item, index) => index.toString()}
+              keyExtractor={(item) => item.id}
               renderItem={({item}) => (
                 <View
                   style={{
@@ -124,10 +143,10 @@ export default function Employees({navigation}) {
                     alignItems: 'center',
                   }}>
                   <Text style={{...styles.modalhead3, width: '10%'}}>
-                    {item.id}
+                    {item.ID}
                   </Text>
                   <Text style={{...styles.modalhead3, width: '30%'}}>
-                    {item.name}
+                    {item.userName}
                   </Text>
 
                   <TouchableOpacity

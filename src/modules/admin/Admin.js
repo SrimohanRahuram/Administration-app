@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Image,
   TextInput,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './Admin.Styles';
 import Colors from '../../constants/Colors';
 import Images from '../../constants/images';
@@ -18,6 +19,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import firestoreAdminService from '../../handlers/firestoreAdminService';
+import { fetchAdminData } from '../../service/redux/actions';
 
 export default function Admin({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,13 +29,33 @@ export default function Admin({navigation}) {
   const [contactNo, setContactNo] = React.useState('');
   const [EditAdminModal, setEditAdminModal] = useState(false);
   const [search, setSearch] = React.useState('');
+  
+  const dispatch = useDispatch();
+  
+  // Accessing adminInfo from your Redux store
+  const adminData = useSelector((state) => state.myReducers.adminInfo);
 
   useEffect(() => {
+    // Fetch admin data when the component mounts
+    dispatch(fetchAdminData());
+    console.log("Fetch dispatched");
+  }, [dispatch]);
+
+  // Logging the admin data to see changes
+  useEffect(() => {
+    console.log("Admin data updated:", adminData);
+  }, [adminData]);
+ 
+  useEffect(() => {
+    
     BackHandler.addEventListener('hardwareBackPress', backAction);
+   
+
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', backAction);
     };
   }, []);
+
 
   const backAction = () => {
     navigation.navigate('AdminHome');
@@ -44,18 +66,13 @@ export default function Admin({navigation}) {
    const status=await firestoreAdminService.saveAdminData(userName,password,contactNo);
    if(status=="Success"){
     ToastAlert.ShowToast('error', 'Alert', 'Sucessfully Admin created..');
+    dispatch(fetchAdminData()); 
     setAddAdminModal(false);
    }
   }
 
 
-  const adminDetails = [
-    {key: '1', id: 'EA - 1', name: 'Gowrisan', phone: '0123456789'},
-    {key: '2', id: 'EA - 2', name: 'Gowrisan', phone: '0123456789'},
-    {key: '3', id: 'EA - 3', name: 'Gowrisan', phone: '0123456789'},
-    {key: '4', id: 'EA - 4', name: 'Gowrisan', phone: '0123456789'},
-    {key: '5', id: 'EA - 5', name: 'Gowrisan', phone: '0123456789'},
-  ];
+
   return (
     <View style={styles.container}>
       <View style={styles.body}>
@@ -96,7 +113,6 @@ export default function Admin({navigation}) {
                 height: 50,
                 alignItems: 'center',
               }}>
-              <Text style={{...styles.modalhead2, width: '10%'}}> ID </Text>
               <Text style={{...styles.modalhead2, width: '30%'}}>Name</Text>
               <Text style={{...styles.modalhead2, width: '30%'}}>
                 Contact-No
@@ -105,9 +121,9 @@ export default function Admin({navigation}) {
               <Text style={{...styles.modalhead2, width: '15%'}}>Delete</Text>
             </View>
             <FlatList
-              data={adminDetails}
+               data={adminData}
               nestedScrollEnabled={true}
-              keyExtractor={(item, index) => index.toString()}
+              keyExtractor={(item) => item.id}
               renderItem={({item}) => (
                 <View
                   style={{
@@ -118,14 +134,12 @@ export default function Admin({navigation}) {
                     height: 50,
                     alignItems: 'center',
                   }}>
-                  <Text style={{...styles.modalhead3, width: '10%'}}>
-                    {item.id}
+                
+                  <Text style={{...styles.modalhead3, width: '30%'}}>
+                    {item.username}
                   </Text>
                   <Text style={{...styles.modalhead3, width: '30%'}}>
-                    {item.name}
-                  </Text>
-                  <Text style={{...styles.modalhead3, width: '30%'}}>
-                    {item.phone}
+                    {item.contactNumber}
                   </Text>
                   <TouchableOpacity
                     style={{
