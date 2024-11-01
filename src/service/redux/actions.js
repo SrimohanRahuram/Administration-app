@@ -1,5 +1,6 @@
 import firestoreAdminService from "../../handlers/firestoreAdminService";
 import firestoreEmployeeService from "../../handlers/firestoreEmployeeService";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestoreShopService from "../../handlers/firestoreShopService";
 
 export const ADD_USER_INFO = 'ADD_USER_INFO';
@@ -20,6 +21,7 @@ export const UPDATE_EMPLOYEE_DATA='UPDATE_EMPLOYEE_DATA';
 export const DELETE_EMPLOYEE_DATA='DELETE_EMPLOYEE_DATA';
 export const UPDATE_SHOP_DATA='UPDATE_SHOP_DATA';
 export const DELETE_SHOP_DATA='DELETE_SHOP_DATA';
+export const FETCH_EMPLOYEE_DATA_BY_ID='FETCH_EMPLOYEE_DATA_BY_ID';
 
 export const addUserToRedux = data => dispatch => {
   // console.log('addUserToRedux ' + JSON.stringify(data));
@@ -235,5 +237,26 @@ export const deleteShopData = (id) => async (dispatch) => {
   } catch (error) {
     console.error('Error deleting Shop data:', error);
     return 'Error';
+  }
+};
+
+
+export const fetchEmployeeDataById = () => async dispatch => {
+  try {
+    const employeeId = await AsyncStorage.getItem('employeeId');
+    const employeeData = await firestoreEmployeeService.getEmployeeDataByID(employeeId);
+    console.log('Fetched Employee Data by ID:', employeeData);
+
+    if (employeeData) {
+      dispatch({
+        type: FETCH_EMPLOYEE_DATA_BY_ID,
+        payload: employeeData,
+      });
+    } else {
+      console.warn('No employee data found for the given ID');
+    }
+  } catch (error) {
+    console.error('Error fetching employee data by ID:', error);
+    throw error;
   }
 };

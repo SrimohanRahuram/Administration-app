@@ -4,8 +4,12 @@ import styles from './ProfileDetails.Styles';
 import Colors from '../../constants/Colors';
 import Images from '../../constants/images';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function ProfileDetails({navigation}) {
+
+
+  const employeeData = useSelector((state) => state.myReducers.employeeInfo);
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backAction);
     return () => {
@@ -34,16 +38,16 @@ export default function ProfileDetails({navigation}) {
 
             <Text style={styles.head}>Name</Text>
             <View style={styles.details}>
-              <Text style={styles.data}>Panadura to Colombo - 4 Route</Text>
+              <Text style={styles.data}>{employeeData.userName}</Text>
             </View>
             <Text style={styles.head}>ID</Text>
             <View style={styles.details}>
-              <Text style={styles.data}>Cargills Food City - Ward Place</Text>
+              <Text style={styles.data}>{employeeData.ID}</Text>
             </View>
             <Text style={styles.head}>Contact-NO</Text>
             <View style={styles.details}>
               <Text style={styles.data}>
-                No 22/3, 48 Ward Pl, Colombo 00700.
+              {employeeData.contactNo}
               </Text>
             </View>
           </View>

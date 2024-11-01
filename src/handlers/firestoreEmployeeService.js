@@ -106,6 +106,28 @@ const firestoreEmployeeService = {
     }
   },
 
+  getEmployeeDataByID: async (employeeID) => {
+    try {
+      const employeeDoc = await firestore().collection('Employee').doc(employeeID).get();
+
+      if (!employeeDoc.exists) {
+        Alert.alert('Error', 'Employee does not exist.');
+        return null;
+      }
+
+      const employeeData = {
+        id: employeeDoc.id,
+        ...employeeDoc.data(),
+      };
+
+      console.log('Retrieved employee data:', employeeData);
+      return employeeData;
+    } catch (error) {
+      console.error('Error retrieving Employee data by ID: ', error);
+      throw error;
+    }
+  },
+
 
 }
   

@@ -37,12 +37,11 @@ export default function LoginScreen({navigation}) {
 
   const handleLogin= async ()=>{
   const status = await firestoreLoginService.loginUser(username,password);
-  if(status=="Admin login successful!"){
-    console.log("thinesh>>"+status);
+  if(status.successMessage=="Admin login successful!"){
     ToastAlert.ShowToast('error', 'Alert', 'Admin login successful!');
     navigation.navigate('AdminHome');
-  }else if(status=="Employee login successful!"){
-    console.log("thinesh>>"+status);
+  }else if(status.successMessage=="Employee login successful!"){
+    await AsyncStorage.setItem('employeeId', status.employeeID);
     ToastAlert.ShowToast('error', 'Alert', 'Employee login successful!');
     navigation.navigate('DashBoard');
   }
@@ -105,7 +104,7 @@ export default function LoginScreen({navigation}) {
     }
   };
   const backAction = () => {
-    Alert.alert('Alert', t('are_you_sure_you_want_to_exit'), [
+    Alert.alert('Alert', ('are_you_sure_you_want_to_exit'), [
       {
         text: t('no'),
         onPress: () => null,

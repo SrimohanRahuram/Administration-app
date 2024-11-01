@@ -39,7 +39,11 @@ const firestoreLoginService = {
         : 'Employee login successful!';
         
       console.log(successMessage);
-      return successMessage;
+      const response={
+        successMessage:successMessage,
+        employeeID:username
+      }
+      return response;
     } catch (error) {
       console.error('Error logging in: ', error);
       throw error;
