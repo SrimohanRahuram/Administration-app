@@ -9,7 +9,7 @@ import {
   Image,
   TextInput,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import styles from './Shops.Styles';
 import Colors from '../../constants/Colors';
 import Images from '../../constants/images';
@@ -19,9 +19,14 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import firestoreShopService from '../../handlers/firestoreShopService';
-import { fetchShopData } from '../../service/redux/actions';
+import {fetchShopData} from '../../service/redux/actions';
+import DocumentPicker from 'react-native-document-picker';
+import {addImage, clearImages} from '../../service/redux/actions';
+import ReactNativeBlobUtil from 'react-native-blob-util';
 
 export default function Shops({navigation}) {
+  const dispatch = useDispatch();
+  const {images} = useSelector(state => state.myReducers);
   const [isLoading, setIsLoading] = useState(false);
   const [AddShopModal, setAddShopModal] = useState(false);
   const [name, setName] = React.useState('');
@@ -34,33 +39,34 @@ export default function Shops({navigation}) {
   const [summaryModal, setSummaryModal] = useState(false);
   const [selectedShop, setSelectedShop] = useState(null);
 
-  const handleOnSubmit= async (e)=>{
-    e.preventDefault()
-   const status=await firestoreShopService.saveShopData(name, shopID, address,contactNo);
-   if(status=="Success"){
-    ToastAlert.ShowToast('error', 'Alert', 'Sucessfully Shop created..');
-    dispatch(fetchShopData()); 
-    setAddShopModal(false);
-   }
-  }
+  const handleOnSubmit = async e => {
+    e.preventDefault();
+    const status = await firestoreShopService.saveShopData(
+      name,
+      shopID,
+      address,
+      contactNo,
+    );
+    if (status == 'Success') {
+      ToastAlert.ShowToast('error', 'Alert', 'Sucessfully Shop created..');
+      dispatch(fetchShopData());
+      setAddShopModal(false);
+    }
+  };
 
-  const dispatch = useDispatch();
-  
   // Accessing shopInfo from your Redux store
-  const showoutletList = useSelector((state) => state.myReducers.shopInfo);
+  const showoutletList = useSelector(state => state.myReducers.shopInfo);
 
   useEffect(() => {
     // Fetch shop data when the component mounts
     dispatch(fetchShopData());
-    console.log("Fetch dispatched");
+    console.log('Fetch dispatched');
   }, [dispatch]);
 
   // Logging the admin data to see changes
   useEffect(() => {
-    console.log("shop data updated:", showoutletList);
+    console.log('shop data updated:', showoutletList);
   }, [showoutletList]);
-
-
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backAction);
@@ -79,27 +85,28 @@ export default function Shops({navigation}) {
       setContactNo(selectedShop.contactNo);
       setName(selectedShop.name);
       setShopID(selectedShop.shopID);
-      
     }
   }, [selectedShop]);
 
-
-  const handleOnUpdate = async (e) => {
+  const handleOnUpdate = async e => {
     e.preventDefault();
-    
+
     // Define updated data as an object
     const updatedData = {
-      name:name,
-      address:address,
+      name: name,
+      address: address,
       contactNo: contactNo,
     };
-  
+
     try {
-      const status = await firestoreShopService.editShopData(shopID, updatedData);
-      if (status === "Success") {
+      const status = await firestoreShopService.editShopData(
+        shopID,
+        updatedData,
+      );
+      if (status === 'Success') {
         ToastAlert.ShowToast('success', 'Alert', 'Successfully updated shop.');
         dispatch(fetchShopData()); // Refresh admin data
-        setEditShopModal(false);    // Close the modal
+        setEditShopModal(false); // Close the modal
       }
     } catch (error) {
       ToastAlert.ShowToast('error', 'Alert', 'Failed to update shop.');
@@ -108,19 +115,16 @@ export default function Shops({navigation}) {
   };
 
   const resetFields = () => {
-    setAddress(''),
-    setContactNo(''),
-    setName(''),
-    setShopID('')
+    setAddress(''), setContactNo(''), setName(''), setShopID('');
   };
 
-  const handleOnDelete = async (e) => {
+  const handleOnDelete = async e => {
     try {
       const status = await firestoreShopService.deleteShopData(shopID); // Call your delete function
-      if (status === "Success") {
+      if (status === 'Success') {
         ToastAlert.ShowToast('success', 'Alert', 'Successfully deleted shop.');
         setShopModal(false);
-        dispatch(fetchShopData()); 
+        dispatch(fetchShopData());
       } else {
         ToastAlert.ShowToast('error', 'Alert', 'Failed to delete shop.');
       }
@@ -130,7 +134,6 @@ export default function Shops({navigation}) {
     }
   };
 
-
   // const showoutletList = [
   //   {key: '1', value: 'shop 1'},
   //   {key: '2', value: 'shop 2'},
@@ -139,7 +142,6 @@ export default function Shops({navigation}) {
   //   {key: '5', value: 'shop 5'},
   // ];
 
-
   const shopsummary = [
     {key: '1', id: 'shop 1', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
     {key: '2', id: 'shop 2', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
@@ -147,6 +149,35 @@ export default function Shops({navigation}) {
     {key: '4', id: 'shop 4', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
     {key: '5', id: 'shop 5', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
   ];
+  const handleAddPdf = async () => {
+    try {
+      const response = await DocumentPicker.pick({
+        type: [DocumentPicker.types.images],
+      });
+      dispatch(addImage(response));
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+      } else {
+        throw err;
+      }
+    }
+  };
+  const convertPdfToBase64 = async image => {
+    if (image) {
+      try {
+        const response = await ReactNativeBlobUtil.fs.readFile(
+          image[0].uri,
+          'base64',
+        );
+        return response;
+      } catch (error) {
+        console.error(`Error reading PDF from URI: ${image.uri}`, error);
+        throw error;
+      }
+    } else {
+      return null;
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.body}>
@@ -197,7 +228,7 @@ export default function Shops({navigation}) {
             numColumns={2}
             contentContainerStyle={{justifyContent: 'space-between'}}
             nestedScrollEnabled={true}
-            keyExtractor={(item) => item.id}
+            keyExtractor={item => item.id}
             renderItem={({item}) => (
               <TouchableOpacity
                 onPress={() => {
@@ -234,7 +265,18 @@ export default function Shops({navigation}) {
                 borderColor: Colors.black,
                 borderRadius: 10,
               }}>
-              <Image source={Images.logo} style={styles.image} />
+              {images.length == 0 ? (
+                <TouchableOpacity onPress={() => handleAddPdf()}>
+                  <Image source={Images.logo} style={styles.image} />
+                </TouchableOpacity>
+              ) : null}
+              {images.length > 0 ? (
+                <Image
+                  resizeMode="cover"
+                  source={{uri: images[0].uri}}
+                  style={styles.image}
+                />
+              ) : null}
 
               <Text style={styles.modalhead}>Name</Text>
               <View style={styles.inputView}>
@@ -280,6 +322,7 @@ export default function Shops({navigation}) {
                 }}>
                 <TouchableOpacity
                   onPress={() => {
+                    dispatch(clearImages());
                     setAddShopModal(false);
                   }}
                   style={{
@@ -291,12 +334,9 @@ export default function Shops({navigation}) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.modalbutton}>
-                  <Text 
-                  style={styles.buttonText}
-                  onPress={handleOnSubmit}
-                  >
+                  <Text style={styles.buttonText} onPress={handleOnSubmit}>
                     Create
-                    </Text>
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -341,12 +381,13 @@ export default function Shops({navigation}) {
                   setSummaryModal(true);
                 }}
                 style={{...styles.button, width: '25%'}}>
-                <Text style={styles.buttonText}
-                onPress={() => {
-               
-                  handleOnDelete();
-                }}
-                >Delete</Text>
+                <Text
+                  style={styles.buttonText}
+                  onPress={() => {
+                    handleOnDelete();
+                  }}>
+                  Delete
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
@@ -455,7 +496,9 @@ export default function Shops({navigation}) {
                     Cancel
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.modalbutton}  onPress={handleOnUpdate}>
+                <TouchableOpacity
+                  style={styles.modalbutton}
+                  onPress={handleOnUpdate}>
                   <Text style={styles.buttonText}>update</Text>
                 </TouchableOpacity>
               </View>
@@ -471,7 +514,6 @@ export default function Shops({navigation}) {
           setSummaryModal(!summaryModal);
         }}>
         <View style={styles.body}>
-      
           <Text style={styles.header}>Shop Summary</Text>
           <View
             style={{
