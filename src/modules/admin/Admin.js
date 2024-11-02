@@ -1,4 +1,4 @@
-import React, {useEffect, useState, } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   Image,
   TextInput,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import styles from './Admin.Styles';
 import Colors from '../../constants/Colors';
 import Images from '../../constants/images';
@@ -19,9 +19,14 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import firestoreAdminService from '../../handlers/firestoreAdminService';
-import { fetchAdminData } from '../../service/redux/actions';
+import {fetchAdminData} from '../../service/redux/actions';
+import DocumentPicker from 'react-native-document-picker';
+import {addImage, clearImages} from '../../service/redux/actions';
+import ReactNativeBlobUtil from 'react-native-blob-util';
 
 export default function Admin({navigation}) {
+  const dispatch = useDispatch();
+  const {images} = useSelector(state => state.myReducers);
   const [isLoading, setIsLoading] = useState(false);
   const [AddAdminModal, setAddAdminModal] = useState(false);
   const [userName, setUserName] = React.useState('');
@@ -30,33 +35,28 @@ export default function Admin({navigation}) {
   const [EditAdminModal, setEditAdminModal] = useState(false);
   const [search, setSearch] = React.useState('');
   const [selectedAdmin, setSelectedAdmin] = useState(null);
-  
-  const dispatch = useDispatch();
-  
+
   // Accessing adminInfo from your Redux store
-  const adminData = useSelector((state) => state.myReducers.adminInfo);
+  const adminData = useSelector(state => state.myReducers.adminInfo);
 
   useEffect(() => {
     // Fetch admin data when the component mounts
     dispatch(fetchAdminData());
-    console.log("Fetch dispatched");
+    console.log('Fetch dispatched');
   }, [dispatch]);
 
   // Logging the admin data to see changes
   useEffect(() => {
-    console.log("Admin data updated:", adminData);
+    console.log('Admin data updated:', adminData);
   }, [adminData]);
- 
+
   useEffect(() => {
-    
     BackHandler.addEventListener('hardwareBackPress', backAction);
-   
 
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', backAction);
     };
   }, []);
-
 
   useEffect(() => {
     if (selectedAdmin) {
@@ -66,36 +66,42 @@ export default function Admin({navigation}) {
     }
   }, [selectedAdmin]);
 
-
   const backAction = () => {
     navigation.navigate('AdminHome');
   };
 
-  const handleOnSumbit= async (e)=>{
-    e.preventDefault()
-   const status=await firestoreAdminService.saveAdminData(userName,password,contactNo);
-   if(status=="Success"){
-    ToastAlert.ShowToast('error', 'Alert', 'Sucessfully Admin created..');
-    dispatch(fetchAdminData()); 
-    setAddAdminModal(false);
-   }
-  }
-
-  const handleOnUpdate = async (e) => {
+  const handleOnSumbit = async e => {
     e.preventDefault();
-    
+    const status = await firestoreAdminService.saveAdminData(
+      userName,
+      password,
+      contactNo,
+    );
+    if (status == 'Success') {
+      ToastAlert.ShowToast('error', 'Alert', 'Sucessfully Admin created..');
+      dispatch(fetchAdminData());
+      setAddAdminModal(false);
+    }
+  };
+
+  const handleOnUpdate = async e => {
+    e.preventDefault();
+
     // Define updated data as an object
     const updatedData = {
-      password:password,
+      password: password,
       contactNo: contactNo,
     };
-  
+
     try {
-      const status = await firestoreAdminService.editAdminData(userName, updatedData);
-      if (status === "Success") {
+      const status = await firestoreAdminService.editAdminData(
+        userName,
+        updatedData,
+      );
+      if (status === 'Success') {
         ToastAlert.ShowToast('success', 'Alert', 'Successfully updated admin.');
         dispatch(fetchAdminData()); // Refresh admin data
-        setEditAdminModal(false);    // Close the modal
+        setEditAdminModal(false); // Close the modal
       }
     } catch (error) {
       ToastAlert.ShowToast('error', 'Alert', 'Failed to update admin.');
@@ -109,11 +115,11 @@ export default function Admin({navigation}) {
     setContactNo('');
   };
 
-
-  const handleOnDelete = async (e) => {
-    try {console.log("iraibaa>>>"+userName);
+  const handleOnDelete = async e => {
+    try {
+      console.log('iraibaa>>>' + userName);
       const status = await firestoreAdminService.deleteAdminData(userName); // Call your delete function
-      if (status === "Success") {
+      if (status === 'Success') {
         ToastAlert.ShowToast('success', 'Alert', 'Successfully deleted admin.');
         dispatch(fetchAdminData()); // Refresh admin data after deletion
       } else {
@@ -124,7 +130,36 @@ export default function Admin({navigation}) {
       console.error('Error deleting admin:', error);
     }
   };
-  
+
+  const handleAddPdf = async () => {
+    try {
+      const response = await DocumentPicker.pick({
+        type: [DocumentPicker.types.images],
+      });
+      dispatch(addImage(response));
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+      } else {
+        throw err;
+      }
+    }
+  };
+  const convertPdfToBase64 = async image => {
+    if (image) {
+      try {
+        const response = await ReactNativeBlobUtil.fs.readFile(
+          image[0].uri,
+          'base64',
+        );
+        return response;
+      } catch (error) {
+        console.error(`Error reading PDF from URI: ${image.uri}`, error);
+        throw error;
+      }
+    } else {
+      return null;
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -175,9 +210,9 @@ export default function Admin({navigation}) {
               <Text style={{...styles.modalhead2, width: '15%'}}>Delete</Text>
             </View>
             <FlatList
-               data={adminData}
+              data={adminData}
               nestedScrollEnabled={true}
-              keyExtractor={(item) => item.id}
+              keyExtractor={item => item.id}
               renderItem={({item}) => (
                 <View
                   style={{
@@ -188,7 +223,6 @@ export default function Admin({navigation}) {
                     height: 50,
                     alignItems: 'center',
                   }}>
-                
                   <Text style={{...styles.modalhead3, width: '30%'}}>
                     {item.username}
                   </Text>
@@ -216,8 +250,7 @@ export default function Admin({navigation}) {
                     onPress={() => {
                       setSelectedAdmin(item);
                       handleOnDelete();
-                    }}
-                    >
+                    }}>
                     <AntDesign name="delete" size={25} color={Colors.darkred} />
                   </TouchableOpacity>
                 </View>
@@ -249,7 +282,18 @@ export default function Admin({navigation}) {
                 borderColor: Colors.black,
                 borderRadius: 10,
               }}>
-              <Image source={Images.logo} style={styles.image} />
+              {images.length == 0 ? (
+                <TouchableOpacity onPress={() => handleAddPdf()}>
+                  <Image source={Images.logo} style={styles.image} />
+                </TouchableOpacity>
+              ) : null}
+              {images.length > 0 ? (
+                <Image
+                  resizeMode="cover"
+                  source={{uri: images[0].uri}}
+                  style={styles.image}
+                />
+              ) : null}
 
               <Text style={styles.modalhead}>UserName</Text>
               <View style={styles.inputView}>
@@ -296,6 +340,7 @@ export default function Admin({navigation}) {
                 <TouchableOpacity
                   onPress={() => {
                     setAddAdminModal(false);
+                    dispatch(clearImages());
                   }}
                   style={{
                     ...styles.modalbutton,
@@ -305,9 +350,9 @@ export default function Admin({navigation}) {
                     Cancel
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
-                style={styles.modalbutton} 
-                onPress={handleOnSumbit} >
+                <TouchableOpacity
+                  style={styles.modalbutton}
+                  onPress={handleOnSumbit}>
                   <Text style={styles.buttonText}>Create</Text>
                 </TouchableOpacity>
               </View>
@@ -364,7 +409,6 @@ export default function Admin({navigation}) {
                 <TextInput
                   style={styles.input}
                   onChangeText={setPassword}
-                 
                   value={password}
                   placeholder="Enter Password"
                 />
@@ -396,14 +440,9 @@ export default function Admin({navigation}) {
                     Cancel
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.modalbutton}
-                
-                >
-                  <Text 
-                  style={styles.buttonText}
-                  
-                  onPress={handleOnUpdate}
-                  >Save
+                <TouchableOpacity style={styles.modalbutton}>
+                  <Text style={styles.buttonText} onPress={handleOnUpdate}>
+                    Save
                   </Text>
                 </TouchableOpacity>
               </View>

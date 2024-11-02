@@ -9,7 +9,6 @@ export const CHANGE_ONLINE_STATUS = 'CHANGE_ONLINE_STATUS';
 export const ITINERARY_LIST = 'ITINERARY_LIST';
 export const OUTLET_INFO= 'OUTLET_INFO';
 export const ADD_IMAGES = 'ADD_IMAGES';
-export const REMOVE_IMAGE = 'REMOVE_IMAGE';
 export const CLEAR_IMAGES = 'CLEAR_IMAGES';
 export const TODAY_LOCATIONS = 'TODAY_LOCATIONS';
 export const FETCH_ADMIN_DATA = 'FETCH_ADMIN_DATA';
@@ -70,15 +69,7 @@ export const addImage = imageURI => dispatch => {
   });
 };
 
-export const removeImage = image => dispatch => {
-  dispatch({
-    type: REMOVE_IMAGE,
-    payload: image,
-  });
-};
-
 export const clearImages = data => dispatch => {
-  // console.log(' Redux REMOVE PDF ------------ ', data),
   dispatch({
     type: CLEAR_IMAGES,
     payload: data,

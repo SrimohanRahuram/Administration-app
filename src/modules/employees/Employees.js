@@ -10,7 +10,7 @@ import {
   TextInput,
   ScrollView,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import styles from './Employees.Styles';
 import Colors from '../../constants/Colors';
 import Images from '../../constants/images';
@@ -20,9 +20,14 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import firestoreEmployeeService from '../../handlers/firestoreEmployeeService';
-import { fetchEmployeeData } from '../../service/redux/actions';
+import {fetchEmployeeData} from '../../service/redux/actions';
+import DocumentPicker from 'react-native-document-picker';
+import {addImage, clearImages} from '../../service/redux/actions';
+import ReactNativeBlobUtil from 'react-native-blob-util';
 
 export default function Employees({navigation}) {
+  const dispatch = useDispatch();
+  const {images} = useSelector(state => state.myReducers);
   const [isLoading, setIsLoading] = useState(false);
   const [AddEmployeeModal, setAddEmployeeModal] = useState(false);
   const [userName, setUserName] = React.useState('');
@@ -50,33 +55,40 @@ export default function Employees({navigation}) {
     navigation.navigate('AdminHome');
   };
 
-  const handleOnSubmit= async (e)=>{
-    e.preventDefault()
-   const status=await firestoreEmployeeService.saveEmployeeData(userName, Id,password,code,contactNo, address,maxHours,hourSalary,maxHolidays);
-   if(status=="Success"){
-    ToastAlert.ShowToast('error', 'Alert', 'Sucessfully Emoloyee created..');
-    dispatch(fetchEmployeeData()); 
-    setAddEmployeeModal(false);
-   }
-  }
-  const dispatch = useDispatch();
-  
+  const handleOnSubmit = async e => {
+    e.preventDefault();
+    const status = await firestoreEmployeeService.saveEmployeeData(
+      userName,
+      Id,
+      password,
+      code,
+      contactNo,
+      address,
+      maxHours,
+      hourSalary,
+      maxHolidays,
+    );
+    if (status == 'Success') {
+      ToastAlert.ShowToast('error', 'Alert', 'Sucessfully Emoloyee created..');
+      dispatch(fetchEmployeeData());
+      setAddEmployeeModal(false);
+    }
+  };
+
   // Accessing adminInfo from your Redux store
-  const employeeData = useSelector((state) => state.myReducers.employeeInfo);
+  const employeeData = useSelector(state => state.myReducers.employeeInfo);
 
   useEffect(() => {
     // Fetch admin data when the component mounts
     dispatch(fetchEmployeeData());
-    console.log("Fetch dispatched");
+    console.log('Fetch dispatched');
   }, [dispatch]);
 
   // Logging the admin data to see changes
   useEffect(() => {
-    console.log("employee data updated:", employeeData);
+    console.log('employee data updated:', employeeData);
   }, [employeeData]);
- 
 
-  
   useEffect(() => {
     if (selectedEmployee) {
       setUserName(selectedEmployee.userName);
@@ -84,35 +96,41 @@ export default function Employees({navigation}) {
       setCode(selectedEmployee.shareCode);
       setHourSalary(selectedEmployee.perHourSalary);
       setId(selectedEmployee.ID);
-      setMaxHours(selectedEmployee.maxHours) 
+      setMaxHours(selectedEmployee.maxHours);
       setPassword('');
-      setmaxHolidays(selectedEmployee.maxHoliday); 
-      setContactNo(selectedEmployee.contactNo); 
+      setmaxHolidays(selectedEmployee.maxHoliday);
+      setContactNo(selectedEmployee.contactNo);
     }
   }, [selectedEmployee]);
 
-
-  const handleOnUpdate = async (e) => {
+  const handleOnUpdate = async e => {
     e.preventDefault();
-    
+
     // Define updated data as an object
     const updatedData = {
-      userName:userName,
-      Address:address,
-      shareCode:code,
-      perHourSalary:hourSalary,
-      maxHours:maxHours,
-      password:password,
-      maxHoliday:maxHolidays,
+      userName: userName,
+      Address: address,
+      shareCode: code,
+      perHourSalary: hourSalary,
+      maxHours: maxHours,
+      password: password,
+      maxHoliday: maxHolidays,
       contactNo: contactNo,
     };
-  
+
     try {
-      const status = await firestoreEmployeeService.editEmplyeeData(Id, updatedData);
-      if (status === "Success") {
-        ToastAlert.ShowToast('success', 'Alert', 'Successfully updated employee.');
-        dispatch(fetchEmployeeData()); 
-        setEditEmployeeModal(false);   
+      const status = await firestoreEmployeeService.editEmplyeeData(
+        Id,
+        updatedData,
+      );
+      if (status === 'Success') {
+        ToastAlert.ShowToast(
+          'success',
+          'Alert',
+          'Successfully updated employee.',
+        );
+        dispatch(fetchEmployeeData());
+        setEditEmployeeModal(false);
       }
     } catch (error) {
       ToastAlert.ShowToast('error', 'Alert', 'Failed to update Employee.');
@@ -120,11 +138,15 @@ export default function Employees({navigation}) {
     }
   };
 
-  const handleOnDelete = async (e) => {
+  const handleOnDelete = async e => {
     try {
       const status = await firestoreEmployeeService.deleteEmployeeData(Id); // Call your delete function
-      if (status === "Success") {
-        ToastAlert.ShowToast('success', 'Alert', 'Successfully deleted Employee.');
+      if (status === 'Success') {
+        ToastAlert.ShowToast(
+          'success',
+          'Alert',
+          'Successfully deleted Employee.',
+        );
         dispatch(fetchEmployeeData()); // Refresh admin data after deletion
       } else {
         ToastAlert.ShowToast('error', 'Alert', 'Failed to delete Employee.');
@@ -140,13 +162,9 @@ export default function Employees({navigation}) {
     setPassword('');
     setContactNo('');
     setAddress('');
-    setCode(''),
-    setHourSalary(''),
-    setMaxHours(''),
-    setId('')
-    setmaxHolidays('')
-  };  
-
+    setCode(''), setHourSalary(''), setMaxHours(''), setId('');
+    setmaxHolidays('');
+  };
 
   // const adminDetails = [
   //   {key: '1', id: 'EA - 1', name: 'Gowrisan', phone: '0123456789'},
@@ -155,6 +173,36 @@ export default function Employees({navigation}) {
   //   {key: '4', id: 'EA - 4', name: 'Gowrisan', phone: '0123456789'},
   //   {key: '5', id: 'EA - 5', name: 'Gowrisan', phone: '0123456789'},
   // ];
+
+  const handleAddPdf = async () => {
+    try {
+      const response = await DocumentPicker.pick({
+        type: [DocumentPicker.types.images],
+      });
+      dispatch(addImage(response));
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+      } else {
+        throw err;
+      }
+    }
+  };
+  const convertPdfToBase64 = async image => {
+    if (image) {
+      try {
+        const response = await ReactNativeBlobUtil.fs.readFile(
+          image[0].uri,
+          'base64',
+        );
+        return response;
+      } catch (error) {
+        console.error(`Error reading PDF from URI: ${image.uri}`, error);
+        throw error;
+      }
+    } else {
+      return null;
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.body}>
@@ -205,7 +253,7 @@ export default function Employees({navigation}) {
             <FlatList
               data={employeeData}
               nestedScrollEnabled={true}
-              keyExtractor={(item) => item.id}
+              keyExtractor={item => item.id}
               renderItem={({item}) => (
                 <View
                   style={{
@@ -294,7 +342,18 @@ export default function Employees({navigation}) {
                 borderRadius: 10,
               }}>
               <ScrollView>
-                <Image source={Images.logo} style={styles.image} />
+                {images.length == 0 ? (
+                  <TouchableOpacity onPress={() => handleAddPdf()}>
+                    <Image source={Images.logo} style={styles.image} />
+                  </TouchableOpacity>
+                ) : null}
+                {images.length > 0 ? (
+                  <Image
+                    resizeMode="cover"
+                    source={{uri: images[0].uri}}
+                    style={styles.image}
+                  />
+                ) : null}
 
                 <Text style={styles.modalhead}>Name</Text>
                 <View style={styles.inputView}>
@@ -387,6 +446,7 @@ export default function Employees({navigation}) {
                   <TouchableOpacity
                     onPress={() => {
                       setAddEmployeeModal(false);
+                      dispatch(clearImages());
                     }}
                     style={{
                       ...styles.modalbutton,
@@ -396,7 +456,9 @@ export default function Employees({navigation}) {
                       Cancel
                     </Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.modalbutton} onPress={handleOnSubmit}>
+                  <TouchableOpacity
+                    style={styles.modalbutton}
+                    onPress={handleOnSubmit}>
                     <Text style={styles.buttonText}>Create</Text>
                   </TouchableOpacity>
                 </View>
@@ -531,11 +593,9 @@ export default function Employees({navigation}) {
                       Cancel
                     </Text>
                   </TouchableOpacity>
-                  <TouchableOpacity 
-                  style={styles.modalbutton}
-                  onPress={handleOnUpdate}
-
-                  >
+                  <TouchableOpacity
+                    style={styles.modalbutton}
+                    onPress={handleOnUpdate}>
                     <Text style={styles.buttonText}>Save</Text>
                   </TouchableOpacity>
                 </View>
@@ -547,4 +607,3 @@ export default function Employees({navigation}) {
     </View>
   );
 }
-
