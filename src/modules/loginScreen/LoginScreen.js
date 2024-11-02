@@ -93,7 +93,7 @@ export default function LoginScreen({navigation}) {
     } else {
       Alert.alert('Internet Connection...', t('No_internet_connection'), [
         {
-          text: t('retry'),
+          text: 'retry',
           onPress: () => 
             navigation.reset({ 
               index: 0,
@@ -106,12 +106,12 @@ export default function LoginScreen({navigation}) {
   const backAction = () => {
     Alert.alert('Alert', ('are_you_sure_you_want_to_exit'), [
       {
-        text: t('no'),
+        text: 'no',
         onPress: () => null,
         style: 'cancel',
       },
       {
-        text: t('yes'),
+        text: 'yes',
         onPress: () => BackHandler.exitApp(),
       },
     ]);
