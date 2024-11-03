@@ -440,7 +440,18 @@ export default function Shops({navigation}) {
                 borderColor: Colors.black,
                 borderRadius: 10,
               }}>
-              <Image source={Images.logo} style={styles.image} />
+              {images.length == 0 ? (
+                <TouchableOpacity onPress={() => handleAddPdf()}>
+                  <Image source={Images.logo} style={styles.image} />
+                </TouchableOpacity>
+              ) : null}
+              {images.length > 0 ? (
+                <Image
+                  resizeMode="cover"
+                  source={{uri: images[0].uri}}
+                  style={styles.image}
+                />
+              ) : null}
 
               <Text style={styles.modalhead}>Name</Text>
               <View style={styles.inputView}>
@@ -486,6 +497,7 @@ export default function Shops({navigation}) {
                 }}>
                 <TouchableOpacity
                   onPress={() => {
+                    dispatch(clearImages());
                     setEditShopModal(false);
                   }}
                   style={{
