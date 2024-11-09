@@ -65,7 +65,7 @@ export default function Admin({navigation}) {
       setContactNo(selectedAdmin.contactNo); // Set contact number from selectedAdmin
     }
   }, [selectedAdmin]);
-
+ 
   const backAction = () => {
     navigation.navigate('AdminHome');
   };

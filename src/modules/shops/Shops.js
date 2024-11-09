@@ -149,7 +149,7 @@ export default function Shops({navigation}) {
     {key: '4', id: 'shop 4', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
     {key: '5', id: 'shop 5', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
   ];
-  const handleAddPdf = async () => {
+  const handleAddShopImage = async () => {
     try {
       const response = await DocumentPicker.pick({
         type: [DocumentPicker.types.images],
@@ -266,7 +266,7 @@ export default function Shops({navigation}) {
                 borderRadius: 10,
               }}>
               {images.length == 0 ? (
-                <TouchableOpacity onPress={() => handleAddPdf()}>
+                <TouchableOpacity onPress={() => handleAddShopImage()}>
                   <Image source={Images.logo} style={styles.image} />
                 </TouchableOpacity>
               ) : null}

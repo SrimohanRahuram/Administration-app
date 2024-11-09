@@ -1,4 +1,4 @@
-import {ADD_USER_INFO} from './actions';
+import {ADD_USER_INFO, HolidayRequestsByEmployeeId} from './actions';
 import {REMOVE_USER} from './actions';
 import {CHANGE_ONLINE_STATUS} from './actions';
 import {ITINERARY_LIST} from './actions';
@@ -17,6 +17,10 @@ import {UPDATE_SHOP_DATA} from './actions';
 import {DELETE_SHOP_DATA} from './actions';
 import {FETCH_EMPLOYEE_DATA_BY_ID} from './actions';
 
+import { ADVANCE_REQUESTS_DATA_BY_EMPLOYEEID } from './actions';
+import { LEAVE_REQUESTS_DATA_BY_EMPLOYEEID } from './actions';
+import { HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID } from './actions';
+
 const initialState = {
   adminInfo: [],
   employeeInfo: [],
@@ -27,6 +31,9 @@ const initialState = {
   outlet_info: [],
   images: [],
   today_locations: [],
+  advanceRequests:[],
+  leaveRequests:[],
+  holidayRequests:[],
 };
 
 function myReducers(state = initialState, action) {
@@ -118,6 +125,24 @@ function myReducers(state = initialState, action) {
         employeeInfo: action.payload,
       };
 
+      case ADVANCE_REQUESTS_DATA_BY_EMPLOYEEID:
+        return {
+          ...state,
+          advanceRequests: action.payload,
+        };
+
+        case LEAVE_REQUESTS_DATA_BY_EMPLOYEEID:
+          return {
+            ...state,
+            leaveRequests: action.payload,
+          };
+
+          case HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID:
+            return {
+              ...state,
+              holidayRequests: action.payload,
+            };        
+    
     default:
       return state;
   }
