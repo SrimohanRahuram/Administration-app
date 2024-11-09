@@ -2,6 +2,7 @@ import firestoreAdminService from "../../handlers/firestoreAdminService";
 import firestoreEmployeeService from "../../handlers/firestoreEmployeeService";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestoreShopService from "../../handlers/firestoreShopService";
+import firestoreRequestService from "../../handlers/firestoreRequestService";
 
 export const ADD_USER_INFO = 'ADD_USER_INFO';
 export const REMOVE_USER = 'REMOVE_USER';
@@ -21,6 +22,10 @@ export const DELETE_EMPLOYEE_DATA='DELETE_EMPLOYEE_DATA';
 export const UPDATE_SHOP_DATA='UPDATE_SHOP_DATA';
 export const DELETE_SHOP_DATA='DELETE_SHOP_DATA';
 export const FETCH_EMPLOYEE_DATA_BY_ID='FETCH_EMPLOYEE_DATA_BY_ID';
+
+export const ADVANCE_REQUESTS_DATA_BY_EMPLOYEEID='ADVANCE_REQUESTS_DATA_BY_EMPLOYEEID';
+export const LEAVE_REQUESTS_DATA_BY_EMPLOYEEID='LEAVE_REQUESTS_DATA_BY_EMPLOYEEID';
+export const HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID='HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID';
 
 export const addUserToRedux = data => dispatch => {
   // console.log('addUserToRedux ' + JSON.stringify(data));
@@ -248,6 +253,70 @@ export const fetchEmployeeDataById = () => async dispatch => {
     }
   } catch (error) {
     console.error('Error fetching employee data by ID:', error);
+    throw error;
+  }
+};
+
+
+export const AdvanceRequestsByEmployeeId = () => async dispatch => {
+  try {
+    const employeeIdforRequest = await AsyncStorage.getItem('employeeIdforRequest');
+    console.log(employeeIdforRequest);
+    const advanceRequestData = await firestoreRequestService.getAdvanceRequestsByEmployeeID(employeeIdforRequest);
+    console.log('Fetched Advance Requests Data by ID:', advanceRequestData);
+
+    if (advanceRequestData) {
+      dispatch({
+        type: ADVANCE_REQUESTS_DATA_BY_EMPLOYEEID,
+        payload: advanceRequestData,
+      });
+    } else {
+      console.warn('No advance requests data found for the given ID');
+    }
+  } catch (error) {
+    console.error('Error advance requests data by ID:', error);
+    throw error;
+  }
+};
+
+export const LeaveRequestsByEmployeeId = () => async dispatch => {
+  try {
+    const employeeIdforRequest = await AsyncStorage.getItem('employeeIdforRequest');
+    console.log(employeeIdforRequest);
+    const leaveRequestData = await firestoreRequestService.getLeaveRequestsByEmployeeID(employeeIdforRequest);
+    console.log('Fetched leaveRequestData by ID:', leaveRequestData);
+
+    if (leaveRequestData) {
+      dispatch({
+        type: LEAVE_REQUESTS_DATA_BY_EMPLOYEEID,
+        payload: leaveRequestData,
+      });
+    } else {
+      console.warn('No leaveRequestData found for the given ID');
+    }
+  } catch (error) {
+    console.error('Error leaveRequestData by ID:', error);
+    throw error;
+  }
+};
+
+export const HolidayRequestsByEmployeeId = () => async dispatch => {
+  try {
+    const employeeIdforRequest = await AsyncStorage.getItem('employeeIdforRequest');
+    console.log(employeeIdforRequest);
+    const holidayRequestData = await firestoreRequestService.getHolidayRequestsByEmployeeID(employeeIdforRequest);
+    console.log('Fetched holidayRequestData by ID:', holidayRequestData);
+
+    if (holidayRequestData) {
+      dispatch({
+        type: HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID,
+        payload: holidayRequestData,
+      });
+    } else {
+      console.warn('No holidayRequestData found for the given ID');
+    }
+  } catch (error) {
+    console.error('Error holidayRequestData by ID:', error);
     throw error;
   }
 };

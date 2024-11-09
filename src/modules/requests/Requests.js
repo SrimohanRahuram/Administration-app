@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   Text,
@@ -14,6 +15,8 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import ProgressOverlay from '../../components/ProgressOverlay';
 import ToastAlert from '../../components/ToastAlert';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import firestoreRequestService from '../../handlers/firestoreRequestService';
+import { SelectCountry } from 'react-native-element-dropdown';
 
 export default function Requests({navigation}) {
   const [advance, setAdvance] = React.useState('');
@@ -108,6 +111,47 @@ export default function Requests({navigation}) {
       ToastAlert.ShowToast('error', 'Alert', 'Wrong Due Date');
     }
   };
+
+  const handleAdvanceSentRequest = async e => {
+  
+    const employeeId = await AsyncStorage.getItem('employeeId');
+    const status = await firestoreRequestService.saveAdvanceRequestData(advance,employeeId);
+    if (status == 'Success') {
+      ToastAlert.ShowToast('error', 'Alert', 'Sucessfully Advance Request sent..');
+      setAdvance('');
+      // dispatch();
+    }
+  };
+
+  const handleLeaveSentRequest = async e => {
+
+
+    const employeeId = await AsyncStorage.getItem('employeeId');
+    const status = await firestoreRequestService.saveLeaveRequestData(formDate2,toDate2,employeeId);
+    if (status == 'Success') {
+      ToastAlert.ShowToast('error', 'Alert', 'Sucessfully Advance Request sent..');
+      setFormDate2("");
+      setToDate2("");
+      // dispatch();
+    }
+  };
+
+  const handleHolidaySentRequest = async e => {
+
+    const employeeId = await AsyncStorage.getItem('employeeId');
+    const status = await firestoreRequestService.saveHolidayRequestData(formDate,toDate,leaveDates,employeeId);
+    if (status == 'Success') {
+      ToastAlert.ShowToast('error', 'Alert', 'Sucessfully Advance Request sent..');
+      setFormDate("");
+      setToDate("");
+      setLeaveDates("");
+      // dispatch();
+    }
+  };
+
+
+
+
   return (
     <View style={styles.container}>
       <View style={styles.body}>
@@ -148,7 +192,9 @@ export default function Requests({navigation}) {
                     keyboardType="numeric"
                   />
                 </View>
-                <TouchableOpacity onPress={() => {}} style={styles.button}>
+                <TouchableOpacity onPress={() => {
+                  handleAdvanceSentRequest();
+                }} style={styles.button}>
                   <Text style={styles.buttonText}>Send Request</Text>
                 </TouchableOpacity>
               </View>
@@ -193,10 +239,10 @@ export default function Requests({navigation}) {
                 <Text style={{...styles.head, width: '20%'}}>To:</Text>
                 <View style={{...styles.inputView, width: '80%'}}>
                   <View style={{width: '90%'}}>
-                    {toDate ? (
+                    {toDate2 ? (
                       <Text
                         style={{...styles.calendertext, color: Colors.black}}>
-                        {toDate2.toLocaleDateString()}
+                           {toDate2.toLocaleDateString()}
                       </Text>
                     ) : (
                       <Text style={styles.calendertext}>Select Date</Text>
@@ -222,9 +268,11 @@ export default function Requests({navigation}) {
                 </View>
               </View>
               <TouchableOpacity
-                onPress={() => {}}
+                onPress={() => {
+                  handleLeaveSentRequest();
+                }}
                 style={{...styles.button, width: '100%'}}>
-                <Text style={styles.buttonText}>Send Request</Text>
+                <Text style={styles.buttonText }>Send Leave Request</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.detailsBody2}>
@@ -308,7 +356,9 @@ export default function Requests({navigation}) {
                 </View>
               </View>
               <TouchableOpacity
-                onPress={() => {}}
+                onPress={() => {
+                  handleHolidaySentRequest();
+                }}
                 style={{...styles.button, width: '100%'}}>
                 <Text style={styles.buttonText}>Send Request</Text>
               </TouchableOpacity>

@@ -1,4 +1,6 @@
 import React, {useEffect, useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useDispatch, useSelector} from 'react-redux';
 import {
   View,
   Text,
@@ -18,6 +20,7 @@ import ToastAlert from '../../components/ToastAlert';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { AdvanceRequestsByEmployeeId, HolidayRequestsByEmployeeId, ITINERARY_LIST, LeaveRequestsByEmployeeId } from '../../service/redux/actions';
 
 export default function EmployeeDetails({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +29,29 @@ export default function EmployeeDetails({navigation}) {
   const [Salary, setSalary] = React.useState(false);
   const [Holidays, setHolidays] = React.useState(false);
   const [Requests, setRequests] = React.useState(false);
+
+    // Accessing advancerequests from your Redux store
+    const advanceRequests = useSelector(state => state.myReducers.advanceRequests);
+    const leaveRequests= useSelector(state => state.myReducers.leaveRequests);
+    const holidayRequests= useSelector(state => state.myReducers.holidayRequests);
+    const dispatch=useDispatch();
+
+    useEffect( () => {
+      dispatch(AdvanceRequestsByEmployeeId());
+      console.log('Fetch dispatched');
+    }, [dispatch]);
+
+    useEffect( () => {
+      dispatch(LeaveRequestsByEmployeeId());
+      console.log('Fetch dispatched');
+    }, [dispatch]);
+
+    useEffect( () => {
+      dispatch(HolidayRequestsByEmployeeId());
+      console.log('Fetch dispatched');
+    }, [dispatch]);
+  
+    //next
 
   useEffect(() => {
     OnPressWorkPlace();
@@ -62,28 +88,31 @@ export default function EmployeeDetails({navigation}) {
     setHolidays(false);
     setRequests(true);
   };
-  const requestsdata = [
-    {key: '1', name: 'Request $500 for Advance Amount?'},
-    {
-      key: '2',
-      name: 'Request for holiday 3 hours?',
-      in: '24/12/2024',
-      out: '24/12/2024',
-    },
-    {
-      key: '3',
-      name: 'Request for Leave?',
-      in: '24/12/2024',
-      out: '24/12/2024',
-    },
-    {key: '4', name: 'Request $200 for Advance Amount?'},
-    {
-      key: '5',
-      name: 'Request for holiday 32hours?',
-      in: '24/12/2024',
-      out: '24/12/2024',
-    },
-  ];
+
+
+  // const requestsdata = [
+  //   {key: '1', name: 'Request $500 for Advance Amount?'},
+  //   {
+  //     key: '2',
+  //     name: 'Request for holiday 3 hours?',
+  //     in: '24/12/2024',
+  //     out: '24/12/2024',
+  //   },
+  //   {
+  //     key: '3',
+  //     name: 'Request for Leave?',
+  //     in: '24/12/2024',
+  //     out: '24/12/2024',
+  //   },
+  //   {key: '4', name: 'Request $200 for Advance Amount?'},
+  //   {
+  //     key: '5',
+  //     name: 'Request for holiday 32hours?',
+  //     in: '24/12/2024',
+  //     out: '24/12/2024',
+  //   },
+  // ];
+
   const workplacedata = [
     {key: '1', id: 'shop 1', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
     {key: '2', id: 'shop 2', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
@@ -381,10 +410,11 @@ export default function EmployeeDetails({navigation}) {
                 padding: 0,
                 width: '100%',
               }}>
+                {advanceRequests!=null && (
               <FlatList
-                data={requestsdata}
+                data={advanceRequests}
                 nestedScrollEnabled={true}
-                keyExtractor={(item, index) => index.toString()}
+                keyExtractor={(item,id) => id.toString()}
                 renderItem={({item}) => (
                   <View
                     style={{
@@ -402,9 +432,10 @@ export default function EmployeeDetails({navigation}) {
                         alignItems: 'center',
                         justifyContent: 'space-between',
                       }}>
-                      <Text style={styles.modalhead3}>{item.name}</Text>
+                      <Text style={styles.modalhead3}> Request ${item.advance} for Advance Amount?</Text>
                     </View>
-                    {item.in && (
+                    {item.in
+                     && (
                       <View
                         style={{
                           flexDirection: 'row',
@@ -479,6 +510,211 @@ export default function EmployeeDetails({navigation}) {
                   </View>
                 )}
               />
+                )}
+                 {leaveRequests!=null && (
+              <FlatList
+                data={leaveRequests}
+                nestedScrollEnabled={true}
+                keyExtractor={(item,id) => id.toString()}
+                renderItem={({item}) => (
+                  <View
+                    style={{
+                      padding: 5,
+                      borderColor: Colors.black,
+                      borderBottomWidth: 2,
+                    }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        borderColor: Colors.white,
+                        borderBottomWidth: 5,
+                        backgroundColor: Colors.white,
+                        height: 50,
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text style={styles.modalhead3}> Request for Leave?</Text>
+                    </View>
+                    {item.from
+                     && (
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginBottom: 10,
+                        }}>
+                        <View
+                          style={{
+                            ...styles.requestbuttoncontiner,
+                            width: '20%',
+                          }}>
+                          <Text style={styles.modalhead3}>From</Text>
+                        </View>
+                        <View
+                          style={{
+                            ...styles.requestbuttoncontiner,
+                            width: '30%',
+                            borderWidth: 1,
+                            borderColor: Colors.black,
+                          }}>
+                          
+                          <Text style={styles.modalhead3}> {item.from.toDate().toLocaleDateString()}</Text>
+                        </View>
+                        <View
+                          style={{
+                            ...styles.requestbuttoncontiner,
+                            width: '20%',
+                          }}>
+                          <Text style={styles.modalhead3}>To</Text>
+                        </View>
+                        <View
+                          style={{
+                            ...styles.requestbuttoncontiner,
+                            width: '30%',
+                            borderWidth: 1,
+                            borderColor: Colors.black,
+                          }}>
+                          <Text style={styles.modalhead3}>{item.To.toDate().toLocaleDateString()}</Text>
+                        </View>
+                      </View>
+                    )}
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: 5,
+                      }}>
+                      <TouchableOpacity
+                        style={{
+                          ...styles.requestbuttoncontiner,
+                          width: '49%',
+                          borderWidth: 1,
+                          borderColor: Colors.black,
+                        }}
+                        onPress={() => {}}>
+                        <Text style={styles.modalhead3}>Reject</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={{
+                          ...styles.requestbuttoncontiner,
+                          width: '49%',
+                          backgroundColor: Colors.black,
+                        }}
+                        onPress={() => {}}>
+                        <Text
+                          style={{...styles.modalhead3, color: Colors.white}}>
+                          Approve
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}  
+              />
+                 )}
+
+              {holidayRequests!=null && (
+              <FlatList
+                data={holidayRequests}
+                nestedScrollEnabled={true}
+                keyExtractor={(item,id) => id.toString()}
+                renderItem={({item}) => (
+                  <View
+                    style={{
+                      padding: 5,
+                      borderColor: Colors.black,
+                      borderBottomWidth: 2,
+                    }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        borderColor: Colors.white,
+                        borderBottomWidth: 5,
+                        backgroundColor: Colors.white,
+                        height: 50,
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text style={styles.modalhead3}> Request for holiday {item.Hours} hours?</Text>
+                    </View>
+                    {item.from
+                     && (
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginBottom: 10,
+                        }}>
+                        <View
+                          style={{
+                            ...styles.requestbuttoncontiner,
+                            width: '20%',
+                          }}>
+                          <Text style={styles.modalhead3}>From</Text>
+                        </View>
+                        <View
+                          style={{
+                            ...styles.requestbuttoncontiner,
+                            width: '30%',
+                            borderWidth: 1,
+                            borderColor: Colors.black,
+                          }}>
+                          <Text style={styles.modalhead3}>{item.from.toDate().toLocaleDateString()}</Text>
+                        </View>
+                        <View
+                          style={{
+                            ...styles.requestbuttoncontiner,
+                            width: '20%',
+                          }}>
+                          <Text style={styles.modalhead3}>To</Text>
+                        </View>
+                        <View
+                          style={{
+                            ...styles.requestbuttoncontiner,
+                            width: '30%',
+                            borderWidth: 1,
+                            borderColor: Colors.black,
+                          }}>
+                          <Text style={styles.modalhead3}>{item.To.toDate().toLocaleDateString()}</Text>
+                        </View>
+                      </View>
+                    )}
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: 5,
+                      }}>
+                      <TouchableOpacity
+                        style={{
+                          ...styles.requestbuttoncontiner,
+                          width: '49%',
+                          borderWidth: 1,
+                          borderColor: Colors.black,
+                        }}
+                        onPress={() => {}}>
+                        <Text style={styles.modalhead3}>Reject</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={{
+                          ...styles.requestbuttoncontiner,
+                          width: '49%',
+                          backgroundColor: Colors.black,
+                        }}
+                        onPress={() => {}}>
+                        <Text
+                          style={{...styles.modalhead3, color: Colors.white}}>
+                          Approve
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+              />
+              )}
             </View>
           )}
         </View>

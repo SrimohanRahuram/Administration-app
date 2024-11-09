@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   Text,
@@ -305,7 +306,10 @@ export default function Employees({navigation}) {
                       padding: 3,
                       paddingBottom: 5,
                     }}
-                    onPress={() => {
+                    onPress  ={async () => {
+                      setSelectedEmployee(item);
+                      await AsyncStorage.setItem('employeeIdforRequest', Id);
+                      console.log(Id);
                       navigation.navigate('EmployeeDetails');
                     }}>
                     <Text style={{...styles.modalhead3, color: Colors.white}}>
