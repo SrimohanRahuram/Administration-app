@@ -14,7 +14,10 @@ import Images from '../../constants/images';
 import ProgressOverlay from '../../components/ProgressOverlay';
 import ToastAlert from '../../components/ToastAlert';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {fetchEmployeeDataById} from '../../service/redux/actions';
+import {
+  fetchEmployeeDataById,
+  fetchShopData,
+} from '../../service/redux/actions';
 import {Dropdown} from 'react-native-element-dropdown';
 
 export default function Home({navigation}) {
@@ -37,8 +40,16 @@ export default function Home({navigation}) {
     navigation.navigate('Notifications');
   };
 
+  const showoutletList = useSelector(state => state.myReducers.shopInfo);
+  useEffect(() => {
+    // Fetch shop data when the component mounts
+    dispatch(fetchShopData());
+    console.log('Fetch dispatched');
+  }, [dispatch]);
+
   const dispatch = useDispatch();
   const employeeData = useSelector(state => state.myReducers.employeeInfo);
+
   useEffect(() => {
     // Fetch admin data when the component mounts
     dispatch(fetchEmployeeDataById());
@@ -65,6 +76,7 @@ export default function Home({navigation}) {
 
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, []);
+
   const data = [
     {key: '1', value: 'shop 1'},
     {key: '2', value: 'shop 2'},
@@ -130,17 +142,17 @@ export default function Home({navigation}) {
               style={styles.dropdown}
               placeholderStyle={styles.placeholderStyle}
               selectedTextStyle={styles.selectedTextStyle}
-              data={data}
+              data={showoutletList}
               maxHeight={300}
-              labelField="value"
+              labelField="name"
               containerStyle={{marginTop: 8, borderRadius: 10}}
               itemContainerStyle={styles.label}
               itemTextStyle={styles.itemTextStyle}
-              valueField="value"
+              valueField="name"
               placeholder={'Select shop'}
               value={value}
               onChange={item => {
-                setValue(item.value);
+                setValue(item.name);
               }}
             />
             <TouchableOpacity
