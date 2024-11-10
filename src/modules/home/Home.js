@@ -19,13 +19,14 @@ import {
   fetchShopData,
 } from '../../service/redux/actions';
 import {Dropdown} from 'react-native-element-dropdown';
+import firestoreRequestService from '../../handlers/firestoreEmployeeService';
 
 export default function Home({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const [value, setValue] = useState(null);
   const [userName, setUserName] = React.useState('');
-  const [Id, setId] = React.useState('');
+  const [shopId, setShopId] = React.useState(null);
   const [contactNo, setContactNo] = React.useState('');
   const [currentDateTime, setCurrentDateTime] = useState('');
 
@@ -77,13 +78,22 @@ export default function Home({navigation}) {
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, []);
 
-  const data = [
-    {key: '1', value: 'shop 1'},
-    {key: '2', value: 'shop 2'},
-    {key: '3', value: 'shop 3'},
-    {key: '4', value: 'shop 4'},
-    {key: '5', value: 'shop 5'},
-  ];
+  const handleAdvanceSentRequest = async e => {
+    const employeeId = await AsyncStorage.getItem('employeeId');
+    const currentDate = new Date();
+    const status = await firestoreRequestService.saveLoginTimeAndDate(
+      currentDate,
+      shopId,
+      employeeId,
+    );
+    if (status == 'Success') {
+      ToastAlert.ShowToast(
+        'error',
+        'Alert',
+        'Sucessfully Advance Request sent..',
+      );
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.body}>
@@ -153,11 +163,13 @@ export default function Home({navigation}) {
               value={value}
               onChange={item => {
                 setValue(item.name);
+                setShopId(item.id);
               }}
             />
             <TouchableOpacity
               onPress={() => {
                 setIsEnabled(previousState => !previousState);
+                handleAdvanceSentRequest();
               }}
               style={[
                 styles.button,
