@@ -127,7 +127,7 @@ export default function LoginScreen({navigation}) {
           style={styles.input}
           onChangeText={username => onChangeUsername(username)}
           value={username}
-          label={'username'}
+          label={'Username'}
           mode="outlined"
           autoCapitalize="none"
           theme={{

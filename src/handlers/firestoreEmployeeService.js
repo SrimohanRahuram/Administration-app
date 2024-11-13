@@ -142,35 +142,56 @@ const firestoreEmployeeService = {
         .get();
 
       if (userDoc.exists) {
-        // Format checkInOutDateTime to string
-        const formattedDate = moment(checkInOutDateTime).format('YYYY-MM-DD'); // e.g., '2024-10-09'
-        const formattedTime = moment(checkInOutDateTime).format('LT');  
+        const formattedDate = moment(checkInOutDateTime).format('YYYY-MM-DD');
+        let currentDate = new Date();
+        let hours = currentDate.getHours();
+        let minutes = currentDate.getMinutes();
+        if (minutes < 30) {
+          minutes = 30;
+        } else {
+          minutes = 0;
+          hours += 1;
+        }
+        currentDate.setHours(hours, minutes, 0, 0);
+        const formattedTime = moment(currentDate).format('HH:mm');
 
-        const advanceRequestRef = firestore()
+        const shopLoginRef = firestore()
           .collection('Employee')
           .doc(employeeId)
           .collection('shoplogin')
           .doc(shopID)
-          .collection(formattedDate) // Use formatted date as collection name
-          .doc(formattedTime); // Generate a new document reference
+          .collection(formattedDate);
 
-        const advanceRequestSnapshot = await advanceRequestRef.get();
+        const latestDocSnapshot = await shopLoginRef
+          .orderBy('checkInDateTime', 'desc')
+          .limit(1)
+          .get();
 
-        const newRequest = advanceRequestSnapshot.exists
-          ? {
-              checkInDateTime: advanceRequestSnapshot.data().checkInDateTime,
-              checkOutDateTime: checkInOutDateTime,
-              shopID: shopID,
-              status: 'INACTIVE',
-            }
-          : {
-              checkInDateTime: checkInOutDateTime,
-              checkOutDateTime: '',
-              shopID: shopID,
-              status: 'ACTIVE',
-            };
+        let newStatus = 'ACTIVE';
+        let timeDifference = null;
 
+        if (!latestDocSnapshot.empty) {
+          const lastDocData = latestDocSnapshot.docs[0].data();
+          const lastCheckIn = moment(lastDocData.checkInDateTime, 'HH:mm');
+          const currentTime = moment(formattedTime, 'HH:mm');
+          timeDifference = currentTime.diff(lastCheckIn, 'minutes');
+          newStatus = lastDocData.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+        }
+
+        const newRequest = {
+          checkInDateTime:
+            newStatus === 'ACTIVE'
+              ? formattedTime
+              : latestDocSnapshot.docs[0]?.data().checkInDateTime,
+          checkOutDateTime: newStatus === 'INACTIVE' ? formattedTime : '',
+          shopID: shopID,
+          status: newStatus,
+          hoursOfWork: timeDifference,
+        };
+
+        const advanceRequestRef = shopLoginRef.doc(formattedTime);
         await advanceRequestRef.set(newRequest);
+
         console.log('Request Successfully sent!');
         return 'Success';
       }
