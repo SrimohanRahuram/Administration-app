@@ -20,6 +20,7 @@ import {
 } from '../../service/redux/actions';
 import {Dropdown} from 'react-native-element-dropdown';
 import firestoreRequestService from '../../handlers/firestoreEmployeeService';
+import getLastWorkingDetails from '../../handlers/firestoreEmployeeService';
 
 export default function Home({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
@@ -94,6 +95,30 @@ export default function Home({navigation}) {
       );
     }
   };
+
+
+  useEffect(() => {
+    const fetchLastWorkingDetails = async e => {
+      try {
+        const employeeId = await AsyncStorage.getItem('employeeId');
+        const details = await firestoreRequestService.getLastWorkingDetails(
+          shopId,
+          employeeId,
+        );
+        console.log('last working details:', details.status);
+        if(details.status==='ACTIVE'){
+          setIsEnabled(true);
+        }
+      } catch (error) {
+        console.error('Error fetching last working details:', error);
+      }
+    };
+
+    if (shopId) {
+      fetchLastWorkingDetails();
+    }
+  }, [shopId]);
+
   return (
     <View style={styles.container}>
       <View style={styles.body}>
@@ -148,24 +173,37 @@ export default function Home({navigation}) {
                 {isEnabled ? 'Inactive' : 'Active'}
               </Text>
             </View>
-            <Dropdown
-              style={styles.dropdown}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              data={showoutletList}
-              maxHeight={300}
-              labelField="name"
-              containerStyle={{marginTop: 8, borderRadius: 10}}
-              itemContainerStyle={styles.label}
-              itemTextStyle={styles.itemTextStyle}
-              valueField="name"
-              placeholder={'Select shop'}
-              value={value}
-              onChange={item => {
-                setValue(item.name);
-                setShopId(item.id);
-              }}
-            />
+            {!isEnabled ? (
+              <Dropdown
+                style={styles.dropdown}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                data={showoutletList}
+                maxHeight={300}
+                labelField="name"
+                containerStyle={{marginTop: 8, borderRadius: 10}}
+                itemContainerStyle={styles.label}
+                itemTextStyle={styles.itemTextStyle}
+                valueField="name"
+                placeholder={'Select shop'}
+                value={value}
+                onChange={item => {
+                  setValue(item.name);
+                  setShopId(item.id);
+                }}
+              />
+            ) : (
+              <View
+                style={[
+                  styles.dropdown,
+                  {opacity: 0.5},
+                  {justifyContent: 'center'},
+                ]}>
+                <Text style={styles.selectedTextStyle}>
+                  {value || 'Select shop'}
+                </Text>
+              </View>
+            )}
             <TouchableOpacity
               onPress={() => {
                 setIsEnabled(previousState => !previousState);

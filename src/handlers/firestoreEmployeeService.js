@@ -155,6 +155,17 @@ const firestoreEmployeeService = {
         currentDate.setHours(hours, minutes, 0, 0);
         const formattedTime = moment(currentDate).format('HH:mm');
 
+        let currentDate2 = new Date();
+        let hours2 = currentDate2.getHours();
+        let minutes2 = currentDate2.getMinutes();
+        if (minutes2 < 30) {
+          minutes2 = 0;
+        } else {
+          minutes2 = 30;
+        }
+        currentDate2.setHours(hours2, minutes2, 0, 0);
+        const formattedTime2 = moment(currentDate2).format('HH:mm');
+
         const shopLoginRef = firestore()
           .collection('Employee')
           .doc(employeeId)
@@ -163,19 +174,27 @@ const firestoreEmployeeService = {
           .collection(formattedDate);
 
         const latestDocSnapshot = await shopLoginRef
-          .orderBy('checkInDateTime', 'desc')
+          .orderBy('createdAt', 'desc')
           .limit(1)
           .get();
 
         let newStatus = 'ACTIVE';
-        let timeDifference = null;
+        let timeDifference = 0;
 
         if (!latestDocSnapshot.empty) {
           const lastDocData = latestDocSnapshot.docs[0].data();
-          const lastCheckIn = moment(lastDocData.checkInDateTime, 'HH:mm');
-          const currentTime = moment(formattedTime, 'HH:mm');
-          timeDifference = currentTime.diff(lastCheckIn, 'minutes');
-          newStatus = lastDocData.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+          const lastDocId = latestDocSnapshot.docs[0].id;
+          if (lastDocData.status === 'ACTIVE') {
+            const lastCheckIn = moment(lastDocData.checkInDateTime, 'HH:mm');
+            const currentTime = moment(formattedTime2, 'HH:mm');
+            if (currentTime.diff(lastCheckIn, 'minutes') < 0) {
+              timeDifference = 0;
+            } else {
+              timeDifference = currentTime.diff(lastCheckIn, 'hours');
+            }
+            newStatus = 'INACTIVE';
+            await shopLoginRef.doc(lastDocId).delete();
+          }
         }
 
         const newRequest = {
@@ -183,13 +202,19 @@ const firestoreEmployeeService = {
             newStatus === 'ACTIVE'
               ? formattedTime
               : latestDocSnapshot.docs[0]?.data().checkInDateTime,
-          checkOutDateTime: newStatus === 'INACTIVE' ? formattedTime : '',
+          checkOutDateTime:
+            newStatus === 'INACTIVE'
+              ? formattedTime2 > formattedTime
+                ? formattedTime2
+                : formattedTime
+              : '',
           shopID: shopID,
           status: newStatus,
           hoursOfWork: timeDifference,
+          createdAt: firestore.FieldValue.serverTimestamp(),
         };
 
-        const advanceRequestRef = shopLoginRef.doc(formattedTime);
+        const advanceRequestRef = shopLoginRef.doc();
         await advanceRequestRef.set(newRequest);
 
         console.log('Request Successfully sent!');
@@ -197,6 +222,45 @@ const firestoreEmployeeService = {
       }
     } catch (error) {
       console.error('Error adding Shop data: ', error);
+      throw error;
+    }
+  },
+
+  getLastWorkingDetails: async (shopId, employeeId) => {
+    try {
+      const formattedDate = moment().format('YYYY-MM-DD');
+
+      const shopLoginRef = firestore()
+        .collection('Employee')
+        .doc(employeeId)
+        .collection('shoplogin')
+        .doc(shopId)
+        .collection(formattedDate);
+
+      const latestDocSnapshot = await shopLoginRef
+        .orderBy('checkInDateTime', 'desc')
+        .limit(1)
+        .get();
+
+      if (!latestDocSnapshot.empty) {
+        const lastDocData = latestDocSnapshot.docs[0].data();
+        console.log('Last Working Details:', lastDocData);
+
+        return {
+          status: lastDocData.status || 'Unknown status',
+          checkIn: lastDocData.checkInDateTime || 'No Check-In Time',
+          checkOut: lastDocData.checkOutDateTime || 'No Check-Out Time',
+        };
+      } else {
+        console.log('No working details found for today.');
+        return {
+          status: 'N/A',
+          checkIn: 'N/A',
+          checkOut: 'N/A',
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching last working details:', error);
       throw error;
     }
   },
