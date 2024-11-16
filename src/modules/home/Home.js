@@ -20,7 +20,6 @@ import {
 } from '../../service/redux/actions';
 import {Dropdown} from 'react-native-element-dropdown';
 import firestoreRequestService from '../../handlers/firestoreEmployeeService';
-import getLastWorkingDetails from '../../handlers/firestoreEmployeeService';
 
 export default function Home({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
@@ -81,9 +80,9 @@ export default function Home({navigation}) {
 
   const handleAdvanceSentRequest = async e => {
     const employeeId = await AsyncStorage.getItem('employeeId');
-    const currentDate = new Date();
+    //const currentDate = new Date();
     const status = await firestoreRequestService.saveLoginTimeAndDate(
-      currentDate,
+      value,
       shopId,
       employeeId,
     );
@@ -96,28 +95,26 @@ export default function Home({navigation}) {
     }
   };
 
-
   useEffect(() => {
     const fetchLastWorkingDetails = async e => {
       try {
         const employeeId = await AsyncStorage.getItem('employeeId');
         const details = await firestoreRequestService.getLastWorkingDetails(
-          shopId,
           employeeId,
         );
         console.log('last working details:', details.status);
-        if(details.status==='ACTIVE'){
+        if (details.status === 'ACTIVE') {
           setIsEnabled(true);
+          setShopId(details.shopID);
+          setValue(details.shopName);
+          console.log({ isEnabled, shopId, value });
         }
       } catch (error) {
         console.error('Error fetching last working details:', error);
       }
     };
-
-    if (shopId) {
-      fetchLastWorkingDetails();
-    }
-  }, [shopId]);
+    fetchLastWorkingDetails();
+  }, []);
 
   return (
     <View style={styles.container}>

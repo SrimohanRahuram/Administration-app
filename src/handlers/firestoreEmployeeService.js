@@ -134,7 +134,7 @@ const firestoreEmployeeService = {
     }
   },
 
-  saveLoginTimeAndDate: async (checkInOutDateTime, shopID, employeeId) => {
+  saveLoginTimeAndDate: async (shopName, shopID, employeeId) => {
     try {
       const userDoc = await firestore()
         .collection('Employee')
@@ -142,7 +142,6 @@ const firestoreEmployeeService = {
         .get();
 
       if (userDoc.exists) {
-        const formattedDate = moment(checkInOutDateTime).format('YYYY-MM-DD');
         let currentDate = new Date();
         let hours = currentDate.getHours();
         let minutes = currentDate.getMinutes();
@@ -169,10 +168,7 @@ const firestoreEmployeeService = {
         const shopLoginRef = firestore()
           .collection('Employee')
           .doc(employeeId)
-          .collection('shoplogin')
-          .doc(shopID)
-          .collection(formattedDate);
-
+          .collection('shoplogin');
         const latestDocSnapshot = await shopLoginRef
           .orderBy('createdAt', 'desc')
           .limit(1)
@@ -212,6 +208,7 @@ const firestoreEmployeeService = {
           status: newStatus,
           hoursOfWork: timeDifference,
           createdAt: firestore.FieldValue.serverTimestamp(),
+          shopName: shopName,
         };
 
         const advanceRequestRef = shopLoginRef.doc();
@@ -226,16 +223,12 @@ const firestoreEmployeeService = {
     }
   },
 
-  getLastWorkingDetails: async (shopId, employeeId) => {
+  getLastWorkingDetails: async employeeId => {
     try {
-      const formattedDate = moment().format('YYYY-MM-DD');
-
       const shopLoginRef = firestore()
         .collection('Employee')
         .doc(employeeId)
-        .collection('shoplogin')
-        .doc(shopId)
-        .collection(formattedDate);
+        .collection('shoplogin');
 
       const latestDocSnapshot = await shopLoginRef
         .orderBy('checkInDateTime', 'desc')
@@ -245,18 +238,17 @@ const firestoreEmployeeService = {
       if (!latestDocSnapshot.empty) {
         const lastDocData = latestDocSnapshot.docs[0].data();
         console.log('Last Working Details:', lastDocData);
-
         return {
           status: lastDocData.status || 'Unknown status',
-          checkIn: lastDocData.checkInDateTime || 'No Check-In Time',
-          checkOut: lastDocData.checkOutDateTime || 'No Check-Out Time',
+          shopID: lastDocData.shopID || 'No shopID',
+          shopName: lastDocData.shopName || 'No shopName',
         };
       } else {
         console.log('No working details found for today.');
         return {
           status: 'N/A',
-          checkIn: 'N/A',
-          checkOut: 'N/A',
+          shopID: 'N/A',
+          shopName: 'N/A',
         };
       }
     } catch (error) {
