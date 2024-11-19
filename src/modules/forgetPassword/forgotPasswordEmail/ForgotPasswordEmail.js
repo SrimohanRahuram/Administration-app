@@ -5,6 +5,7 @@ import {
   Image,
   Alert,
   BackHandler,
+  SafeAreaView
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import styles from './ForgotPasswordEmail.Styles';
@@ -93,7 +94,7 @@ export default function ForgotPasswordEmail({navigation}) {
   //   }
   // };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Image source={Images.forgotPasswordEmail} style={styles.image} />
 
       <View style={styles.middleView}>
@@ -145,6 +146,6 @@ export default function ForgotPasswordEmail({navigation}) {
         </TouchableOpacity>
       </View>
       <ProgressOverlay visible={isLoading} message={'loading'} />
-    </View>
+    </SafeAreaView>
   );
 }

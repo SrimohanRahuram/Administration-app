@@ -6,6 +6,7 @@ import {
   Alert,
   BackHandler,
   ImageBackground,
+  SafeAreaView
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import styles from './LoginScreen.Style';
@@ -119,7 +120,7 @@ export default function LoginScreen({navigation}) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Image style={styles.image} resizeMode="center" source={Images.logo} />
 
       <View style={styles.card}>
@@ -127,7 +128,7 @@ export default function LoginScreen({navigation}) {
           style={styles.input}
           onChangeText={username => onChangeUsername(username)}
           value={username}
-          label={'username'}
+          label={'Username'}
           mode="outlined"
           autoCapitalize="none"
           theme={{
@@ -196,6 +197,6 @@ export default function LoginScreen({navigation}) {
         </TouchableOpacity>
       </View>
       <ProgressOverlay visible={isLoading} message={'Loading'} />
-    </View>
+    </SafeAreaView>
   );
 }

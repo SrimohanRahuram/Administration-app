@@ -1,39 +1,43 @@
 import firestore from '@react-native-firebase/firestore';
 import bcrypt from 'react-native-bcrypt';
-import { Alert } from 'react-native'; 
+import {Alert} from 'react-native';
+import moment from 'moment';
 
 const firestoreEmployeeService = {
-
-
-  saveEmployeeData: async (userName, ID,password,shareCode,contactNo, Address,maxHours,perHourSalary,maxHoliday) => {
+  saveEmployeeData: async (
+    userName,
+    ID,
+    password,
+    shareCode,
+    contactNo,
+    Address,
+    maxHours,
+    perHourSalary,
+    maxHoliday,
+  ) => {
     try {
-
       const userDoc = await firestore().collection('Employee').doc(ID).get();
-      
-      if (userDoc.exists) {
 
+      if (userDoc.exists) {
         Alert.alert('Error', 'ID already exists. Please choose another ID.');
         return 'ID already exists';
       }
 
       const saltRounds = 10;
-      const salt = bcrypt.genSaltSync(saltRounds);  
-      const hashedPassword = bcrypt.hashSync(password, salt);  
+      const salt = bcrypt.genSaltSync(saltRounds);
+      const hashedPassword = bcrypt.hashSync(password, salt);
 
-      await firestore()
-        .collection('Employee')
-        .doc(ID)
-        .set({
-          userName: userName,
-          ID:ID,
-          password: hashedPassword,
-          contactNo:contactNo,
-          shareCode:shareCode,
-          Address:Address,
-          maxHours:maxHours,
-          perHourSalary:perHourSalary,
-          maxHoliday:maxHoliday
-        });
+      await firestore().collection('Employee').doc(ID).set({
+        userName: userName,
+        ID: ID,
+        password: hashedPassword,
+        contactNo: contactNo,
+        shareCode: shareCode,
+        Address: Address,
+        maxHours: maxHours,
+        perHourSalary: perHourSalary,
+        maxHoliday: maxHoliday,
+      });
 
       console.log('Emlpoyeer data added successfully!');
       return 'Success';
@@ -42,7 +46,6 @@ const firestoreEmployeeService = {
       throw error;
     }
   },
-
 
   getAllEmployees: async () => {
     try {
@@ -79,7 +82,7 @@ const firestoreEmployeeService = {
 
       await employeeDocRef.update(updatedData);
       console.log('Employee data updated successfully!');
-     
+
       return 'Success';
     } catch (error) {
       console.error('Error updating Employee data: ', error);
@@ -87,7 +90,7 @@ const firestoreEmployeeService = {
     }
   },
 
-  deleteEmployeeData: async (ID) => {
+  deleteEmployeeData: async ID => {
     try {
       const employeeDocRef = firestore().collection('Employee').doc(ID);
       const employeeDoc = await employeeDocRef.get();
@@ -106,9 +109,12 @@ const firestoreEmployeeService = {
     }
   },
 
-  getEmployeeDataByID: async (employeeID) => {
+  getEmployeeDataByID: async employeeID => {
     try {
-      const employeeDoc = await firestore().collection('Employee').doc(employeeID).get();
+      const employeeDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeID)
+        .get();
 
       if (!employeeDoc.exists) {
         Alert.alert('Error', 'Employee does not exist.');
@@ -128,8 +134,128 @@ const firestoreEmployeeService = {
     }
   },
 
+  saveLoginTimeAndDate: async (shopName, shopID, employeeId) => {
+    try {
+      const userDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeId)
+        .get();
 
-}
-  
+      if (userDoc.exists) {
+        let currentDate = new Date();
+        let hours = currentDate.getHours();
+        let minutes = currentDate.getMinutes();
+        if (minutes < 30) {
+          minutes = 30;
+        } else {
+          minutes = 0;
+          hours += 1;
+        }
+        currentDate.setHours(hours, minutes, 0, 0);
+        const formattedTime = moment(currentDate).format('HH:mm');
+
+        let currentDate2 = new Date();
+        let hours2 = currentDate2.getHours();
+        let minutes2 = currentDate2.getMinutes();
+        if (minutes2 < 30) {
+          minutes2 = 0;
+        } else {
+          minutes2 = 30;
+        }
+        currentDate2.setHours(hours2, minutes2, 0, 0);
+        const formattedTime2 = moment(currentDate2).format('HH:mm');
+
+        const shopLoginRef = firestore()
+          .collection('Employee')
+          .doc(employeeId)
+          .collection('shoplogin');
+        const latestDocSnapshot = await shopLoginRef
+          .orderBy('createdAt', 'desc')
+          .limit(1)
+          .get();
+
+        let newStatus = 'ACTIVE';
+        let timeDifference = 0;
+
+        if (!latestDocSnapshot.empty) {
+          const lastDocData = latestDocSnapshot.docs[0].data();
+          const lastDocId = latestDocSnapshot.docs[0].id;
+          if (lastDocData.status === 'ACTIVE') {
+            const lastCheckIn = moment(lastDocData.checkInDateTime, 'HH:mm');
+            const currentTime = moment(formattedTime2, 'HH:mm');
+            if (currentTime.diff(lastCheckIn, 'minutes') < 0) {
+              timeDifference = 0;
+            } else {
+              timeDifference = currentTime.diff(lastCheckIn, 'hours');
+            }
+            newStatus = 'INACTIVE';
+            await shopLoginRef.doc(lastDocId).delete();
+          }
+        }
+
+        const newRequest = {
+          checkInDateTime:
+            newStatus === 'ACTIVE'
+              ? formattedTime
+              : latestDocSnapshot.docs[0]?.data().checkInDateTime,
+          checkOutDateTime:
+            newStatus === 'INACTIVE'
+              ? formattedTime2 > formattedTime
+                ? formattedTime2
+                : formattedTime
+              : '',
+          shopID: shopID,
+          status: newStatus,
+          hoursOfWork: timeDifference,
+          createdAt: firestore.FieldValue.serverTimestamp(),
+          shopName: shopName,
+        };
+
+        const advanceRequestRef = shopLoginRef.doc();
+        await advanceRequestRef.set(newRequest);
+
+        console.log('Request Successfully sent!');
+        return 'Success';
+      }
+    } catch (error) {
+      console.error('Error adding Shop data: ', error);
+      throw error;
+    }
+  },
+
+  getLastWorkingDetails: async employeeId => {
+    try {
+      const shopLoginRef = firestore()
+        .collection('Employee')
+        .doc(employeeId)
+        .collection('shoplogin');
+
+      const latestDocSnapshot = await shopLoginRef
+        .orderBy('checkInDateTime', 'desc')
+        .limit(1)
+        .get();
+
+      if (!latestDocSnapshot.empty) {
+        const lastDocData = latestDocSnapshot.docs[0].data();
+        console.log('Last Working Details:', lastDocData);
+        return {
+          status: lastDocData.status || 'Unknown status',
+          shopID: lastDocData.shopID || 'No shopID',
+          shopName: lastDocData.shopName || 'No shopName',
+        };
+      } else {
+        console.log('No working details found for today.');
+        return {
+          status: 'N/A',
+          shopID: 'N/A',
+          shopName: 'N/A',
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching last working details:', error);
+      throw error;
+    }
+  },
+};
 
 export default firestoreEmployeeService;

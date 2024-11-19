@@ -8,6 +8,7 @@ import {
   Modal,
   Image,
   TextInput,
+  SafeAreaView
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import styles from './Admin.Styles';
@@ -162,7 +163,7 @@ export default function Admin({navigation}) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.body}>
         <Text style={styles.header}>Admin</Text>
         <View style={styles.detailsBody}>
@@ -462,6 +463,6 @@ export default function Admin({navigation}) {
           </View>
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }

@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {View, Image, ImageBackground} from 'react-native';
+import {View, Image, ImageBackground,SafeAreaView} from 'react-native';
 import styles from './SplashScreen.Styles';
 import Images from '../../constants/images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,8 +26,8 @@ export default function SplashScreen({navigation}) {
     //     </View>
     //   </View>
     // </ImageBackground>
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Image style={styles.image} resizeMode="center" source={Images.logo} />
-    </View>
+    </SafeAreaView>
   );
 }

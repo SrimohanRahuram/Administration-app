@@ -8,6 +8,7 @@ import {
   Modal,
   Image,
   TextInput,
+  SafeAreaView
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import styles from './Shops.Styles';
@@ -179,7 +180,7 @@ export default function Shops({navigation}) {
     }
   };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.body}>
         <View
           style={{
@@ -584,6 +585,6 @@ export default function Shops({navigation}) {
           </View>
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
