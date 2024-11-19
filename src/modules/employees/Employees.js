@@ -10,6 +10,7 @@ import {
   Image,
   TextInput,
   ScrollView,
+  SafeAreaView
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import styles from './Employees.Styles';
@@ -205,7 +206,7 @@ export default function Employees({navigation}) {
     }
   };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.body}>
         <Text style={styles.header}>Employees</Text>
         <View style={styles.detailsBody}>
@@ -620,6 +621,6 @@ export default function Employees({navigation}) {
           </View>
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }

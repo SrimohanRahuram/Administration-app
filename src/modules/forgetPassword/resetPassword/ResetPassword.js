@@ -5,6 +5,7 @@ import {
   Image,
   Alert,
   BackHandler,
+  SafeAreaView
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import styles from './ResetPassword.Styles';
@@ -110,7 +111,7 @@ export default function ResetPassword({navigation}) {
     }
   };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Image source={Images.resetPassword} style={styles.image} />
 
       <View style={styles.middleView}>
@@ -181,6 +182,6 @@ export default function ResetPassword({navigation}) {
         </TouchableOpacity>
       </View>
       <ProgressOverlay visible={isLoading} message={'loading'} />
-    </View>
+    </SafeAreaView>
   );
 }

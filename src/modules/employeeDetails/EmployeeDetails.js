@@ -11,6 +11,7 @@ import {
   Image,
   TextInput,
   ScrollView,
+  SafeAreaView
 } from 'react-native';
 import styles from './EmployeeDetails.Styles';
 import Colors from '../../constants/Colors';
@@ -128,7 +129,7 @@ export default function EmployeeDetails({navigation}) {
     {key: '5', id: ' 51', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
   ];
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.body}>
         <Text style={styles.header}>Employee Details</Text>
         <View style={styles.detailsBody}>
@@ -927,6 +928,6 @@ export default function EmployeeDetails({navigation}) {
           </View>
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   BackHandler,
   TextInput,
+  SafeAreaView
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import styles from './Home.Styles';
@@ -117,7 +118,7 @@ export default function Home({navigation}) {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.body}>
         <View
           style={{
@@ -238,6 +239,6 @@ export default function Home({navigation}) {
         </View>
       </View>
       <ProgressOverlay visible={isLoading} message={'Loading...'} />
-    </View>
+    </SafeAreaView>
   );
 }
