@@ -309,7 +309,7 @@ export default function Employees({navigation}) {
                     }}
                     onPress  ={async () => {
                       setSelectedEmployee(item);
-                      await AsyncStorage.setItem('employeeIdforRequest', Id);
+                      await AsyncStorage.setItem('employeeIdforRequest', item.ID);
                       console.log(Id);
                       navigation.navigate('EmployeeDetails');
                     }}>
