@@ -35,6 +35,7 @@ export default function EmployeeDetails({navigation}) {
   const [Salary, setSalary] = React.useState(false);
   const [Holidays, setHolidays] = React.useState(false);
   const [Requests, setRequests] = React.useState(false);
+  const {userinfo} = useSelector(state => state.myReducers);
 
   // Accessing advancerequests from your Redux store
   const advanceRequests = useSelector(
@@ -159,7 +160,7 @@ export default function EmployeeDetails({navigation}) {
             </TouchableOpacity>
             <View style={{...styles.button, backgroundColor: Colors.white}}>
               <Text style={{...styles.buttonText, color: Colors.black}}>
-                Gowrisan-En-101
+                {userinfo.userName}
               </Text>
             </View>
             <View />
@@ -771,7 +772,7 @@ export default function EmployeeDetails({navigation}) {
               </TouchableOpacity>
               <View style={{...styles.button, backgroundColor: Colors.white}}>
                 <Text style={{...styles.buttonText, color: Colors.black}}>
-                  Gowrisan-En-101
+                  {userinfo.userName}
                 </Text>
               </View>
               <View />

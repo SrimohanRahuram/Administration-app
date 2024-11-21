@@ -26,6 +26,7 @@ import {fetchEmployeeData} from '../../service/redux/actions';
 import DocumentPicker from 'react-native-document-picker';
 import {addImage, clearImages} from '../../service/redux/actions';
 import ReactNativeBlobUtil from 'react-native-blob-util';
+import {addUserToRedux} from '../../service/redux/actions';
 
 export default function Employees({navigation}) {
   const dispatch = useDispatch();
@@ -309,6 +310,8 @@ export default function Employees({navigation}) {
                     }}
                     onPress  ={async () => {
                       setSelectedEmployee(item);
+                      dispatch(addUserToRedux(item));
+
                       await AsyncStorage.setItem('employeeIdforRequest', item.ID);
                       console.log(Id);
                       navigation.navigate('EmployeeDetails');

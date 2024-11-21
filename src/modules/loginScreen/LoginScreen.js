@@ -6,7 +6,7 @@ import {
   Alert,
   BackHandler,
   ImageBackground,
-  SafeAreaView
+  SafeAreaView,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import styles from './LoginScreen.Style';
@@ -36,30 +36,13 @@ export default function LoginScreen({navigation}) {
     setHidePassword(!hidePassword);
   };
 
-  const handleLogin= async ()=>{
-  const status = await firestoreLoginService.loginUser(username,password);
-  if(status.successMessage=="Admin login successful!"){
-    ToastAlert.ShowToast('error', 'Alert', 'Admin login successful!');
-    navigation.navigate('AdminHome');
-  }else if(status.successMessage=="Employee login successful!"){
-    await AsyncStorage.setItem('employeeId', status.employeeID);
-    ToastAlert.ShowToast('error', 'Alert', 'Employee login successful!');
-    navigation.navigate('DashBoard');
-  }
-  else{
-    ToastAlert.ShowToast('error', 'Alert', 'Wrong user name or password...!');
-  }
-  
-}
-
   useEffect(() => {
     fetchRememberMeData();
-
     async function fetchRememberMeData() {
       try {
         AsyncStorage.removeItem('accessToken');
         const rememberme = await AsyncStorage.getItem('rememberMe');
-        const username = await AsyncStorage.getItem('login_username');
+        const username = await AsyncStorage.getItem('login_email');
         if (rememberme === 'true') {
           setRememberMe(rememberme);
           const password = await SInfo.getItem('login_password', {
@@ -84,19 +67,19 @@ export default function LoginScreen({navigation}) {
     if (online_status == true) {
       if (username) {
         if (password) {
-          //login();
+          handleLogin();
         } else {
           ToastAlert.ShowToast('error', 'Alert', 'Password is empty');
         }
       } else {
-        ToastAlert.ShowToast('error', 'Alert', 'username is empty');
+        ToastAlert.ShowToast('error', 'Alert', 'Username is empty');
       }
     } else {
       Alert.alert('Internet Connection...', t('No_internet_connection'), [
         {
           text: 'retry',
-          onPress: () => 
-            navigation.reset({ 
+          onPress: () =>
+            navigation.reset({
               index: 0,
               routes: [{name: 'LoginScreen'}],
             }),
@@ -104,8 +87,45 @@ export default function LoginScreen({navigation}) {
       ]);
     }
   };
+  const handleLogin = async () => {
+    setIsLoading(true);
+    const status = await firestoreLoginService.loginUser(username, password);
+    if (status.successMessage == 'Admin login successful!') {
+      ToastAlert.ShowToast('success', 'Alert', 'Admin login successful!');
+      setIsLoading(false);
+      await saveLogin(username, password, '' + rememberme);
+      navigation.navigate('AdminHome');
+    } else if (status.successMessage == 'Employee login successful!') {
+      await AsyncStorage.setItem('employeeId', status.employeeID);
+      ToastAlert.ShowToast('success', 'Alert', 'Employee login successful!');
+      setIsLoading(false);
+      await saveLogin(username, password, '' + rememberme);
+      navigation.navigate('DashBoard');
+    } else {
+      setIsLoading(false);
+      ToastAlert.ShowToast('error', 'Alert', 'Wrong user name or password...!');
+    }
+  };
+
+  const saveLogin = async (email, password, rememberme) => {
+    await AsyncStorage.setItem('login_email', email);
+    await AsyncStorage.setItem('rememberMe', rememberme);
+
+    if (rememberme === 'true') {
+      await SInfo.setItem('login_password', password, {
+        sharedPreferencesName: 'myAppPrefs',
+        keychainService: 'myAppKeychain',
+      });
+    } else {
+      await SInfo.deleteItem('login_password', {
+        sharedPreferencesName: 'myAppPrefs',
+        keychainService: 'myAppKeychain',
+      });
+    }
+  };
+
   const backAction = () => {
-    Alert.alert('Alert', ('are_you_sure_you_want_to_exit'), [
+    Alert.alert('Alert', 'are_you_sure_you_want_to_exit', [
       {
         text: 'no',
         onPress: () => null,
@@ -118,7 +138,6 @@ export default function LoginScreen({navigation}) {
     ]);
     return true;
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <Image style={styles.image} resizeMode="center" source={Images.logo} />
@@ -183,15 +202,9 @@ export default function LoginScreen({navigation}) {
         </View>
 
         <TouchableOpacity
-          onPress=
-          {handleLogin}
-          // {() => {
-          //   if (username === 'admin') {
-          //     navigation.navigate('AdminHome');
-          //   } else {
-          //     navigation.navigate('DashBoard');
-          //   }
-          // }}
+          onPress={() => {
+            checkOnlineStatusLogin();
+          }}
           style={styles.button}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
