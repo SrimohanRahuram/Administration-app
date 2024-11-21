@@ -27,6 +27,7 @@ import {
   ShopLoginByEmployeeId,
   LeaveRequestsByEmployeeId,
 } from '../../service/redux/actions';
+import { format, getWeek, parse } from "date-fns";
 
 export default function EmployeeDetails({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
@@ -46,10 +47,11 @@ export default function EmployeeDetails({navigation}) {
     state => state.myReducers.holidayRequests,
   );
   const shoplogin = useSelector(state => state.myReducers.shop_login);
-
   const dispatch = useDispatch();
+
   useEffect(() => {
     console.log('shop login updated:', shoplogin);
+    groupByWeek();
   }, [shoplogin]);
 
   useEffect(() => {
@@ -132,13 +134,13 @@ export default function EmployeeDetails({navigation}) {
   //   },
   // ];
 
-  const workplacedata = [
-    {key: '1', id: 'shop 1', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
-    {key: '2', id: 'shop 2', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
-    {key: '3', id: 'shop 3', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
-    {key: '4', id: 'shop 4', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
-    {key: '5', id: 'shop 5', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
-  ];
+  // const workplacedata = [
+  //   {key: '1', id: 'shop 1', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
+  //   {key: '2', id: 'shop 2', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
+  //   {key: '3', id: 'shop 3', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
+  //   {key: '4', id: 'shop 4', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
+  //   {key: '5', id: 'shop 5', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
+  // ];
   const salarydata = [
     {key: '1', id: ' 11', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
     {key: '2', id: ' 12', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
@@ -146,6 +148,22 @@ export default function EmployeeDetails({navigation}) {
     {key: '4', id: ' 14', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
     {key: '5', id: ' 51', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
   ];
+
+  const groupByWeek = () => {
+    const groupedData = {};
+    shoplogin.forEach((item) => {
+      const parsedDate = item.createdAt.toDate();  
+      const weekNumber = getWeek(parsedDate);
+      const year = parsedDate.getFullYear();
+      const weekKey = `${year}-W${weekNumber}`;  
+      if (!groupedData[weekKey]) {
+        groupedData[weekKey] = [];
+      }
+      groupedData[weekKey].push(item);
+    });  
+    console.log('groupByWeek'+JSON.stringify(groupedData));
+  };
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.body}>
@@ -331,7 +349,8 @@ export default function EmployeeDetails({navigation}) {
                       {item.hoursOfWork}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '10%'}}>
-                      {item.hoursOfWork}
+                      {Number(item.hoursOfWork) *
+                        Number(userinfo.perHourSalary)}
                     </Text>
                     <TouchableOpacity
                       style={{
@@ -914,7 +933,7 @@ export default function EmployeeDetails({navigation}) {
                 <Text style={{...styles.modalhead2, width: '33%'}}>Salary</Text>
               </View>
               <FlatList
-                data={salarydata}
+                data={shoplogin}
                 nestedScrollEnabled={true}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({item}) => (
@@ -929,13 +948,16 @@ export default function EmployeeDetails({navigation}) {
                       justifyContent: 'space-between',
                     }}>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                      {item.out}
+                      {item.createdAt
+                        ? item.createdAt.toDate().toLocaleDateString()
+                        : 'Date not available'}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                      {item.id}
+                      {item.hoursOfWork}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                      {item.id}
+                      {Number(item.hoursOfWork) *
+                        Number(userinfo.perHourSalary)}
                     </Text>
                   </View>
                 )}
