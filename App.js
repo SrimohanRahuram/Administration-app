@@ -15,19 +15,20 @@ import ForgotPasswordEmail from './src/modules/forgetPassword/forgotPasswordEmai
 import ForgotPasswordOTP from './src/modules/forgetPassword/forgotPasswordOTP/ForgotPasswordOTP';
 import ResetPassword from './src/modules/forgetPassword/resetPassword/ResetPassword';
 import ResetSuccess from './src/modules/forgetPassword/resetSuccess/ResetSuccess';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';AntDesign
+//import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';AntDesign
 import ProfileDetails from './src/modules/profileDetails/ProfileDetails';
 import Colors from './src/constants/Colors';
 import Requests from './src/modules/requests/Requests';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+//import AntDesign from 'react-native-vector-icons/AntDesign';
 import Home from './src/modules/home/Home';
 import AdminHome from './src/modules/adminHome/AdminHome';
 import Shops from './src/modules/shops/Shops';
 import Admin from './src/modules/admin/Admin';
 import Employees from './src/modules/employees/Employees';
 import EmployeeDetails from './src/modules/employeeDetails/EmployeeDetails';
-import Entypo from 'react-native-vector-icons/Entypo';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+//import Entypo from 'react-native-vector-icons/Entypo';
+//import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -49,8 +50,8 @@ function DashboardTabs() {
           headerShown: false,
           tabBarIcon: ({focused}) => (
             <View style={focused ? styles.button : styles.button2}>
-              <MaterialCommunityIcons
-                name="home-outline"
+              <FontAwesome
+                name="home"
                 color={focused ? Colors.white : Colors.verylightgray}
                 size={25}
               />
@@ -65,8 +66,8 @@ function DashboardTabs() {
           headerShown: false,
           tabBarIcon: ({focused}) => (
             <View style={focused ? styles.button : styles.button2}>
-              <AntDesign
-                name="questioncircleo"
+              <FontAwesome
+                name="question-circle-o"
                 size={25}
                 color={focused ? Colors.white : Colors.verylightgray}
               />
@@ -81,8 +82,8 @@ function DashboardTabs() {
           headerShown: false,
           tabBarIcon: ({focused}) => (
             <View style={focused ? styles.button : styles.button2}>
-              <MaterialCommunityIcons
-                name="account-circle-outline"
+              <FontAwesome
+                name="user"
                 size={25}
                 color={focused ? Colors.white : Colors.verylightgray}
               />
@@ -110,8 +111,8 @@ function AdminDashboardTabs() {
           headerShown: false,
           tabBarIcon: ({focused}) => (
             <View style={focused ? styles.button : styles.button2}>
-              <Entypo
-                name="shop"
+              <FontAwesome
+                name="shopping-cart"
                 color={focused ? Colors.white : Colors.verylightgray}
                 size={25}
               />
@@ -126,8 +127,8 @@ function AdminDashboardTabs() {
           headerShown: false,
           tabBarIcon: ({focused}) => (
             <View style={focused ? styles.button : styles.button2}>
-              <MaterialIcons
-                name="admin-panel-settings"
+              <FontAwesome
+                name="pencil"
                 size={25}
                 color={focused ? Colors.white : Colors.verylightgray}
               />
@@ -142,8 +143,8 @@ function AdminDashboardTabs() {
           headerShown: false,
           tabBarIcon: ({focused}) => (
             <View style={focused ? styles.button : styles.button2}>
-              <MaterialCommunityIcons
-                name="account-cash-outline"
+              <FontAwesome
+                name="group"
                 size={25}
                 color={focused ? Colors.white : Colors.verylightgray}
               />
