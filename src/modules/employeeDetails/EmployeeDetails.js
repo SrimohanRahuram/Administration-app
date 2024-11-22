@@ -27,7 +27,7 @@ import {
   ShopLoginByEmployeeId,
   LeaveRequestsByEmployeeId,
 } from '../../service/redux/actions';
-import { format, getWeek, parse } from "date-fns";
+import {format, getWeek, startOfWeek, endOfWeek} from 'date-fns';
 
 export default function EmployeeDetails({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +37,8 @@ export default function EmployeeDetails({navigation}) {
   const [Holidays, setHolidays] = React.useState(false);
   const [Requests, setRequests] = React.useState(false);
   const {userinfo} = useSelector(state => state.myReducers);
+  const [filteredData, setFilteredData] = React.useState([]);
+  const [selectedItem, setSelectedItem] = React.useState('');
 
   // Accessing advancerequests from your Redux store
   const advanceRequests = useSelector(
@@ -151,19 +153,31 @@ export default function EmployeeDetails({navigation}) {
 
   const groupByWeek = () => {
     const groupedData = {};
-    shoplogin.forEach((item) => {
-      const parsedDate = item.createdAt.toDate();  
+    shoplogin.forEach(item => {
+      const parsedDate = item.createdAt.toDate();
       const weekNumber = getWeek(parsedDate);
       const year = parsedDate.getFullYear();
-      const weekKey = `${year}-W${weekNumber}`;  
+      const weekKey = `${year}-W${weekNumber}`;
+      const startDate = startOfWeek(parsedDate, {weekStartsOn: 1}); // Week starts on Monday
+      const endDate = endOfWeek(parsedDate, {weekStartsOn: 1});
       if (!groupedData[weekKey]) {
-        groupedData[weekKey] = [];
+        groupedData[weekKey] = {
+          startDate: format(startDate, 'yyyy-MM-dd'),
+          endDate: format(endDate, 'yyyy-MM-dd'),
+          totalHours: 0,
+          items: [],
+        };
       }
-      groupedData[weekKey].push(item);
-    });  
-    console.log('groupByWeek'+JSON.stringify(groupedData));
+      groupedData[weekKey].items.push(item);
+      groupedData[weekKey].totalHours += item.hoursOfWork || 0;
+    });
+    setFilteredData(groupedData);
+    //console.log('groupByWeek'+JSON.stringify(groupedData));
   };
-  
+  const transformedData = Object.keys(filteredData).map(key => ({
+    ...filteredData[key],
+    week: key,
+  }));
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.body}>
@@ -326,7 +340,7 @@ export default function EmployeeDetails({navigation}) {
                 <Text style={{...styles.modalhead2, width: '30%'}}>More</Text>
               </View>
               <FlatList
-                data={shoplogin}
+                data={transformedData}
                 nestedScrollEnabled={true}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({item}) => (
@@ -340,17 +354,16 @@ export default function EmployeeDetails({navigation}) {
                       alignItems: 'center',
                     }}>
                     <Text style={{...styles.modalhead3, width: '25%'}}>
-                      {item.checkInDateTime}
+                      {item.startDate}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '25%'}}>
-                      {item.checkOutDateTime}
+                      {item.endDate}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '10%'}}>
-                      {item.hoursOfWork}
+                      {item.totalHours}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '10%'}}>
-                      {Number(item.hoursOfWork) *
-                        Number(userinfo.perHourSalary)}
+                      {Number(item.totalHours) * Number(userinfo.perHourSalary)}
                     </Text>
                     <TouchableOpacity
                       style={{
@@ -360,6 +373,10 @@ export default function EmployeeDetails({navigation}) {
                       }}
                       onPress={() => {
                         setSalaryModal(true);
+                        setSelectedItem(item);
+                        // console.log(
+                        //   'view item' + JSON.stringify(item),
+                        // );
                       }}>
                       <Text style={{...styles.modalhead3, color: Colors.white}}>
                         View more
@@ -834,7 +851,7 @@ export default function EmployeeDetails({navigation}) {
                     fontSize: 15,
                     textAlign: 'left',
                   }}>
-                  10/12/2024
+                  {selectedItem.startDate}
                 </Text>
                 <Text
                   style={{
@@ -842,7 +859,7 @@ export default function EmployeeDetails({navigation}) {
                     fontSize: 15,
                     textAlign: 'left',
                   }}>
-                  17/12/2024
+                  {selectedItem.endDate}
                 </Text>
               </View>
               <View style={{width: '25%'}}>
@@ -870,7 +887,7 @@ export default function EmployeeDetails({navigation}) {
                     fontSize: 15,
                     textAlign: 'left',
                   }}>
-                  56 Hours
+                  {selectedItem.totalHours} Hours
                 </Text>
                 <Text
                   style={{
@@ -878,7 +895,9 @@ export default function EmployeeDetails({navigation}) {
                     fontSize: 15,
                     textAlign: 'left',
                   }}>
-                  50 Pounds
+                  {Number(selectedItem.totalHours) *
+                    Number(userinfo.perHourSalary)}{' '}
+                  Pounds
                 </Text>
               </View>
             </View>
@@ -933,7 +952,7 @@ export default function EmployeeDetails({navigation}) {
                 <Text style={{...styles.modalhead2, width: '33%'}}>Salary</Text>
               </View>
               <FlatList
-                data={shoplogin}
+                data={selectedItem.items}
                 nestedScrollEnabled={true}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({item}) => (
@@ -949,7 +968,9 @@ export default function EmployeeDetails({navigation}) {
                     }}>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
                       {item.createdAt
-                        ? item.createdAt.toDate().toLocaleDateString()
+                        ? new Date(item.createdAt.toDate())
+                            .toISOString()
+                            .split('T')[0]
                         : 'Date not available'}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
