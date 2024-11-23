@@ -984,22 +984,27 @@ export default function EmployeeDetails({navigation}) {
                 )}
               />
             </View>
-            <View
-              style={{
-                backgroundColor: Colors.rose,
-                width: '100%',
-                borderRadius: 10,
-                marginBottom: 5,
-                padding: 5,
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginTop: 5,
-                justifyContent: 'center',
-              }}>
-              <Text style={{...styles.modalhead2, fontSize: 15}}>
-                Also you exit Your total max Hours
-              </Text>
-            </View>
+            {Number(userinfo.maxHours) <
+            Number(selectedItem.totalHours) * Number(userinfo.perHourSalary) ? (
+              <View
+                style={{
+                  backgroundColor: Colors.rose,
+                  width: '100%',
+                  borderRadius: 10,
+                  marginBottom: 5,
+                  padding: 5,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginTop: 5,
+                  justifyContent: 'center',
+                }}>
+                <Text style={{...styles.modalhead2, fontSize: 15}}>
+                  Also you exit Your total max Hours
+                </Text>
+              </View>
+            ) : (
+              ''
+            )}
           </View>
         </View>
       </Modal>

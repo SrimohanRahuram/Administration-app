@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   BackHandler,
   TextInput,
-  SafeAreaView
+  SafeAreaView,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import styles from './Home.Styles';
@@ -14,7 +14,7 @@ import Colors from '../../constants/Colors';
 import Images from '../../constants/images';
 import ProgressOverlay from '../../components/ProgressOverlay';
 import ToastAlert from '../../components/ToastAlert';
-import Entypo from 'react-native-vector-icons/Entypo';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {
   fetchEmployeeDataById,
   fetchShopData,
@@ -28,7 +28,7 @@ export default function Home({navigation}) {
   const [value, setValue] = useState(null);
   const [userName, setUserName] = React.useState('');
   const [shopId, setShopId] = React.useState(null);
-  const [contactNo, setContactNo] = React.useState('');
+  const [lastVisistedDetails, setLastVisistedDetails] = React.useState('');
   const [currentDateTime, setCurrentDateTime] = useState('');
 
   useEffect(() => {
@@ -103,12 +103,12 @@ export default function Home({navigation}) {
         const details = await firestoreRequestService.getLastWorkingDetails(
           employeeId,
         );
-        console.log('last working details:', details.status);
+        setLastVisistedDetails(details);
         if (details.status === 'ACTIVE') {
           setIsEnabled(true);
           setShopId(details.shopID);
           setValue(details.shopName);
-          console.log({ isEnabled, shopId, value });
+          console.log({isEnabled, shopId, value});
         }
       } catch (error) {
         console.error('Error fetching last working details:', error);
@@ -214,12 +214,12 @@ export default function Home({navigation}) {
               {isEnabled ? (
                 <View style={styles.buttonView}>
                   <Text style={styles.buttonText}>Clock-Out</Text>
-                  <Entypo name="log-out" size={25} color={Colors.white} />
+                  <FontAwesome name="sign-out" size={25} color={Colors.white} />
                 </View>
               ) : (
                 <View style={styles.buttonView}>
                   <Text style={styles.buttonText}>Clock-In</Text>
-                  <Entypo name="login" size={25} color={Colors.white} />
+                  <FontAwesome name="sign-in" size={25} color={Colors.white} />
                 </View>
               )}
             </TouchableOpacity>
@@ -229,12 +229,24 @@ export default function Home({navigation}) {
           </Text>
           <View style={styles.detailsBody2}>
             <Text style={{...styles.head, marginBottom: 10}}>
-              Shop Name: London
+              Shop Name: {lastVisistedDetails.shopName}
             </Text>
             <Text style={{...styles.head, marginBottom: 10}}>
-              Login: 12.00 2024-10-12
+              Login: {lastVisistedDetails.checkInDateTime}{'  '}
+              {lastVisistedDetails.createdAt
+                ? new Date(lastVisistedDetails.createdAt.toDate())
+                    .toISOString()
+                    .split('T')[0]
+                : 'Date not available'}
             </Text>
-            <Text style={{...styles.head}}>Logout: 18.00 2024-10-12</Text>
+            <Text style={{...styles.head}}>
+              Logout: {lastVisistedDetails.checkOutDateTime}{'  '}
+              {lastVisistedDetails.createdAt
+                ? new Date(lastVisistedDetails.createdAt.toDate())
+                    .toISOString()
+                    .split('T')[0]
+                : 'Date not available'}
+            </Text>
           </View>
         </View>
       </View>

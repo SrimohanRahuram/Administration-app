@@ -242,6 +242,9 @@ const firestoreEmployeeService = {
           status: lastDocData.status || 'Unknown status',
           shopID: lastDocData.shopID || 'No shopID',
           shopName: lastDocData.shopName || 'No shopName',
+          checkInDateTime: lastDocData.checkInDateTime || 'No checkInDateTime',
+          checkOutDateTime: lastDocData.checkOutDateTime || 'No checkOutDateTime',
+          createdAt: lastDocData.createdAt || 'No createdAt',
         };
       } else {
         console.log('No working details found for today.');
@@ -249,6 +252,9 @@ const firestoreEmployeeService = {
           status: 'N/A',
           shopID: 'N/A',
           shopName: 'N/A',
+          checkInDateTime: 'N/A',
+          checkOutDateTime: 'N/A',
+          createdAt: 'N/A',
         };
       }
     } catch (error) {
