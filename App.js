@@ -15,19 +15,15 @@ import ForgotPasswordEmail from './src/modules/forgetPassword/forgotPasswordEmai
 import ForgotPasswordOTP from './src/modules/forgetPassword/forgotPasswordOTP/ForgotPasswordOTP';
 import ResetPassword from './src/modules/forgetPassword/resetPassword/ResetPassword';
 import ResetSuccess from './src/modules/forgetPassword/resetSuccess/ResetSuccess';
-//import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';AntDesign
 import ProfileDetails from './src/modules/profileDetails/ProfileDetails';
 import Colors from './src/constants/Colors';
 import Requests from './src/modules/requests/Requests';
-//import AntDesign from 'react-native-vector-icons/AntDesign';
 import Home from './src/modules/home/Home';
 import AdminHome from './src/modules/adminHome/AdminHome';
 import Shops from './src/modules/shops/Shops';
 import Admin from './src/modules/admin/Admin';
 import Employees from './src/modules/employees/Employees';
 import EmployeeDetails from './src/modules/employeeDetails/EmployeeDetails';
-//import Entypo from 'react-native-vector-icons/Entypo';
-//import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const Stack = createNativeStackNavigator();

@@ -16,9 +16,7 @@ import Colors from '../../constants/Colors';
 import Images from '../../constants/images';
 import ProgressOverlay from '../../components/ProgressOverlay';
 import ToastAlert from '../../components/ToastAlert';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import firestoreShopService from '../../handlers/firestoreShopService';
 import {fetchShopData} from '../../service/redux/actions';
 import DocumentPicker from 'react-native-document-picker';
@@ -220,8 +218,8 @@ export default function Shops({navigation}) {
                 setAddShopModal(true);
               }}
               style={styles.button}>
-              <Text style={styles.buttonText}>Add Shops</Text>
-              <MaterialIcons name="add-box" color={Colors.white} size={25} />
+              <Text style={styles.buttonText}>Add Shops </Text>
+              <FontAwesome name="plus" color={Colors.white} size={20} />
             </TouchableOpacity>
           </View>
           <FlatList
@@ -363,7 +361,7 @@ export default function Shops({navigation}) {
               onPress={() => {
                 setShopModal(false);
               }}>
-              <AntDesign name="arrowleft" size={20} color={Colors.black} />
+              <FontAwesome name="arrow-left" size={20} color={Colors.black} />
             </TouchableOpacity>
             <View
               style={{
@@ -538,7 +536,7 @@ export default function Shops({navigation}) {
               onPress={() => {
                 setSummaryModal(false);
               }}>
-              <AntDesign name="arrowleft" size={20} color={Colors.black} />
+              <FontAwesome name="arrow-left" size={20} color={Colors.black} />
             </TouchableOpacity>
             <View
               style={{

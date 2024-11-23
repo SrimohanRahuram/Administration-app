@@ -18,9 +18,7 @@ import Colors from '../../constants/Colors';
 import Images from '../../constants/images';
 import ProgressOverlay from '../../components/ProgressOverlay';
 import ToastAlert from '../../components/ToastAlert';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Feather from 'react-native-vector-icons/Feather';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {
   AdvanceRequestsByEmployeeId,
   HolidayRequestsByEmployeeId,
@@ -188,7 +186,7 @@ export default function EmployeeDetails({navigation}) {
               onPress={() => {
                 backAction();
               }}>
-              <AntDesign name="arrowleft" size={25} color={Colors.black} />
+              <FontAwesome name="arrow-left" size={25} color={Colors.black} />
             </TouchableOpacity>
             <View style={{...styles.button, backgroundColor: Colors.white}}>
               <Text style={{...styles.buttonText, color: Colors.black}}>
@@ -804,7 +802,7 @@ export default function EmployeeDetails({navigation}) {
                 onPress={() => {
                   setSalaryModal(false);
                 }}>
-                <AntDesign name="arrowleft" size={25} color={Colors.black} />
+                <FontAwesome name="arrow-left" size={25} color={Colors.black} />
               </TouchableOpacity>
               <View style={{...styles.button, backgroundColor: Colors.white}}>
                 <Text style={{...styles.buttonText, color: Colors.black}}>
