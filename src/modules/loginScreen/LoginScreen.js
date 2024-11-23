@@ -22,6 +22,7 @@ import SInfo from 'react-native-sensitive-info';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {promptForEnableLocationIfNeeded} from 'react-native-android-location-enabler';
 import firestoreLoginService from '../../handlers/firestoreLoginService';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 export default function LoginScreen({navigation}) {
   const dispatch = useDispatch();
@@ -166,9 +167,14 @@ export default function LoginScreen({navigation}) {
           secureTextEntry={hidePassword}
           right={
             <TextInput.Icon
-              icon={hidePassword ? 'eye-off' : 'eye'}
-              iconColor={Colors.gray}
-              onPress={() => handleHidePassword()}
+              icon={() => (
+                <FontAwesome
+                  name={hidePassword ? 'eye-slash' : 'eye'}
+                  size={20}
+                  color={Colors.gray}
+                  onPress={() => handleHidePassword()}
+                />
+              )}
             />
           }
           theme={{
@@ -187,8 +193,12 @@ export default function LoginScreen({navigation}) {
             }}
             textStyle={{color: Colors.gray, fontSize: 12}}
             checked={rememberme}
-            checkedIcon="dot-circle-o"
-            uncheckedIcon="circle-o"
+            checkedIcon={
+              <FontAwesome name="dot-circle-o" size={17} color={Colors.gray} />
+            }
+            uncheckedIcon={
+              <FontAwesome name="circle-o" size={17} color={Colors.gray} />
+            }
             size={17}
           />
 
