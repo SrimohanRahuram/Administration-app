@@ -204,8 +204,12 @@ export default function Home({navigation}) {
             )}
             <TouchableOpacity
               onPress={() => {
-                setIsEnabled(previousState => !previousState);
-                handleAdvanceSentRequest();
+                if (value) {
+                  setIsEnabled(previousState => !previousState);
+                  handleAdvanceSentRequest();
+                } else {
+                  ToastAlert.ShowToast('error', 'Alert', 'Please select the shops');
+                }
               }}
               style={[
                 styles.button,
@@ -232,7 +236,8 @@ export default function Home({navigation}) {
               Shop Name: {lastVisistedDetails.shopName}
             </Text>
             <Text style={{...styles.head, marginBottom: 10}}>
-              Login: {lastVisistedDetails.checkInDateTime}{'  '}
+              Login: {lastVisistedDetails.checkInDateTime}
+              {'  '}
               {lastVisistedDetails.createdAt
                 ? new Date(lastVisistedDetails.createdAt.toDate())
                     .toISOString()
@@ -240,7 +245,8 @@ export default function Home({navigation}) {
                 : 'Date not available'}
             </Text>
             <Text style={{...styles.head}}>
-              Logout: {lastVisistedDetails.checkOutDateTime}{'  '}
+              Logout: {lastVisistedDetails.checkOutDateTime}
+              {'  '}
               {lastVisistedDetails.createdAt
                 ? new Date(lastVisistedDetails.createdAt.toDate())
                     .toISOString()

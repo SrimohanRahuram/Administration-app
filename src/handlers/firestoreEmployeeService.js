@@ -231,7 +231,7 @@ const firestoreEmployeeService = {
         .collection('shoplogin');
 
       const latestDocSnapshot = await shopLoginRef
-        .orderBy('checkInDateTime', 'desc')
+        .orderBy('createdAt', 'desc')
         .limit(1)
         .get();
 

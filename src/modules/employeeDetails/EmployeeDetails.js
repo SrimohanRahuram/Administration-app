@@ -169,8 +169,15 @@ export default function EmployeeDetails({navigation}) {
       groupedData[weekKey].items.push(item);
       groupedData[weekKey].totalHours += item.hoursOfWork || 0;
     });
-    setFilteredData(groupedData);
-    //console.log('groupByWeek'+JSON.stringify(groupedData));
+    const sortedData = Object.entries(groupedData)
+    .sort(([a], [b]) => a.localeCompare(b)) // Sort keys in ascending order
+    .reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {});
+
+    setFilteredData(sortedData);
+    console.log('groupByWeek'+JSON.stringify(sortedData));
   };
   const transformedData = Object.keys(filteredData).map(key => ({
     ...filteredData[key],
