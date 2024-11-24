@@ -24,6 +24,7 @@ import {
   HolidayRequestsByEmployeeId,
   ShopLoginByEmployeeId,
   LeaveRequestsByEmployeeId,
+  ActiveHolidayRequestsByEmployeeId,
 } from '../../service/redux/actions';
 import {format, getWeek, startOfWeek, endOfWeek} from 'date-fns';
 
@@ -47,6 +48,10 @@ export default function EmployeeDetails({navigation}) {
     state => state.myReducers.holidayRequests,
   );
   const shoplogin = useSelector(state => state.myReducers.shop_login);
+  const activeholidayRequests = useSelector(
+    state => state.myReducers.activeholidayRequests,
+  );
+  const totalHours = activeholidayRequests.reduce((total, item) => total + parseFloat(item.Hours), 0);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -71,6 +76,11 @@ export default function EmployeeDetails({navigation}) {
 
   useEffect(() => {
     dispatch(ShopLoginByEmployeeId());
+    console.log('Fetch dispatched');
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(ActiveHolidayRequestsByEmployeeId());
     console.log('Fetch dispatched');
   }, [dispatch]);
   //next
@@ -141,13 +151,13 @@ export default function EmployeeDetails({navigation}) {
   //   {key: '4', id: 'shop 4', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
   //   {key: '5', id: 'shop 5', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
   // ];
-  const salarydata = [
-    {key: '1', id: ' 11', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
-    {key: '2', id: ' 12', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
-    {key: '3', id: ' 31', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
-    {key: '4', id: ' 14', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
-    {key: '5', id: ' 51', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
-  ];
+  // const salarydata = [
+  //   {key: '1', id: ' 11', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
+  //   {key: '2', id: ' 12', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
+  //   {key: '3', id: ' 31', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
+  //   {key: '4', id: ' 14', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
+  //   {key: '5', id: ' 51', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
+  // ];
 
   const groupByWeek = () => {
     const groupedData = {};
@@ -170,14 +180,14 @@ export default function EmployeeDetails({navigation}) {
       groupedData[weekKey].totalHours += item.hoursOfWork || 0;
     });
     const sortedData = Object.entries(groupedData)
-    .sort(([a], [b]) => a.localeCompare(b)) // Sort keys in ascending order
-    .reduce((acc, [key, value]) => {
-      acc[key] = value;
-      return acc;
-    }, {});
+      .sort(([a], [b]) => a.localeCompare(b)) // Sort keys in ascending order
+      .reduce((acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+      }, {});
 
     setFilteredData(sortedData);
-    console.log('groupByWeek'+JSON.stringify(sortedData));
+    console.log('groupByWeek' + JSON.stringify(sortedData));
   };
   const transformedData = Object.keys(filteredData).map(key => ({
     ...filteredData[key],
@@ -403,7 +413,7 @@ export default function EmployeeDetails({navigation}) {
                   padding: 5,
                 }}>
                 <Text style={styles.modalhead2}>
-                  Current Total holidays = 14 hours
+                  Current Total holidays = {totalHours} hours
                 </Text>
               </View>
               <View
@@ -431,7 +441,7 @@ export default function EmployeeDetails({navigation}) {
                   </Text>
                 </View>
                 <FlatList
-                  data={salarydata}
+                  data={activeholidayRequests}
                   nestedScrollEnabled={true}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({item}) => (
@@ -446,13 +456,21 @@ export default function EmployeeDetails({navigation}) {
                         justifyContent: 'space-between',
                       }}>
                       <Text style={{...styles.modalhead3, width: '33%'}}>
-                        {item.out}
+                        {item.from && item.from.toDate
+                          ? new Date(item.from.toDate())
+                              .toISOString()
+                              .split('T')[0]
+                          : 'Date not available'}
                       </Text>
                       <Text style={{...styles.modalhead3, width: '33%'}}>
-                        {item.in}
+                        {item.To && item.To.toDate
+                          ? new Date(item.To.toDate())
+                              .toISOString()
+                              .split('T')[0]
+                          : 'Date not available'}
                       </Text>
                       <Text style={{...styles.modalhead3, width: '33%'}}>
-                        {item.id}
+                        {item.Hours}
                       </Text>
                     </View>
                   )}

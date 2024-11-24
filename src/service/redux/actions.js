@@ -31,6 +31,8 @@ export const HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID =
   'HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID';
 export const SHOP_LOGIN_DATA_BY_EMPLOYEEID =
   'SHOP_LOGIN_DATA_BY_EMPLOYEEID';
+export const ACTIVE_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID =
+  'ACTIVE_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID';
 
 export const addUserToRedux = data => dispatch => {
   // console.log('addUserToRedux ' + JSON.stringify(data));
@@ -367,6 +369,32 @@ export const ShopLoginByEmployeeId = () => async dispatch => {
     }
   } catch (error) {
     console.error('Error ShopLoginData by ID:', error);
+    throw error;
+  }
+};
+
+export const ActiveHolidayRequestsByEmployeeId = () => async dispatch => {
+  try {
+    const employeeIdforRequest = await AsyncStorage.getItem(
+      'employeeIdforRequest',
+    );
+    console.log(employeeIdforRequest);
+    const holidayRequestData =
+      await firestoreRequestService.getActiveHolidayRequestsByEmployeeID(
+        employeeIdforRequest,
+      );
+    console.log('Fetched activeholidayRequestData by ID:', holidayRequestData);
+
+    if (holidayRequestData) {
+      dispatch({
+        type: ACTIVE_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID,
+        payload: holidayRequestData,
+      });
+    } else {
+      console.warn('No holidayRequestData found for the given ID');
+    }
+  } catch (error) {
+    console.error('Error holidayRequestData by ID:', error);
     throw error;
   }
 };

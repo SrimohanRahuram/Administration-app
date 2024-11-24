@@ -209,6 +209,36 @@ const firestoreRequestService = {
       throw error;
     }
   },
+
+  getActiveHolidayRequestsByEmployeeID: async employeeID => {
+    try {
+      const employeeDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeID)
+        .get();
+      if (employeeDoc.exists) {
+        const holidayRequestSnapshot = await firestore()
+          .collection('Employee')
+          .doc(employeeID)
+          .collection('HolidayRequests')
+          .get();
+
+        const HolidayRequestsData = holidayRequestSnapshot.docs
+          .filter(doc => doc.data().status === 'ACTIVE') 
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+        console.log('Retrieved ActiveHolidayRequestsData:', HolidayRequestsData);
+        return HolidayRequestsData;
+      }
+    } catch (error) {
+      console.error('Error retrieving ActiveHolidayRequestsData by ID: ', error);
+      throw error;
+    }
+  },
+
 };
 
 export default firestoreRequestService;
