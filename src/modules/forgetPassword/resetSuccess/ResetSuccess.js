@@ -5,6 +5,7 @@ import {
   Image,
   Alert,
   BackHandler,
+  SafeAreaView
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import styles from './ResetSuccess.Styles';
@@ -27,7 +28,7 @@ export default function ResetSuccess({navigation}) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Image
         source={Images.successImage}
         style={styles.image}
@@ -55,6 +56,6 @@ export default function ResetSuccess({navigation}) {
           <Text style={styles.buttonText}>LOGIN</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

@@ -23,6 +23,8 @@
     "@rneui/themed": "^4.0.0-rc.8",
     "@twotalltotems/react-native-otp-input": "^1.3.5",
     "bcryptjs": "^2.4.3",
+    "date-fns": "^4.1.0",
+    "moment": "^2.30.1",
     "react": "18.2.0",
     "react-native": "0.74.3",
     "react-native-android-location-enabler": "^2.0.1",

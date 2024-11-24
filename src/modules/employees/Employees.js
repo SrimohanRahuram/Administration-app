@@ -10,6 +10,7 @@ import {
   Image,
   TextInput,
   ScrollView,
+  SafeAreaView
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import styles from './Employees.Styles';
@@ -17,14 +18,13 @@ import Colors from '../../constants/Colors';
 import Images from '../../constants/images';
 import ProgressOverlay from '../../components/ProgressOverlay';
 import ToastAlert from '../../components/ToastAlert';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Feather from 'react-native-vector-icons/Feather';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import firestoreEmployeeService from '../../handlers/firestoreEmployeeService';
 import {fetchEmployeeData} from '../../service/redux/actions';
 import DocumentPicker from 'react-native-document-picker';
 import {addImage, clearImages} from '../../service/redux/actions';
 import ReactNativeBlobUtil from 'react-native-blob-util';
+import {addUserToRedux} from '../../service/redux/actions';
 
 export default function Employees({navigation}) {
   const dispatch = useDispatch();
@@ -205,7 +205,7 @@ export default function Employees({navigation}) {
     }
   };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.body}>
         <Text style={styles.header}>Employees</Text>
         <View style={styles.detailsBody}>
@@ -216,8 +216,8 @@ export default function Employees({navigation}) {
                 setAddEmployeeModal(true);
               }}
               style={styles.button}>
-              <Text style={styles.buttonText}>Add Employee</Text>
-              <MaterialIcons name="add-box" color={Colors.white} size={25} />
+              <Text style={styles.buttonText}>Add Employee </Text>
+              <FontAwesome name="plus" color={Colors.white} size={20} />
             </TouchableOpacity>
           </View>
           <View style={{...styles.inputView, borderColor: Colors.lightgray}}>
@@ -282,7 +282,7 @@ export default function Employees({navigation}) {
                       setSelectedEmployee(item);
                       setEditEmployeeModal(true);
                     }}>
-                    <Feather name="edit" size={25} color={Colors.black} />
+                    <FontAwesome name="edit" size={25} color={Colors.black} />
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={{
@@ -294,7 +294,7 @@ export default function Employees({navigation}) {
                       setSelectedEmployee(item);
                       handleOnDelete();
                     }}>
-                    <AntDesign name="delete" size={25} color={Colors.darkred} />
+                    <FontAwesome name="trash-o" size={25} color={Colors.darkred} />
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={{
@@ -308,7 +308,9 @@ export default function Employees({navigation}) {
                     }}
                     onPress  ={async () => {
                       setSelectedEmployee(item);
-                      await AsyncStorage.setItem('employeeIdforRequest', Id);
+                      dispatch(addUserToRedux(item));
+
+                      await AsyncStorage.setItem('employeeIdforRequest', item.ID);
                       console.log(Id);
                       navigation.navigate('EmployeeDetails');
                     }}>
@@ -330,7 +332,7 @@ export default function Employees({navigation}) {
         onRequestClose={() => {
           setAddEmployeeModal(!AddEmployeeModal);
         }}>
-        <View style={styles.body}>
+        <SafeAreaView style={styles.body}>
           <Text style={styles.header}>Add Employee</Text>
           <View
             style={{
@@ -469,7 +471,7 @@ export default function Employees({navigation}) {
               </ScrollView>
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
       <Modal
         animationType="slide"
@@ -478,7 +480,7 @@ export default function Employees({navigation}) {
         onRequestClose={() => {
           setEditEmployeeModal(!EditEmployeeModal);
         }}>
-        <View style={styles.body}>
+        <SafeAreaView style={styles.body}>
           <Text style={styles.header}>Edit Employee</Text>
           <View
             style={{
@@ -618,8 +620,8 @@ export default function Employees({navigation}) {
               </ScrollView>
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }

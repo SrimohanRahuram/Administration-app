@@ -7,6 +7,7 @@ import {
   BackHandler,
   TextInput,
   ScrollView,
+  SafeAreaView
 } from 'react-native';
 import styles from './Requests.Styles';
 import Colors from '../../constants/Colors';
@@ -153,7 +154,7 @@ export default function Requests({navigation}) {
 
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.body}>
         <Text style={styles.header}>Requests</Text>
         <View style={styles.detailsBody}>
@@ -367,6 +368,6 @@ export default function Requests({navigation}) {
         </View>
       </View>
       <ProgressOverlay visible={isLoading} message={'Loading...'} />
-    </View>
+    </SafeAreaView>
   );
 }

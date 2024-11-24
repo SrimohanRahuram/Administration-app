@@ -8,6 +8,7 @@ import {
   Modal,
   Image,
   TextInput,
+  SafeAreaView
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import styles from './Admin.Styles';
@@ -15,9 +16,7 @@ import Colors from '../../constants/Colors';
 import Images from '../../constants/images';
 import ProgressOverlay from '../../components/ProgressOverlay';
 import ToastAlert from '../../components/ToastAlert';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Feather from 'react-native-vector-icons/Feather';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import firestoreAdminService from '../../handlers/firestoreAdminService';
 import {fetchAdminData} from '../../service/redux/actions';
 import DocumentPicker from 'react-native-document-picker';
@@ -162,7 +161,7 @@ export default function Admin({navigation}) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.body}>
         <Text style={styles.header}>Admin</Text>
         <View style={styles.detailsBody}>
@@ -173,8 +172,8 @@ export default function Admin({navigation}) {
                 setAddAdminModal(true);
               }}
               style={styles.button}>
-              <Text style={styles.buttonText}>Add Admin</Text>
-              <MaterialIcons name="add-box" color={Colors.white} size={25} />
+              <Text style={styles.buttonText}>Add Admin </Text>
+              <FontAwesome name="plus" color={Colors.white} size={20} />
             </TouchableOpacity>
           </View>
           <View style={{...styles.inputView, borderColor: Colors.lightgray}}>
@@ -239,7 +238,7 @@ export default function Admin({navigation}) {
                       setSelectedAdmin(item);
                       setEditAdminModal(true);
                     }}>
-                    <Feather name="edit" size={25} color={Colors.black} />
+                    <FontAwesome name="edit" size={25} color={Colors.black} />
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={{
@@ -251,7 +250,7 @@ export default function Admin({navigation}) {
                       setSelectedAdmin(item);
                       handleOnDelete();
                     }}>
-                    <AntDesign name="delete" size={25} color={Colors.darkred} />
+                    <FontAwesome name="trash-o" size={25} color={Colors.darkred} />
                   </TouchableOpacity>
                 </View>
               )}
@@ -267,7 +266,7 @@ export default function Admin({navigation}) {
         onRequestClose={() => {
           setAddAdminModal(!AddAdminModal);
         }}>
-        <View style={styles.body}>
+        <SafeAreaView style={styles.body}>
           <Text style={styles.header}>Add Admin</Text>
           <View
             style={{
@@ -358,7 +357,7 @@ export default function Admin({navigation}) {
               </View>
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
 
       <Modal
@@ -368,7 +367,7 @@ export default function Admin({navigation}) {
         onRequestClose={() => {
           setEditAdminModal(!EditAdminModal);
         }}>
-        <View style={styles.body}>
+        <SafeAreaView style={styles.body}>
           <Text style={styles.header}>Edit Admin</Text>
           <View
             style={{
@@ -460,8 +459,8 @@ export default function Admin({navigation}) {
               </View>
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }

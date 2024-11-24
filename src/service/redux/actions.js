@@ -1,31 +1,36 @@
-import firestoreAdminService from "../../handlers/firestoreAdminService";
-import firestoreEmployeeService from "../../handlers/firestoreEmployeeService";
+import firestoreAdminService from '../../handlers/firestoreAdminService';
+import firestoreEmployeeService from '../../handlers/firestoreEmployeeService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import firestoreShopService from "../../handlers/firestoreShopService";
-import firestoreRequestService from "../../handlers/firestoreRequestService";
+import firestoreShopService from '../../handlers/firestoreShopService';
+import firestoreRequestService from '../../handlers/firestoreRequestService';
 
 export const ADD_USER_INFO = 'ADD_USER_INFO';
 export const REMOVE_USER = 'REMOVE_USER';
 export const CHANGE_ONLINE_STATUS = 'CHANGE_ONLINE_STATUS';
 export const ITINERARY_LIST = 'ITINERARY_LIST';
-export const OUTLET_INFO= 'OUTLET_INFO';
+export const OUTLET_INFO = 'OUTLET_INFO';
 export const ADD_IMAGES = 'ADD_IMAGES';
 export const CLEAR_IMAGES = 'CLEAR_IMAGES';
 export const TODAY_LOCATIONS = 'TODAY_LOCATIONS';
 export const FETCH_ADMIN_DATA = 'FETCH_ADMIN_DATA';
-export const FETCH_EMPLOYEE_DATA='FETCH_EMPLOYEE_DATA';
-export const FETCH_SHOP_DATA='FETCH_SHOP_DATA';
-export const UPDATE_ADMIN_DATA='UPDATE_ADMIN_DATA';
-export const DELETE_ADMIN_DATA='DELETE_ADMIN_DATA';
-export const UPDATE_EMPLOYEE_DATA='UPDATE_EMPLOYEE_DATA';
-export const DELETE_EMPLOYEE_DATA='DELETE_EMPLOYEE_DATA';
-export const UPDATE_SHOP_DATA='UPDATE_SHOP_DATA';
-export const DELETE_SHOP_DATA='DELETE_SHOP_DATA';
-export const FETCH_EMPLOYEE_DATA_BY_ID='FETCH_EMPLOYEE_DATA_BY_ID';
+export const FETCH_EMPLOYEE_DATA = 'FETCH_EMPLOYEE_DATA';
+export const FETCH_SHOP_DATA = 'FETCH_SHOP_DATA';
+export const UPDATE_ADMIN_DATA = 'UPDATE_ADMIN_DATA';
+export const DELETE_ADMIN_DATA = 'DELETE_ADMIN_DATA';
+export const UPDATE_EMPLOYEE_DATA = 'UPDATE_EMPLOYEE_DATA';
+export const DELETE_EMPLOYEE_DATA = 'DELETE_EMPLOYEE_DATA';
+export const UPDATE_SHOP_DATA = 'UPDATE_SHOP_DATA';
+export const DELETE_SHOP_DATA = 'DELETE_SHOP_DATA';
+export const FETCH_EMPLOYEE_DATA_BY_ID = 'FETCH_EMPLOYEE_DATA_BY_ID';
 
-export const ADVANCE_REQUESTS_DATA_BY_EMPLOYEEID='ADVANCE_REQUESTS_DATA_BY_EMPLOYEEID';
-export const LEAVE_REQUESTS_DATA_BY_EMPLOYEEID='LEAVE_REQUESTS_DATA_BY_EMPLOYEEID';
-export const HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID='HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID';
+export const ADVANCE_REQUESTS_DATA_BY_EMPLOYEEID =
+  'ADVANCE_REQUESTS_DATA_BY_EMPLOYEEID';
+export const LEAVE_REQUESTS_DATA_BY_EMPLOYEEID =
+  'LEAVE_REQUESTS_DATA_BY_EMPLOYEEID';
+export const HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID =
+  'HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID';
+export const SHOP_LOGIN_DATA_BY_EMPLOYEEID =
+  'SHOP_LOGIN_DATA_BY_EMPLOYEEID';
 
 export const addUserToRedux = data => dispatch => {
   // console.log('addUserToRedux ' + JSON.stringify(data));
@@ -90,9 +95,9 @@ export const addTodayLocationsRedux = data => dispatch => {
 };
 
 //thinesh
-export const fetchAdminData  = () => async dispatch => {
-  const adminData = await  firestoreAdminService.getAllAdmins();
-  console.log('Fetched Admin Data:', adminData); 
+export const fetchAdminData = () => async dispatch => {
+  const adminData = await firestoreAdminService.getAllAdmins();
+  console.log('Fetched Admin Data:', adminData);
 
   dispatch({
     type: FETCH_ADMIN_DATA,
@@ -100,9 +105,9 @@ export const fetchAdminData  = () => async dispatch => {
   });
 };
 
-export const fetchEmployeeData  = () => async dispatch => {
-  const employeeData = await  firestoreEmployeeService.getAllEmployees();
-  console.log('Fetched Employee Data:', employeeData); 
+export const fetchEmployeeData = () => async dispatch => {
+  const employeeData = await firestoreEmployeeService.getAllEmployees();
+  console.log('Fetched Employee Data:', employeeData);
 
   dispatch({
     type: FETCH_EMPLOYEE_DATA,
@@ -110,9 +115,16 @@ export const fetchEmployeeData  = () => async dispatch => {
   });
 };
 
+<<<<<<< HEAD
 export const fetchShopData  = () => async dispatch => {
   const shopData = await  firestoreShopService.getAllShops();
   console.log('Fetched Shops Data:', shopData); 
+=======
+export const fetchShopData = () => async dispatch => {
+  const shopData = await firestoreShopService.getAllShops();
+  console.log('Fetched Shops Data:', shopData);
+
+>>>>>>> 32d924281ce5d4468249b1c7d396c4a79209c128
   dispatch({
     type: FETCH_SHOP_DATA,
     payload: shopData,
@@ -121,7 +133,10 @@ export const fetchShopData  = () => async dispatch => {
 
 export const updateAdminData = (username, updatedData) => async dispatch => {
   try {
-    const updatedAdminData = await firestoreAdminService.editAdminData(username, updatedData);
+    const updatedAdminData = await firestoreAdminService.editAdminData(
+      username,
+      updatedData,
+    );
     console.log('Updated Admin Data:', updatedAdminData);
 
     dispatch({
@@ -139,8 +154,7 @@ export const updateAdminData = (username, updatedData) => async dispatch => {
   }
 };
 
-
-export const deleteAdminData = (username) => async (dispatch) => {
+export const deleteAdminData = username => async dispatch => {
   try {
     await firestoreAdminService.deleteAdminData(username);
     console.log('Deleted Admin:', username);
@@ -157,10 +171,12 @@ export const deleteAdminData = (username) => async (dispatch) => {
   }
 };
 
-
 export const updateEmployeeData = (username, updatedData) => async dispatch => {
   try {
-    const updatedEmployeeData = await firestoreEmployeeService.editEmplyeeData(username, updatedData);
+    const updatedEmployeeData = await firestoreEmployeeService.editEmplyeeData(
+      username,
+      updatedData,
+    );
     console.log('Updated Employee Data:', updatedEmployeeData);
 
     dispatch({
@@ -178,8 +194,7 @@ export const updateEmployeeData = (username, updatedData) => async dispatch => {
   }
 };
 
-
-export const deleteEmployeeData = (username) => async (dispatch) => {
+export const deleteEmployeeData = username => async dispatch => {
   try {
     await firestoreEmployeeService.deleteEmployeeData(username);
     console.log('Deleted Employee:', username);
@@ -196,10 +211,12 @@ export const deleteEmployeeData = (username) => async (dispatch) => {
   }
 };
 
-
 export const updateShopData = (id, updatedData) => async dispatch => {
   try {
-    const updatedShopData = await firestoreShopService.editShopData(id, updatedData);
+    const updatedShopData = await firestoreShopService.editShopData(
+      id,
+      updatedData,
+    );
     console.log('Updated Shop Data:', updatedShopData);
 
     dispatch({
@@ -217,8 +234,7 @@ export const updateShopData = (id, updatedData) => async dispatch => {
   }
 };
 
-
-export const deleteShopData = (id) => async (dispatch) => {
+export const deleteShopData = id => async dispatch => {
   try {
     await firestoreShopService.deleteShopData(id);
     console.log('Deleted shop:', id);
@@ -235,11 +251,12 @@ export const deleteShopData = (id) => async (dispatch) => {
   }
 };
 
-
 export const fetchEmployeeDataById = () => async dispatch => {
   try {
     const employeeId = await AsyncStorage.getItem('employeeId');
-    const employeeData = await firestoreEmployeeService.getEmployeeDataByID(employeeId);
+    const employeeData = await firestoreEmployeeService.getEmployeeDataByID(
+      employeeId,
+    );
     console.log('Fetched Employee Data by ID:', employeeData);
 
     if (employeeData) {
@@ -256,12 +273,16 @@ export const fetchEmployeeDataById = () => async dispatch => {
   }
 };
 
-
 export const AdvanceRequestsByEmployeeId = () => async dispatch => {
   try {
-    const employeeIdforRequest = await AsyncStorage.getItem('employeeIdforRequest');
+    const employeeIdforRequest = await AsyncStorage.getItem(
+      'employeeIdforRequest',
+    );
     console.log(employeeIdforRequest);
-    const advanceRequestData = await firestoreRequestService.getAdvanceRequestsByEmployeeID(employeeIdforRequest);
+    const advanceRequestData =
+      await firestoreRequestService.getAdvanceRequestsByEmployeeID(
+        employeeIdforRequest,
+      );
     console.log('Fetched Advance Requests Data by ID:', advanceRequestData);
 
     if (advanceRequestData) {
@@ -280,9 +301,14 @@ export const AdvanceRequestsByEmployeeId = () => async dispatch => {
 
 export const LeaveRequestsByEmployeeId = () => async dispatch => {
   try {
-    const employeeIdforRequest = await AsyncStorage.getItem('employeeIdforRequest');
+    const employeeIdforRequest = await AsyncStorage.getItem(
+      'employeeIdforRequest',
+    );
     console.log(employeeIdforRequest);
-    const leaveRequestData = await firestoreRequestService.getLeaveRequestsByEmployeeID(employeeIdforRequest);
+    const leaveRequestData =
+      await firestoreRequestService.getLeaveRequestsByEmployeeID(
+        employeeIdforRequest,
+      );
     console.log('Fetched leaveRequestData by ID:', leaveRequestData);
 
     if (leaveRequestData) {
@@ -301,9 +327,14 @@ export const LeaveRequestsByEmployeeId = () => async dispatch => {
 
 export const HolidayRequestsByEmployeeId = () => async dispatch => {
   try {
-    const employeeIdforRequest = await AsyncStorage.getItem('employeeIdforRequest');
+    const employeeIdforRequest = await AsyncStorage.getItem(
+      'employeeIdforRequest',
+    );
     console.log(employeeIdforRequest);
-    const holidayRequestData = await firestoreRequestService.getHolidayRequestsByEmployeeID(employeeIdforRequest);
+    const holidayRequestData =
+      await firestoreRequestService.getHolidayRequestsByEmployeeID(
+        employeeIdforRequest,
+      );
     console.log('Fetched holidayRequestData by ID:', holidayRequestData);
 
     if (holidayRequestData) {
@@ -316,6 +347,32 @@ export const HolidayRequestsByEmployeeId = () => async dispatch => {
     }
   } catch (error) {
     console.error('Error holidayRequestData by ID:', error);
+    throw error;
+  }
+};
+
+export const ShopLoginByEmployeeId = () => async dispatch => {
+  try {
+    const employeeIdforRequest = await AsyncStorage.getItem(
+      'employeeIdforRequest',
+    );
+    console.log('employeeIdforRequest : '+employeeIdforRequest);
+    const shopLoginData =
+      await firestoreRequestService.getShopLoginByEmployeeID(
+        employeeIdforRequest,
+      );
+    console.log('Fetched ShopLoginData by ID:', shopLoginData);
+
+    if (shopLoginData) {
+      dispatch({
+        type: SHOP_LOGIN_DATA_BY_EMPLOYEEID,
+        payload: shopLoginData,
+      });
+    } else {
+      console.warn('No ShopLoginData found for the given ID');
+    }
+  } catch (error) {
+    console.error('Error ShopLoginData by ID:', error);
     throw error;
   }
 };

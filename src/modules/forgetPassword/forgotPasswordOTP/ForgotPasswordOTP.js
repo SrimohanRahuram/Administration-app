@@ -5,6 +5,7 @@ import {
   Image,
   Alert,
   BackHandler,
+  SafeAreaView
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import styles from './ForgotPasswordOTP.Styles';
@@ -96,7 +97,7 @@ export default function ForgotPasswordOTP({navigation}) {
   //   }
   // };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Image source={Images.forgotPasswordOTP} style={styles.image} />
 
       <View style={styles.middleView}>
@@ -157,6 +158,6 @@ export default function ForgotPasswordOTP({navigation}) {
         </View>
       </View>
       <ProgressOverlay visible={isLoading} message={'loading'} />
-    </View>
+    </SafeAreaView>
   );
 }

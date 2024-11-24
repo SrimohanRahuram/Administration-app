@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   BackHandler,
   TextInput,
+  SafeAreaView,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import styles from './Home.Styles';
@@ -13,17 +14,21 @@ import Colors from '../../constants/Colors';
 import Images from '../../constants/images';
 import ProgressOverlay from '../../components/ProgressOverlay';
 import ToastAlert from '../../components/ToastAlert';
-import Entypo from 'react-native-vector-icons/Entypo';
-import {fetchEmployeeDataById} from '../../service/redux/actions';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {
+  fetchEmployeeDataById,
+  fetchShopData,
+} from '../../service/redux/actions';
 import {Dropdown} from 'react-native-element-dropdown';
+import firestoreRequestService from '../../handlers/firestoreEmployeeService';
 
 export default function Home({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const [value, setValue] = useState(null);
   const [userName, setUserName] = React.useState('');
-  const [Id, setId] = React.useState('');
-  const [contactNo, setContactNo] = React.useState('');
+  const [shopId, setShopId] = React.useState(null);
+  const [lastVisistedDetails, setLastVisistedDetails] = React.useState('');
   const [currentDateTime, setCurrentDateTime] = useState('');
 
   useEffect(() => {
@@ -37,8 +42,16 @@ export default function Home({navigation}) {
     navigation.navigate('Notifications');
   };
 
+  const showoutletList = useSelector(state => state.myReducers.shopInfo);
+  useEffect(() => {
+    // Fetch shop data when the component mounts
+    dispatch(fetchShopData());
+    console.log('Fetch dispatched');
+  }, [dispatch]);
+
   const dispatch = useDispatch();
   const employeeData = useSelector(state => state.myReducers.employeeInfo);
+
   useEffect(() => {
     // Fetch admin data when the component mounts
     dispatch(fetchEmployeeDataById());
@@ -65,15 +78,51 @@ export default function Home({navigation}) {
 
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, []);
-  const data = [
-    {key: '1', value: 'shop 1'},
-    {key: '2', value: 'shop 2'},
-    {key: '3', value: 'shop 3'},
-    {key: '4', value: 'shop 4'},
-    {key: '5', value: 'shop 5'},
-  ];
+
+  const handleAdvanceSentRequest = async e => {
+    setIsLoading(true);
+    const employeeId = await AsyncStorage.getItem('employeeId');
+    //const currentDate = new Date();
+    const status = await firestoreRequestService.saveLoginTimeAndDate(
+      value,
+      shopId,
+      employeeId,
+    );
+    if (status == 'Success') {
+      setIsLoading(false);
+      ToastAlert.ShowToast(
+        'success',
+        'Alert',
+        'Sucessfully Advance Request sent..',
+      );
+    } else {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchLastWorkingDetails = async e => {
+      try {
+        const employeeId = await AsyncStorage.getItem('employeeId');
+        const details = await firestoreRequestService.getLastWorkingDetails(
+          employeeId,
+        );
+        setLastVisistedDetails(details);
+        if (details.status === 'ACTIVE') {
+          setIsEnabled(true);
+          setShopId(details.shopID);
+          setValue(details.shopName);
+          console.log({isEnabled, shopId, value});
+        }
+      } catch (error) {
+        console.error('Error fetching last working details:', error);
+      }
+    };
+    fetchLastWorkingDetails();
+  }, []);
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.body}>
         <View
           style={{
@@ -126,26 +175,49 @@ export default function Home({navigation}) {
                 {isEnabled ? 'Inactive' : 'Active'}
               </Text>
             </View>
-            <Dropdown
-              style={styles.dropdown}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              data={data}
-              maxHeight={300}
-              labelField="value"
-              containerStyle={{marginTop: 8, borderRadius: 10}}
-              itemContainerStyle={styles.label}
-              itemTextStyle={styles.itemTextStyle}
-              valueField="value"
-              placeholder={'Select shop'}
-              value={value}
-              onChange={item => {
-                setValue(item.value);
-              }}
-            />
+            {!isEnabled ? (
+              <Dropdown
+                style={styles.dropdown}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                data={showoutletList}
+                maxHeight={300}
+                labelField="name"
+                containerStyle={{marginTop: 8, borderRadius: 10}}
+                itemContainerStyle={styles.label}
+                itemTextStyle={styles.itemTextStyle}
+                valueField="name"
+                placeholder={'Select shop'}
+                value={value}
+                onChange={item => {
+                  setValue(item.name);
+                  setShopId(item.id);
+                }}
+              />
+            ) : (
+              <View
+                style={[
+                  styles.dropdown,
+                  {opacity: 0.5},
+                  {justifyContent: 'center'},
+                ]}>
+                <Text style={styles.selectedTextStyle}>
+                  {value || 'Select shop'}
+                </Text>
+              </View>
+            )}
             <TouchableOpacity
               onPress={() => {
-                setIsEnabled(previousState => !previousState);
+                if (value) {
+                  setIsEnabled(previousState => !previousState);
+                  handleAdvanceSentRequest();
+                } else {
+                  ToastAlert.ShowToast(
+                    'error',
+                    'Alert',
+                    'Please select the shops',
+                  );
+                }
               }}
               style={[
                 styles.button,
@@ -154,12 +226,12 @@ export default function Home({navigation}) {
               {isEnabled ? (
                 <View style={styles.buttonView}>
                   <Text style={styles.buttonText}>Clock-Out</Text>
-                  <Entypo name="log-out" size={25} color={Colors.white} />
+                  <FontAwesome name="sign-out" size={25} color={Colors.white} />
                 </View>
               ) : (
                 <View style={styles.buttonView}>
                   <Text style={styles.buttonText}>Clock-In</Text>
-                  <Entypo name="login" size={25} color={Colors.white} />
+                  <FontAwesome name="sign-in" size={25} color={Colors.white} />
                 </View>
               )}
             </TouchableOpacity>
@@ -169,16 +241,32 @@ export default function Home({navigation}) {
           </Text>
           <View style={styles.detailsBody2}>
             <Text style={{...styles.head, marginBottom: 10}}>
-              Shop Name: London
+              Shop Name: {lastVisistedDetails.shopName}
             </Text>
             <Text style={{...styles.head, marginBottom: 10}}>
-              Login: 12.00 2024-10-12
+              Check-In: {lastVisistedDetails.checkInDateTime}
+              {'  '}
+              {lastVisistedDetails.createdAt &&
+              lastVisistedDetails.createdAt.toDate
+                ? new Date(lastVisistedDetails.createdAt.toDate())
+                    .toISOString()
+                    .split('T')[0]
+                : 'Date not available'}
             </Text>
-            <Text style={{...styles.head}}>Logout: 18.00 2024-10-12</Text>
+            <Text style={{...styles.head}}>
+              Check-Out: {lastVisistedDetails.checkOutDateTime}
+              {'  '}
+              {lastVisistedDetails.createdAt &&
+              lastVisistedDetails.createdAt.toDate
+                ? new Date(lastVisistedDetails.createdAt.toDate())
+                    .toISOString()
+                    .split('T')[0]
+                : 'Date not available'}
+            </Text>
           </View>
         </View>
       </View>
       <ProgressOverlay visible={isLoading} message={'Loading...'} />
-    </View>
+    </SafeAreaView>
   );
 }

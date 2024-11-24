@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, Image, BackHandler, TouchableOpacity} from 'react-native';
+import {View, Text, Image, BackHandler, TouchableOpacity,SafeAreaView} from 'react-native';
 import styles from './ProfileDetails.Styles';
 import Colors from '../../constants/Colors';
 import Images from '../../constants/images';
@@ -22,7 +22,7 @@ export default function ProfileDetails({navigation}) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.body}>
         <Text style={styles.header}>Profile</Text>
         <View style={styles.detailsBody}>
@@ -53,6 +53,6 @@ export default function ProfileDetails({navigation}) {
           </View>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

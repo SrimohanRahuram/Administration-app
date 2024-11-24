@@ -8,6 +8,7 @@ import {
   Modal,
   Image,
   TextInput,
+  SafeAreaView
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import styles from './Shops.Styles';
@@ -15,9 +16,7 @@ import Colors from '../../constants/Colors';
 import Images from '../../constants/images';
 import ProgressOverlay from '../../components/ProgressOverlay';
 import ToastAlert from '../../components/ToastAlert';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import firestoreShopService from '../../handlers/firestoreShopService';
 import {fetchShopData} from '../../service/redux/actions';
 import DocumentPicker from 'react-native-document-picker';
@@ -179,7 +178,7 @@ export default function Shops({navigation}) {
     }
   };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.body}>
         <View
           style={{
@@ -219,8 +218,8 @@ export default function Shops({navigation}) {
                 setAddShopModal(true);
               }}
               style={styles.button}>
-              <Text style={styles.buttonText}>Add Shops</Text>
-              <MaterialIcons name="add-box" color={Colors.white} size={25} />
+              <Text style={styles.buttonText}>Add Shops </Text>
+              <FontAwesome name="plus" color={Colors.white} size={20} />
             </TouchableOpacity>
           </View>
           <FlatList
@@ -250,7 +249,7 @@ export default function Shops({navigation}) {
         onRequestClose={() => {
           setAddShopModal(!AddShopModal);
         }}>
-        <View style={styles.body}>
+        <SafeAreaView style={styles.body}>
           <Text style={styles.header}>Add Shop</Text>
           <View
             style={{
@@ -341,7 +340,7 @@ export default function Shops({navigation}) {
               </View>
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
       <Modal
         animationType="slide"
@@ -350,7 +349,7 @@ export default function Shops({navigation}) {
         onRequestClose={() => {
           setShopModal(!ShopModal);
         }}>
-        <View style={styles.body}>
+        <SafeAreaView style={styles.body}>
           <Text style={styles.header}>Shop-1</Text>
           <View
             style={{
@@ -362,7 +361,7 @@ export default function Shops({navigation}) {
               onPress={() => {
                 setShopModal(false);
               }}>
-              <AntDesign name="arrowleft" size={20} color={Colors.black} />
+              <FontAwesome name="arrow-left" size={20} color={Colors.black} />
             </TouchableOpacity>
             <View
               style={{
@@ -416,7 +415,7 @@ export default function Shops({navigation}) {
               <Text style={styles.modalText}>Login time:</Text>
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
       <Modal
         animationType="slide"
@@ -425,7 +424,7 @@ export default function Shops({navigation}) {
         onRequestClose={() => {
           setEditShopModal(!EditShopModal);
         }}>
-        <View style={styles.body}>
+        <SafeAreaView style={styles.body}>
           <Text style={styles.header}>Edit Shop</Text>
           <View
             style={{
@@ -516,7 +515,7 @@ export default function Shops({navigation}) {
               </View>
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
       <Modal
         animationType="slide"
@@ -525,7 +524,7 @@ export default function Shops({navigation}) {
         onRequestClose={() => {
           setSummaryModal(!summaryModal);
         }}>
-        <View style={styles.body}>
+        <SafeAreaView style={styles.body}>
           <Text style={styles.header}>Shop Summary</Text>
           <View
             style={{
@@ -537,7 +536,7 @@ export default function Shops({navigation}) {
               onPress={() => {
                 setSummaryModal(false);
               }}>
-              <AntDesign name="arrowleft" size={20} color={Colors.black} />
+              <FontAwesome name="arrow-left" size={20} color={Colors.black} />
             </TouchableOpacity>
             <View
               style={{
@@ -582,8 +581,8 @@ export default function Shops({navigation}) {
               />
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }

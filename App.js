@@ -1,5 +1,5 @@
 import React from 'react';
-import {StatusBar, View, StyleSheet} from 'react-native';
+import {SafeAreaView, View, StyleSheet} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -15,19 +15,16 @@ import ForgotPasswordEmail from './src/modules/forgetPassword/forgotPasswordEmai
 import ForgotPasswordOTP from './src/modules/forgetPassword/forgotPasswordOTP/ForgotPasswordOTP';
 import ResetPassword from './src/modules/forgetPassword/resetPassword/ResetPassword';
 import ResetSuccess from './src/modules/forgetPassword/resetSuccess/ResetSuccess';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';AntDesign
 import ProfileDetails from './src/modules/profileDetails/ProfileDetails';
 import Colors from './src/constants/Colors';
 import Requests from './src/modules/requests/Requests';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import Home from './src/modules/home/Home';
 import AdminHome from './src/modules/adminHome/AdminHome';
 import Shops from './src/modules/shops/Shops';
 import Admin from './src/modules/admin/Admin';
 import Employees from './src/modules/employees/Employees';
 import EmployeeDetails from './src/modules/employeeDetails/EmployeeDetails';
-import Entypo from 'react-native-vector-icons/Entypo';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -48,13 +45,13 @@ function DashboardTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({focused}) => (
-            <View style={focused ? styles.button : styles.button2}>
-              <MaterialCommunityIcons
-                name="home-outline"
+            <SafeAreaView style={focused ? styles.button : styles.button2}>
+              <FontAwesome
+                name="home"
                 color={focused ? Colors.white : Colors.verylightgray}
                 size={25}
               />
-            </View>
+            </SafeAreaView>
           ),
         }}
       />
@@ -64,13 +61,13 @@ function DashboardTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({focused}) => (
-            <View style={focused ? styles.button : styles.button2}>
-              <AntDesign
-                name="questioncircleo"
+            <SafeAreaView style={focused ? styles.button : styles.button2}>
+              <FontAwesome
+                name="question-circle-o"
                 size={25}
                 color={focused ? Colors.white : Colors.verylightgray}
               />
-            </View>
+            </SafeAreaView>
           ),
         }}
       />
@@ -80,13 +77,13 @@ function DashboardTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({focused}) => (
-            <View style={focused ? styles.button : styles.button2}>
-              <MaterialCommunityIcons
-                name="account-circle-outline"
+            <SafeAreaView style={focused ? styles.button : styles.button2}>
+              <FontAwesome
+                name="user"
                 size={25}
                 color={focused ? Colors.white : Colors.verylightgray}
               />
-            </View>
+            </SafeAreaView>
           ),
         }}
       />
@@ -109,13 +106,13 @@ function AdminDashboardTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({focused}) => (
-            <View style={focused ? styles.button : styles.button2}>
-              <Entypo
-                name="shop"
+            <SafeAreaView style={focused ? styles.button : styles.button2}>
+              <FontAwesome
+                name="shopping-cart"
                 color={focused ? Colors.white : Colors.verylightgray}
                 size={25}
               />
-            </View>
+            </SafeAreaView>
           ),
         }}
       />
@@ -125,13 +122,13 @@ function AdminDashboardTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({focused}) => (
-            <View style={focused ? styles.button : styles.button2}>
-              <MaterialIcons
-                name="admin-panel-settings"
+            <SafeAreaView style={focused ? styles.button : styles.button2}>
+              <FontAwesome
+                name="pencil"
                 size={25}
                 color={focused ? Colors.white : Colors.verylightgray}
               />
-            </View>
+            </SafeAreaView>
           ),
         }}
       />
@@ -141,13 +138,13 @@ function AdminDashboardTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({focused}) => (
-            <View style={focused ? styles.button : styles.button2}>
-              <MaterialCommunityIcons
-                name="account-cash-outline"
+            <SafeAreaView style={focused ? styles.button : styles.button2}>
+              <FontAwesome
+                name="group"
                 size={25}
                 color={focused ? Colors.white : Colors.verylightgray}
               />
-            </View>
+            </SafeAreaView>
           ),
         }}
       />
