@@ -21,6 +21,7 @@ import {ADVANCE_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
 import {LEAVE_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
 import {HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
 import {SHOP_LOGIN_DATA_BY_EMPLOYEEID} from './actions';
+import {ACTIVE_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
 
 const initialState = {
   adminInfo: [],
@@ -36,6 +37,7 @@ const initialState = {
   leaveRequests: [],
   holidayRequests: [],
   shop_login: [],
+  activeholidayRequests: [],
 };
 
 function myReducers(state = initialState, action) {
@@ -149,6 +151,12 @@ function myReducers(state = initialState, action) {
       return {
         ...state,
         shop_login: action.payload,
+      };
+
+    case ACTIVE_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID:
+      return {
+        ...state,
+        activeholidayRequests: action.payload,
       };
     default:
       return state;

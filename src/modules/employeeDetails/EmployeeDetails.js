@@ -24,8 +24,10 @@ import {
   HolidayRequestsByEmployeeId,
   ShopLoginByEmployeeId,
   LeaveRequestsByEmployeeId,
+  ActiveHolidayRequestsByEmployeeId,
 } from '../../service/redux/actions';
 import {format, getWeek, startOfWeek, endOfWeek} from 'date-fns';
+import firestoreRequestService from '../../handlers/firestoreRequestService';
 
 export default function EmployeeDetails({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +39,9 @@ export default function EmployeeDetails({navigation}) {
   const {userinfo} = useSelector(state => state.myReducers);
   const [filteredData, setFilteredData] = React.useState([]);
   const [selectedItem, setSelectedItem] = React.useState('');
+  const [CountModal, setCountModal] = useState(false);
+  const [Count, setCount] = React.useState(null);
+  const [CountItem, setCountItem] = React.useState(null);
 
   // Accessing advancerequests from your Redux store
   const advanceRequests = useSelector(
@@ -47,6 +52,13 @@ export default function EmployeeDetails({navigation}) {
     state => state.myReducers.holidayRequests,
   );
   const shoplogin = useSelector(state => state.myReducers.shop_login);
+  const activeholidayRequests = useSelector(
+    state => state.myReducers.activeholidayRequests,
+  );
+  const totalHours = activeholidayRequests.reduce(
+    (total, item) => total + parseFloat(item.Hours),
+    0,
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -71,6 +83,11 @@ export default function EmployeeDetails({navigation}) {
 
   useEffect(() => {
     dispatch(ShopLoginByEmployeeId());
+    console.log('Fetch dispatched');
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(ActiveHolidayRequestsByEmployeeId());
     console.log('Fetch dispatched');
   }, [dispatch]);
   //next
@@ -141,13 +158,13 @@ export default function EmployeeDetails({navigation}) {
   //   {key: '4', id: 'shop 4', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
   //   {key: '5', id: 'shop 5', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
   // ];
-  const salarydata = [
-    {key: '1', id: ' 11', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
-    {key: '2', id: ' 12', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
-    {key: '3', id: ' 31', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
-    {key: '4', id: ' 14', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
-    {key: '5', id: ' 51', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
-  ];
+  // const salarydata = [
+  //   {key: '1', id: ' 11', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
+  //   {key: '2', id: ' 12', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
+  //   {key: '3', id: ' 31', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
+  //   {key: '4', id: ' 14', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
+  //   {key: '5', id: ' 51', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
+  // ];
 
   const groupByWeek = () => {
     const groupedData = {};
@@ -170,19 +187,46 @@ export default function EmployeeDetails({navigation}) {
       groupedData[weekKey].totalHours += item.hoursOfWork || 0;
     });
     const sortedData = Object.entries(groupedData)
-    .sort(([a], [b]) => a.localeCompare(b)) // Sort keys in ascending order
-    .reduce((acc, [key, value]) => {
-      acc[key] = value;
-      return acc;
-    }, {});
+      .sort(([a], [b]) => a.localeCompare(b)) // Sort keys in ascending order
+      .reduce((acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+      }, {});
 
     setFilteredData(sortedData);
-    console.log('groupByWeek'+JSON.stringify(sortedData));
+    console.log('groupByWeek' + JSON.stringify(sortedData));
   };
   const transformedData = Object.keys(filteredData).map(key => ({
     ...filteredData[key],
     week: key,
   }));
+  const reloadAction = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'EmployeeDetails' }],
+    });
+    return true;
+  };
+  const EditCount = async e => {
+    setIsLoading(true);
+    const status = await firestoreRequestService.editActiveHolidayRequestsByEmployeeID(
+      CountItem.id,
+      Number(Count),
+      userinfo.ID,
+    );
+    if (status == 'Success') {
+      setIsLoading(false);
+      ToastAlert.ShowToast(
+        'success',
+        'Alert',
+        'Successfully Edit count',
+      );
+      reloadAction();
+    } else {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.body}>
@@ -403,7 +447,7 @@ export default function EmployeeDetails({navigation}) {
                   padding: 5,
                 }}>
                 <Text style={styles.modalhead2}>
-                  Current Total holidays = 14 hours
+                  Current Total holidays = {totalHours} hours
                 </Text>
               </View>
               <View
@@ -431,7 +475,7 @@ export default function EmployeeDetails({navigation}) {
                   </Text>
                 </View>
                 <FlatList
-                  data={salarydata}
+                  data={activeholidayRequests}
                   nestedScrollEnabled={true}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({item}) => (
@@ -446,13 +490,21 @@ export default function EmployeeDetails({navigation}) {
                         justifyContent: 'space-between',
                       }}>
                       <Text style={{...styles.modalhead3, width: '33%'}}>
-                        {item.out}
+                        {item.from && item.from.toDate
+                          ? new Date(item.from.toDate())
+                              .toISOString()
+                              .split('T')[0]
+                          : 'Date not available'}
                       </Text>
                       <Text style={{...styles.modalhead3, width: '33%'}}>
-                        {item.in}
+                        {item.To && item.To.toDate
+                          ? new Date(item.To.toDate())
+                              .toISOString()
+                              .split('T')[0]
+                          : 'Date not available'}
                       </Text>
                       <Text style={{...styles.modalhead3, width: '33%'}}>
-                        {item.id}
+                        {item.Hours}
                       </Text>
                     </View>
                   )}
@@ -978,9 +1030,21 @@ export default function EmployeeDetails({navigation}) {
                             .split('T')[0]
                         : 'Date not available'}
                     </Text>
-                    <Text style={{...styles.modalhead3, width: '33%'}}>
-                      {item.hoursOfWork}
-                    </Text>
+                    <View style={{width: '33%', flexDirection: 'row',alignItems:'center',justifyContent:'center'}}>
+                      <Text style={{...styles.modalhead3,marginRight:15}}>{item.hoursOfWork}</Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setCountModal(true);
+                          setCountItem(item);
+                        }}>
+                        <FontAwesome
+                          name="pencil"
+                          size={25}
+                          color={Colors.black}
+                        />
+                      </TouchableOpacity>
+                    </View>
+
                     <Text style={{...styles.modalhead3, width: '33%'}}>
                       {Number(item.hoursOfWork) *
                         Number(userinfo.perHourSalary)}
@@ -1010,6 +1074,89 @@ export default function EmployeeDetails({navigation}) {
             ) : (
               ''
             )}
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={CountModal}
+        onRequestClose={() => {
+          setCountModal(!CountModal);
+        }}>
+        <SafeAreaView
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}>
+          <View style={styles.modalcontainer}>
+            <View style={styles.modalheaderview}>
+              <Text style={styles.modalheadertext}>Edit Count</Text>
+            </View>
+
+            <TextInput
+              style={styles.modaltextinput}
+              onChangeText={Count => setCount(Count)}
+              textColor="#BB0000"
+              value={Count}
+              placeholder={' hours..'}
+              placeholderTextColor="#D9D9D9"
+              theme={{
+                colors: {
+                  primary: 'transparent',
+                  underlineColor: 'transparent',
+                },
+              }}
+              returnKeyType="next"
+              multiline={true}
+              keyboardType='numeric'
+            />
+            <View style={styles.modalline} />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  // if (Count) {
+                  //   //CountNotToCome();
+                  // } else {
+                  //   ToastAlert.ShowToast(
+                  //     'error',
+                  //     'Alert',
+                  //     'Please add hours',
+                  //   );
+                  // }
+                  EditCount();
+                  setCountModal(false);
+                  console.log('CountItem'+JSON.stringify(CountItem));
+                }}
+                style={styles.modalbuttonview}>
+                <Text style={styles.modalbuttontext}>Send</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setCountModal(false);
+                  setCount(null);
+                }}
+                style={{
+                  ...styles.modalbuttonview,
+                  backgroundColor: Colors.white,
+                  borderWidth: 1,
+                  borderColor: Colors.lightgray,
+                }}>
+                <Text
+                  style={{...styles.modalbuttontext, color: Colors.darkText}}>
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </SafeAreaView>
       </Modal>
