@@ -266,7 +266,7 @@ export default function Admin({navigation}) {
         onRequestClose={() => {
           setAddAdminModal(!AddAdminModal);
         }}>
-        <View style={styles.body}>
+        <SafeAreaView style={styles.body}>
           <Text style={styles.header}>Add Admin</Text>
           <View
             style={{
@@ -357,7 +357,7 @@ export default function Admin({navigation}) {
               </View>
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
 
       <Modal
@@ -367,7 +367,7 @@ export default function Admin({navigation}) {
         onRequestClose={() => {
           setEditAdminModal(!EditAdminModal);
         }}>
-        <View style={styles.body}>
+        <SafeAreaView style={styles.body}>
           <Text style={styles.header}>Edit Admin</Text>
           <View
             style={{
@@ -459,7 +459,7 @@ export default function Admin({navigation}) {
               </View>
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
     </SafeAreaView>
   );

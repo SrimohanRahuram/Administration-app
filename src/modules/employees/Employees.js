@@ -332,7 +332,7 @@ export default function Employees({navigation}) {
         onRequestClose={() => {
           setAddEmployeeModal(!AddEmployeeModal);
         }}>
-        <View style={styles.body}>
+        <SafeAreaView style={styles.body}>
           <Text style={styles.header}>Add Employee</Text>
           <View
             style={{
@@ -471,7 +471,7 @@ export default function Employees({navigation}) {
               </ScrollView>
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
       <Modal
         animationType="slide"
@@ -480,7 +480,7 @@ export default function Employees({navigation}) {
         onRequestClose={() => {
           setEditEmployeeModal(!EditEmployeeModal);
         }}>
-        <View style={styles.body}>
+        <SafeAreaView style={styles.body}>
           <Text style={styles.header}>Edit Employee</Text>
           <View
             style={{
@@ -620,7 +620,7 @@ export default function Employees({navigation}) {
               </ScrollView>
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
     </SafeAreaView>
   );

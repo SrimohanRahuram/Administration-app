@@ -801,7 +801,7 @@ export default function EmployeeDetails({navigation}) {
         onRequestClose={() => {
           setSalaryModal(!SalaryModal);
         }}>
-        <View style={styles.body}>
+        <SafeAreaView style={styles.body}>
           <Text style={styles.header}>Employee Details</Text>
           <View style={styles.detailsBody}>
             <View style={styles.inputContainer}>
@@ -1011,7 +1011,7 @@ export default function EmployeeDetails({navigation}) {
               ''
             )}
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
     </SafeAreaView>
   );
