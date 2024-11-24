@@ -1,5 +1,5 @@
 import React from 'react';
-import {StatusBar, View, StyleSheet} from 'react-native';
+import {SafeAreaView, View, StyleSheet} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -45,13 +45,13 @@ function DashboardTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({focused}) => (
-            <View style={focused ? styles.button : styles.button2}>
+            <SafeAreaView style={focused ? styles.button : styles.button2}>
               <FontAwesome
                 name="home"
                 color={focused ? Colors.white : Colors.verylightgray}
                 size={25}
               />
-            </View>
+            </SafeAreaView>
           ),
         }}
       />
@@ -61,13 +61,13 @@ function DashboardTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({focused}) => (
-            <View style={focused ? styles.button : styles.button2}>
+            <SafeAreaView style={focused ? styles.button : styles.button2}>
               <FontAwesome
                 name="question-circle-o"
                 size={25}
                 color={focused ? Colors.white : Colors.verylightgray}
               />
-            </View>
+            </SafeAreaView>
           ),
         }}
       />
@@ -77,13 +77,13 @@ function DashboardTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({focused}) => (
-            <View style={focused ? styles.button : styles.button2}>
+            <SafeAreaView style={focused ? styles.button : styles.button2}>
               <FontAwesome
                 name="user"
                 size={25}
                 color={focused ? Colors.white : Colors.verylightgray}
               />
-            </View>
+            </SafeAreaView>
           ),
         }}
       />
@@ -106,13 +106,13 @@ function AdminDashboardTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({focused}) => (
-            <View style={focused ? styles.button : styles.button2}>
+            <SafeAreaView style={focused ? styles.button : styles.button2}>
               <FontAwesome
                 name="shopping-cart"
                 color={focused ? Colors.white : Colors.verylightgray}
                 size={25}
               />
-            </View>
+            </SafeAreaView>
           ),
         }}
       />
@@ -122,13 +122,13 @@ function AdminDashboardTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({focused}) => (
-            <View style={focused ? styles.button : styles.button2}>
+            <SafeAreaView style={focused ? styles.button : styles.button2}>
               <FontAwesome
                 name="pencil"
                 size={25}
                 color={focused ? Colors.white : Colors.verylightgray}
               />
-            </View>
+            </SafeAreaView>
           ),
         }}
       />
@@ -138,13 +138,13 @@ function AdminDashboardTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({focused}) => (
-            <View style={focused ? styles.button : styles.button2}>
+            <SafeAreaView style={focused ? styles.button : styles.button2}>
               <FontAwesome
                 name="group"
                 size={25}
                 color={focused ? Colors.white : Colors.verylightgray}
               />
-            </View>
+            </SafeAreaView>
           ),
         }}
       />
