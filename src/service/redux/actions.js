@@ -113,7 +113,6 @@ export const fetchEmployeeData  = () => async dispatch => {
 export const fetchShopData  = () => async dispatch => {
   const shopData = await  firestoreShopService.getAllShops();
   console.log('Fetched Shops Data:', shopData); 
-
   dispatch({
     type: FETCH_SHOP_DATA,
     payload: shopData,
