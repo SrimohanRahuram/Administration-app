@@ -208,7 +208,11 @@ export default function Home({navigation}) {
                   setIsEnabled(previousState => !previousState);
                   handleAdvanceSentRequest();
                 } else {
-                  ToastAlert.ShowToast('error', 'Alert', 'Please select the shops');
+                  ToastAlert.ShowToast(
+                    'error',
+                    'Alert',
+                    'Please select the shops',
+                  );
                 }
               }}
               style={[
@@ -238,7 +242,8 @@ export default function Home({navigation}) {
             <Text style={{...styles.head, marginBottom: 10}}>
               Login: {lastVisistedDetails.checkInDateTime}
               {'  '}
-              {lastVisistedDetails.createdAt
+              {lastVisistedDetails.createdAt &&
+              lastVisistedDetails.createdAt.toDate
                 ? new Date(lastVisistedDetails.createdAt.toDate())
                     .toISOString()
                     .split('T')[0]
@@ -247,7 +252,8 @@ export default function Home({navigation}) {
             <Text style={{...styles.head}}>
               Logout: {lastVisistedDetails.checkOutDateTime}
               {'  '}
-              {lastVisistedDetails.createdAt
+              {lastVisistedDetails.createdAt &&
+              lastVisistedDetails.createdAt.toDate
                 ? new Date(lastVisistedDetails.createdAt.toDate())
                     .toISOString()
                     .split('T')[0]
