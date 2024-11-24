@@ -80,6 +80,7 @@ export default function Home({navigation}) {
   }, []);
 
   const handleAdvanceSentRequest = async e => {
+    setIsLoading(true);
     const employeeId = await AsyncStorage.getItem('employeeId');
     //const currentDate = new Date();
     const status = await firestoreRequestService.saveLoginTimeAndDate(
@@ -88,11 +89,14 @@ export default function Home({navigation}) {
       employeeId,
     );
     if (status == 'Success') {
+      setIsLoading(false);
       ToastAlert.ShowToast(
-        'error',
+        'success',
         'Alert',
         'Sucessfully Advance Request sent..',
       );
+    } else {
+      setIsLoading(false);
     }
   };
 
@@ -240,7 +244,7 @@ export default function Home({navigation}) {
               Shop Name: {lastVisistedDetails.shopName}
             </Text>
             <Text style={{...styles.head, marginBottom: 10}}>
-              Login: {lastVisistedDetails.checkInDateTime}
+              Check-In: {lastVisistedDetails.checkInDateTime}
               {'  '}
               {lastVisistedDetails.createdAt &&
               lastVisistedDetails.createdAt.toDate
@@ -250,7 +254,7 @@ export default function Home({navigation}) {
                 : 'Date not available'}
             </Text>
             <Text style={{...styles.head}}>
-              Logout: {lastVisistedDetails.checkOutDateTime}
+              Check-Out: {lastVisistedDetails.checkOutDateTime}
               {'  '}
               {lastVisistedDetails.createdAt &&
               lastVisistedDetails.createdAt.toDate

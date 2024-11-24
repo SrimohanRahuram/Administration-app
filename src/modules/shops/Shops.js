@@ -249,7 +249,7 @@ export default function Shops({navigation}) {
         onRequestClose={() => {
           setAddShopModal(!AddShopModal);
         }}>
-        <View style={styles.body}>
+        <SafeAreaView style={styles.body}>
           <Text style={styles.header}>Add Shop</Text>
           <View
             style={{
@@ -340,7 +340,7 @@ export default function Shops({navigation}) {
               </View>
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
       <Modal
         animationType="slide"
@@ -349,7 +349,7 @@ export default function Shops({navigation}) {
         onRequestClose={() => {
           setShopModal(!ShopModal);
         }}>
-        <View style={styles.body}>
+        <SafeAreaView style={styles.body}>
           <Text style={styles.header}>Shop-1</Text>
           <View
             style={{
@@ -415,7 +415,7 @@ export default function Shops({navigation}) {
               <Text style={styles.modalText}>Login time:</Text>
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
       <Modal
         animationType="slide"
@@ -424,7 +424,7 @@ export default function Shops({navigation}) {
         onRequestClose={() => {
           setEditShopModal(!EditShopModal);
         }}>
-        <View style={styles.body}>
+        <SafeAreaView style={styles.body}>
           <Text style={styles.header}>Edit Shop</Text>
           <View
             style={{
@@ -515,7 +515,7 @@ export default function Shops({navigation}) {
               </View>
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
       <Modal
         animationType="slide"
@@ -524,7 +524,7 @@ export default function Shops({navigation}) {
         onRequestClose={() => {
           setSummaryModal(!summaryModal);
         }}>
-        <View style={styles.body}>
+        <SafeAreaView style={styles.body}>
           <Text style={styles.header}>Shop Summary</Text>
           <View
             style={{
@@ -581,7 +581,7 @@ export default function Shops({navigation}) {
               />
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
     </SafeAreaView>
   );
