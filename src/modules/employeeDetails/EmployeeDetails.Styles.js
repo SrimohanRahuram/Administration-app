@@ -211,6 +211,67 @@ const stylesNew = StyleSheet.create({
     padding: 3,
     paddingBottom: 5,
   },
+
+  modalcontainer: {
+    width: '92%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    backgroundColor: 'white',
+    margin: 15,
+    padding: 15,
+    borderRadius: 5,
+  },
+  modalheaderview: {
+    flexDirection: 'row',
+    width: '100%',
+    height: 40,
+    backgroundColor: '#6666661A',
+    justifyContent:'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+    paddingLeft:15,
+    paddingRight:15,
+    borderRadius:5
+  },
+  modalheadertext: {
+    fontWeight: '700',
+    fontSize: 17,
+    color: '#131212',
+  },
+  modaltextinput: {
+    height: 50,
+    marginBottom: 15,
+    backgroundColor: 'white',
+    width: '100%',
+    alignSelf: 'center',
+    borderWidth: 1,
+    borderColor: '#D9D9D9',
+    borderRadius: 5,
+    fontSize: 14,
+    paddingLeft:10
+  },
+  modalline: {
+    backgroundColor: '#D9D9D9',
+    width: '100%',
+    height: 1,
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
+  modalbuttonview: {
+    width: '48%',
+    height: 50,
+    backgroundColor: Colors.black,
+    borderRadius: 5,
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  modalbuttontext: {
+    color: '#FFFFFF',
+    textAlign: 'center',
+    fontSize: 15,
+    fontWeight: '600',
+  },
 });
 
 export default stylesNew;

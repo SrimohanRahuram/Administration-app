@@ -224,21 +224,58 @@ const firestoreRequestService = {
           .get();
 
         const HolidayRequestsData = holidayRequestSnapshot.docs
-          .filter(doc => doc.data().status === 'ACTIVE') 
+          .filter(doc => doc.data().status === 'ACTIVE')
           .map(doc => ({
             id: doc.id,
             ...doc.data(),
           }));
 
-        console.log('Retrieved ActiveHolidayRequestsData:', HolidayRequestsData);
+        console.log(
+          'Retrieved ActiveHolidayRequestsData:',
+          HolidayRequestsData,
+        );
         return HolidayRequestsData;
       }
     } catch (error) {
-      console.error('Error retrieving ActiveHolidayRequestsData by ID: ', error);
+      console.error(
+        'Error retrieving ActiveHolidayRequestsData by ID: ',
+        error,
+      );
       throw error;
     }
   },
 
+  editActiveHolidayRequestsByEmployeeID: async (id, count, employeeID) => {
+    console.log(employeeID);
+    try {
+      const employeeDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeID)
+        .get();
+
+      if (employeeDoc.exists) {
+        const holidayRequestRef = firestore()
+          .collection('Employee')
+          .doc(employeeID)
+          .collection('shoplogin')
+          .doc(id);
+        const holidayRequestSnapshot = await holidayRequestRef.get();
+        if (holidayRequestSnapshot.exists) {
+          await holidayRequestRef.update({
+            hoursOfWork: count,
+          });
+          return 'Success';
+        } else {
+          return 'Error';
+        }
+      } else {
+        console.error('Employee document not found');
+      }
+    } catch (error) {
+      console.error('Error updating HolidayRequestsData by ID: ', error);
+      throw error;
+    }
+  },
 };
 
 export default firestoreRequestService;

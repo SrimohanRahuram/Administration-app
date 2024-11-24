@@ -27,6 +27,7 @@ import {
   ActiveHolidayRequestsByEmployeeId,
 } from '../../service/redux/actions';
 import {format, getWeek, startOfWeek, endOfWeek} from 'date-fns';
+import firestoreRequestService from '../../handlers/firestoreRequestService';
 
 export default function EmployeeDetails({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
@@ -38,6 +39,9 @@ export default function EmployeeDetails({navigation}) {
   const {userinfo} = useSelector(state => state.myReducers);
   const [filteredData, setFilteredData] = React.useState([]);
   const [selectedItem, setSelectedItem] = React.useState('');
+  const [CountModal, setCountModal] = useState(false);
+  const [Count, setCount] = React.useState(null);
+  const [CountItem, setCountItem] = React.useState(null);
 
   // Accessing advancerequests from your Redux store
   const advanceRequests = useSelector(
@@ -51,7 +55,10 @@ export default function EmployeeDetails({navigation}) {
   const activeholidayRequests = useSelector(
     state => state.myReducers.activeholidayRequests,
   );
-  const totalHours = activeholidayRequests.reduce((total, item) => total + parseFloat(item.Hours), 0);
+  const totalHours = activeholidayRequests.reduce(
+    (total, item) => total + parseFloat(item.Hours),
+    0,
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -193,6 +200,33 @@ export default function EmployeeDetails({navigation}) {
     ...filteredData[key],
     week: key,
   }));
+  const reloadAction = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'EmployeeDetails' }],
+    });
+    return true;
+  };
+  const EditCount = async e => {
+    setIsLoading(true);
+    const status = await firestoreRequestService.editActiveHolidayRequestsByEmployeeID(
+      CountItem.id,
+      Number(Count),
+      userinfo.ID,
+    );
+    if (status == 'Success') {
+      setIsLoading(false);
+      ToastAlert.ShowToast(
+        'success',
+        'Alert',
+        'Successfully Edit count',
+      );
+      reloadAction();
+    } else {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.body}>
@@ -996,9 +1030,21 @@ export default function EmployeeDetails({navigation}) {
                             .split('T')[0]
                         : 'Date not available'}
                     </Text>
-                    <Text style={{...styles.modalhead3, width: '33%'}}>
-                      {item.hoursOfWork}
-                    </Text>
+                    <View style={{width: '33%', flexDirection: 'row',alignItems:'center',justifyContent:'center'}}>
+                      <Text style={{...styles.modalhead3,marginRight:15}}>{item.hoursOfWork}</Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setCountModal(true);
+                          setCountItem(item);
+                        }}>
+                        <FontAwesome
+                          name="pencil"
+                          size={25}
+                          color={Colors.black}
+                        />
+                      </TouchableOpacity>
+                    </View>
+
                     <Text style={{...styles.modalhead3, width: '33%'}}>
                       {Number(item.hoursOfWork) *
                         Number(userinfo.perHourSalary)}
@@ -1028,6 +1074,89 @@ export default function EmployeeDetails({navigation}) {
             ) : (
               ''
             )}
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={CountModal}
+        onRequestClose={() => {
+          setCountModal(!CountModal);
+        }}>
+        <SafeAreaView
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}>
+          <View style={styles.modalcontainer}>
+            <View style={styles.modalheaderview}>
+              <Text style={styles.modalheadertext}>Edit Count</Text>
+            </View>
+
+            <TextInput
+              style={styles.modaltextinput}
+              onChangeText={Count => setCount(Count)}
+              textColor="#BB0000"
+              value={Count}
+              placeholder={' hours..'}
+              placeholderTextColor="#D9D9D9"
+              theme={{
+                colors: {
+                  primary: 'transparent',
+                  underlineColor: 'transparent',
+                },
+              }}
+              returnKeyType="next"
+              multiline={true}
+              keyboardType='numeric'
+            />
+            <View style={styles.modalline} />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  // if (Count) {
+                  //   //CountNotToCome();
+                  // } else {
+                  //   ToastAlert.ShowToast(
+                  //     'error',
+                  //     'Alert',
+                  //     'Please add hours',
+                  //   );
+                  // }
+                  EditCount();
+                  setCountModal(false);
+                  console.log('CountItem'+JSON.stringify(CountItem));
+                }}
+                style={styles.modalbuttonview}>
+                <Text style={styles.modalbuttontext}>Send</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setCountModal(false);
+                  setCount(null);
+                }}
+                style={{
+                  ...styles.modalbuttonview,
+                  backgroundColor: Colors.white,
+                  borderWidth: 1,
+                  borderColor: Colors.lightgray,
+                }}>
+                <Text
+                  style={{...styles.modalbuttontext, color: Colors.darkText}}>
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </SafeAreaView>
       </Modal>
