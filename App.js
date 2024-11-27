@@ -37,7 +37,7 @@ function DashboardTabs() {
         tabBarActiveTintColor: '#131212',
         tabBarInactiveTintColor: Colors.verylightgray,
         tabBarLabelStyle: {fontSize: 13, fontWeight: '600'},
-        tabBarStyle: {height: 60},
+        tabBarStyle: {height: 70},
       }}>
       <Tab.Screen
         name="Home"
@@ -98,7 +98,7 @@ function AdminDashboardTabs() {
         tabBarActiveTintColor: '#131212',
         tabBarInactiveTintColor: Colors.verylightgray,
         tabBarLabelStyle: {fontSize: 13, fontWeight: '600'},
-        tabBarStyle: {height: 60},
+        tabBarStyle: {height: 70},
       }}>
       <Tab.Screen
         name="Shops"
