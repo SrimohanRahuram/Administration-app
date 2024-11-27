@@ -276,7 +276,12 @@ const firestoreRequestService = {
     }
   },
 
-   getActiveHolidayRequestsByEmployeeID: async employeeID => {
+  getActiveHolidayRequestsByEmployeeID: async employeeID => {
+    try {
+      const employeeDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeID)
+        .get();
       if (employeeDoc.exists) {
         const holidayRequestSnapshot = await firestore()
           .collection('Employee')
@@ -302,6 +307,9 @@ const firestoreRequestService = {
         'Error retrieving ActiveHolidayRequestsData by ID: ',
         error,
       );
+      throw error;
+    }
+  },
 
 
   editApproveHolidayRequestStatus: async (employeeID, requestID, newStatus) => {
@@ -338,9 +346,14 @@ const firestoreRequestService = {
   },
 
 
-editActiveHolidayRequestsByEmployeeID: async (id, count, employeeID) => {
+  editActiveHolidayRequestsByEmployeeID: async (id, count, employeeID) => {
     console.log(employeeID);
-  
+    try {
+      const employeeDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeID)
+        .get();
+
       if (employeeDoc.exists) {
         const holidayRequestRef = firestore()
           .collection('Employee')
