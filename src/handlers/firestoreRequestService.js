@@ -108,7 +108,7 @@ const firestoreRequestService = {
           .get();
 
         const AdvanceRequestsData = advanceRequestSnapshot.docs
-          .filter(doc => doc.data().status !== 'ACTIVE') // Only include requests where status is not 'active'
+          .filter(doc => doc.data().status == 'INACTIVE') // Only include requests where status is not 'active'
           .map(doc => ({
             id: doc.id,
             ...doc.data(),
@@ -137,7 +137,7 @@ const firestoreRequestService = {
           .get();
 
         const LeaveRequestsData = leaveRequestSnapshot.docs
-          .filter(doc => doc.data().status !== 'ACTIVE') // Only include requests where status is not 'active'
+          .filter(doc => doc.data().status == 'INACTIVE') // Only include requests where status is not 'active'
           .map(doc => ({
             id: doc.id,
             ...doc.data(),
@@ -166,7 +166,7 @@ const firestoreRequestService = {
           .get();
 
         const HolidayRequestsData = holidayRequestSnapshot.docs
-          .filter(doc => doc.data().status !== 'ACTIVE') // Only include requests where status is not 'active'
+          .filter(doc => doc.data().status == 'INACTIVE') // Only include requests where status is not 'active'
           .map(doc => ({
             id: doc.id,
             ...doc.data(),
@@ -195,7 +195,7 @@ const firestoreRequestService = {
           .get();
 
         const ShopLoginData = ShopLoginDataSnapshot.docs
-          .filter(doc => doc.data().status !== 'ACTIVE') // Only include requests where status is not 'inactive'
+          .filter(doc => doc.data().status == 'INACTIVE') // Only include requests where status is not 'inactive'
           .map(doc => ({
             id: doc.id,
             ...doc.data(),
@@ -209,6 +209,109 @@ const firestoreRequestService = {
       throw error;
     }
   },
+
+
+  editApproveAdvanceRequestStatus: async (employeeID, requestID, newStatus) => {
+    try {
+      const employeeDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeID)
+        .get();
+  
+      if (employeeDoc.exists) {
+        const requestDocRef = firestore()
+          .collection('Employee')
+          .doc(employeeID)
+          .collection('AdvanceRequests')
+          .doc(requestID);
+  
+        const requestDoc = await requestDocRef.get();
+        if (requestDoc.exists) {
+          await requestDocRef.update({ status: newStatus });
+          console.log(`Advance request ${requestID} status updated to: ${newStatus}`);
+          return { success: true, message: 'Status updated successfully' };
+        } else {
+          throw new Error('Advance request not found');
+        }
+      } else {
+        throw new Error('Employee not found');
+      }
+    } 
+    catch (error) {
+      console.error('Error updating AdvanceRequest status1: ', error);
+      throw error;
+    }
+  },
+
+  editApproveLeaveRequestStatus: async (employeeID, requestID, newStatus) => {
+    try {
+      const employeeDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeID)
+        .get();
+  
+      if (employeeDoc.exists) {
+        const requestDocRef = firestore()
+          .collection('Employee')
+          .doc(employeeID)
+          .collection('LeaveRequests')
+          .doc(requestID);
+  
+        const requestDoc = await requestDocRef.get();
+        if (requestDoc.exists) {
+          await requestDocRef.update({ status: newStatus });
+          console.log(`Leave request ${requestID} status updated to: ${newStatus}`);
+          return { success: true, message: 'Status updated successfully' };
+        } else {
+          throw new Error('Leave request not found');
+        }
+      } else {
+        throw new Error('Employee not found');
+      }
+    } 
+    catch (error) {
+      console.error('Error updating LeaveRequest status1: ', error);
+      throw error;
+    }
+  },
+
+  editApproveHolidayRequestStatus: async (employeeID, requestID, newStatus) => {
+    try {
+      const employeeDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeID)
+        .get();
+  
+      if (employeeDoc.exists) {
+        const requestDocRef = firestore()
+          .collection('Employee')
+          .doc(employeeID)
+          .collection('HolidayRequests')
+          .doc(requestID);
+  
+        const requestDoc = await requestDocRef.get();
+        if (requestDoc.exists) {
+          await requestDocRef.update({ status: newStatus });
+          console.log(`Holiday request ${requestID} status updated to: ${newStatus}`);
+          return { success: true, message: 'Status updated successfully' };
+        } else {
+          throw new Error('Holiday request not found');
+        }
+      } else {
+        throw new Error('Employee not found');
+      }
+    } 
+    catch (error) {
+      console.error('Error updating HolidayRequest status1: ', error);
+      throw error;
+    }
+  },
+
+
 };
+
+
+
+
 
 export default firestoreRequestService;

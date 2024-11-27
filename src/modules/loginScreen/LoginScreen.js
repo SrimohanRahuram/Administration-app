@@ -92,6 +92,7 @@ export default function LoginScreen({navigation}) {
     setIsLoading(true);
     const status = await firestoreLoginService.loginUser(username, password);
     if (status.successMessage == 'Admin login successful!') {
+      await AsyncStorage.setItem('employeeId', status.employeeID);
       ToastAlert.ShowToast('success', 'Alert', 'Admin login successful!');
       setIsLoading(false);
       await saveLogin(username, password, '' + rememberme);

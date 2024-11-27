@@ -3,6 +3,7 @@ import firestoreEmployeeService from '../../handlers/firestoreEmployeeService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestoreShopService from '../../handlers/firestoreShopService';
 import firestoreRequestService from '../../handlers/firestoreRequestService';
+import { id } from 'date-fns/locale';
 
 export const ADD_USER_INFO = 'ADD_USER_INFO';
 export const REMOVE_USER = 'REMOVE_USER';
@@ -14,6 +15,7 @@ export const CLEAR_IMAGES = 'CLEAR_IMAGES';
 export const TODAY_LOCATIONS = 'TODAY_LOCATIONS';
 export const FETCH_ADMIN_DATA = 'FETCH_ADMIN_DATA';
 export const FETCH_EMPLOYEE_DATA = 'FETCH_EMPLOYEE_DATA';
+export const FETCH_ADMIN_DATA_BY_ID='FETCH_ADMIN_DATA_BY_ID';
 export const FETCH_SHOP_DATA = 'FETCH_SHOP_DATA';
 export const UPDATE_ADMIN_DATA = 'UPDATE_ADMIN_DATA';
 export const DELETE_ADMIN_DATA = 'DELETE_ADMIN_DATA';
@@ -31,6 +33,20 @@ export const HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID =
   'HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID';
 export const SHOP_LOGIN_DATA_BY_EMPLOYEEID =
   'SHOP_LOGIN_DATA_BY_EMPLOYEEID';
+
+export const EDIT_APPROVE_ADVANCE_REQUEST_STATUS_SUCCESS='EDIT_APPROVE_ADVANCE_REQUEST_STATUS_SUCCESS';
+export const EDIT_REJECT_ADVANCE_REQUEST_STATUS_SUCCESS='EDIT_REJECT_ADVANCE_REQUEST_STATUS_SUCCESS';
+
+export const EDIT_APPROVE_LEAVE_REQUEST_STATUS_SUCCESS='EDIT_APPROVE_LEAVE_REQUEST_STATUS_SUCCESS';
+export const EDIT_REJECT_LEAVE_REQUEST_STATUS_SUCCESS='EDIT_REJECT_LEAVE_REQUEST_STATUS_SUCCESS';
+
+export const EDIT_APPROVE_HOLIDAY_REQUEST_STATUS_SUCCESS='EDIT_APPROVE_HOLIDAY_REQUEST_STATUS_SUCCESS';
+export const EDIT_REJECT_HOLIDAY_REQUEST_STATUS_SUCCESS='EDIT_REJECT_HOLIDAY_REQUEST_STATUS_SUCCESS';
+
+
+
+
+
 
 export const addUserToRedux = data => dispatch => {
   // console.log('addUserToRedux ' + JSON.stringify(data));
@@ -267,6 +283,28 @@ export const fetchEmployeeDataById = () => async dispatch => {
   }
 };
 
+export const fetchAdminDataById = () => async dispatch => {
+  try {
+    const adminId = await AsyncStorage.getItem('employeeId');
+    const adminData = await firestoreEmployeeService.getAdminDataByID(
+      adminId,
+    );
+    console.log('Fetched Employee Data by ID:', adminData);
+
+    if (adminData) {
+      dispatch({
+        type: FETCH_ADMIN_DATA_BY_ID,
+        payload: adminData,
+      });
+    } else {
+      console.warn('No admin data found for the given ID');
+    }
+  } catch (error) {
+    console.error('Error fetching employee data by ID:', error);
+    throw error;
+  }
+};
+
 export const AdvanceRequestsByEmployeeId = () => async dispatch => {
   try {
     const employeeIdforRequest = await AsyncStorage.getItem(
@@ -370,3 +408,169 @@ export const ShopLoginByEmployeeId = () => async dispatch => {
     throw error;
   }
 };
+
+
+export const editApproveAdvanceRequestStatus = (employeeID, requestID, newStatus) => async dispatch =>{
+
+    try {
+
+      const advanceRequestData = await firestoreRequestService.editApproveAdvanceRequestStatus(
+        employeeID,
+        requestID,
+        newStatus,
+      );
+      console.log('Updated advance Data:', advanceRequestData);
+  
+      dispatch({
+        type:EDIT_APPROVE_ADVANCE_REQUEST_STATUS_SUCCESS,
+        payload: {
+          id,
+          ...advanceRequestData,
+        },
+      });
+      console.log("thinesh");
+      return "Success";
+      
+    } catch (error) {
+      console.error('Error updating AdvanceRequest status2: ', error);
+      return { success: false, message: error.message };
+    }
+  
+};
+
+export const editRejectAdvanceRequestStatus = (employeeID, requestID, newStatus) => async dispatch =>{
+
+  try {
+
+    const advanceRequestData = await firestoreRequestService.editApproveAdvanceRequestStatus(
+      employeeID,
+      requestID,
+      newStatus,
+    );
+    console.log('Updated advance Data:', advanceRequestData);
+
+    dispatch({
+      type:EDIT_REJECT_ADVANCE_REQUEST_STATUS_SUCCESS,
+      payload: {
+        id,
+        ...advanceRequestData,
+      },
+    });
+   
+    return "Success";
+    
+  } catch (error) {
+    console.error('Error updating AdvanceRequest status: ', error);
+    return { success: false, message: error.message };
+  }
+
+};
+
+export const editApproveLeaveRequestStatus = (employeeID, requestID, newStatus) => async dispatch =>{
+
+  try {
+
+    const leaveRequestData = await firestoreRequestService.editApproveLeaveRequestStatus(
+      employeeID,
+      requestID,
+      newStatus,
+    );
+    console.log('Updated Leave Data:', leaveRequestData);
+
+    dispatch({
+      type:EDIT_APPROVE_LEAVE_REQUEST_STATUS_SUCCESS,
+      payload: {
+        id,
+        ...leaveRequestData,
+      },
+    });
+   
+    return "Success";
+    
+  } catch (error) {
+    console.error('Error updating AdvanceRequest status: ', error);
+    return { success: false, message: error.message };
+  }
+};
+
+export const editRejectLeaveRequestStatus = (employeeID, requestID, newStatus) => async dispatch =>{
+
+  try {
+
+    const leaveRequestData = await firestoreRequestService.editApproveLeaveRequestStatus(
+      employeeID,
+      requestID,
+      newStatus,
+    );
+    console.log('Updated advance Data:', leaveRequestData);
+
+    dispatch({
+      type:EDIT_REJECT_LEAVE_REQUEST_STATUS_SUCCESS,
+      payload: {
+        id,
+        ...leaveRequestData,
+      },
+    });
+   
+    return "Success";
+    
+  } catch (error) {
+    console.error('Error updating AdvanceRequest status: ', error);
+    return { success: false, message: error.message };
+  }
+};
+
+export const editApproveHolidayRequestStatus = (employeeID, requestID, newStatus) => async dispatch =>{
+
+  try {
+
+    const HolidayRequestData = await firestoreRequestService.editApproveHolidayRequestStatus(
+      employeeID,
+      requestID,
+      newStatus,
+    );
+    console.log('Updated Holiday Data:', HolidayRequestData);
+
+    dispatch({
+      type:EDIT_APPROVE_HOLIDAY_REQUEST_STATUS_SUCCESS,
+      payload: {
+        id,
+        ...HolidayRequestData,
+      },
+    });
+   
+    return "Success";
+    
+  } catch (error) {
+    console.error('Error updating AdvanceRequest status: ', error);
+    return { success: false, message: error.message };
+  }
+};
+
+export const editRejectHolidayRequestStatus = (employeeID, requestID, newStatus) => async dispatch =>{
+
+  try {
+
+    const HolidayRequestData = await firestoreRequestService.editApproveHolidayRequestStatus(
+      employeeID,
+      requestID,
+      newStatus,
+    );
+    console.log('Updated advance Data:', HolidayRequestData);
+
+    dispatch({
+      type:EDIT_REJECT_HOLIDAY_REQUEST_STATUS_SUCCESS,
+      payload: {
+        id,
+        ...HolidayRequestData,
+      },
+    });
+   
+    return "Success";
+    
+  } catch (error) {
+    console.error('Error updating HolidayRequest status: ', error);
+    return { success: false, message: error.message };
+  }
+};
+

@@ -133,6 +133,32 @@ const firestoreEmployeeService = {
       throw error;
     }
   },
+ 
+  getAdminDataByID: async adminId => {
+    try {
+      const adminDoc = await firestore()
+        .collection('Admin')
+        .doc(adminId)
+        .get();
+
+      if (!adminDoc.exists) {
+        Alert.alert('Error', 'Employee does not exist.');
+        return null;
+      }
+
+      const adminData = {
+        username: adminDoc.username,
+        ...adminDoc.data(),
+      };
+
+      console.log('Retrieved employee data:', adminData);
+      return adminData;
+    } catch (error) {
+      console.error('Error retrieving Employee data by ID: ', error);
+      throw error;
+    }
+  },
+
 
   saveLoginTimeAndDate: async (shopName, shopID, employeeId) => {
     try {

@@ -16,11 +16,19 @@ import {DELETE_EMPLOYEE_DATA} from './actions';
 import {UPDATE_SHOP_DATA} from './actions';
 import {DELETE_SHOP_DATA} from './actions';
 import {FETCH_EMPLOYEE_DATA_BY_ID} from './actions';
+import { FETCH_ADMIN_DATA_BY_ID } from './actions';
 
 import {ADVANCE_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
 import {LEAVE_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
 import {HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
 import {SHOP_LOGIN_DATA_BY_EMPLOYEEID} from './actions';
+import {EDIT_APPROVE_ADVANCE_REQUEST_STATUS_SUCCESS}from './actions';
+import {EDIT_REJECT_ADVANCE_REQUEST_STATUS_SUCCESS} from './actions';
+import { EDIT_APPROVE_LEAVE_REQUEST_STATUS_SUCCESS } from './actions';
+import { EDIT_REJECT_LEAVE_REQUEST_STATUS_SUCCESS } from './actions';
+import { EDIT_APPROVE_HOLIDAY_REQUEST_STATUS_SUCCESS } from './actions';
+import { EDIT_REJECT_HOLIDAY_REQUEST_STATUS_SUCCESS } from './actions';
+
 
 const initialState = {
   adminInfo: [],
@@ -127,6 +135,12 @@ function myReducers(state = initialState, action) {
         employeeInfo: action.payload,
       };
 
+      case FETCH_ADMIN_DATA_BY_ID:
+        return {
+          ...state,
+          adminInfo: action.payload,
+        };
+
     case ADVANCE_REQUESTS_DATA_BY_EMPLOYEEID:
       return {
         ...state,
@@ -150,9 +164,92 @@ function myReducers(state = initialState, action) {
         ...state,
         shop_login: action.payload,
       };
+
+      case EDIT_APPROVE_ADVANCE_REQUEST_STATUS_SUCCESS: {
+        const { employeeID, requestID, newStatus } = action.payload;
+  
+        return {
+          ...state,
+          loading: false,
+          advanceRequests: state.advanceRequests.map(request =>
+            request.employeeID === employeeID && request.id === requestID
+              ? { ...request, status: newStatus }
+              : request
+          ),
+        };
+      };
+
+      case EDIT_REJECT_ADVANCE_REQUEST_STATUS_SUCCESS: {
+        const { employeeID, requestID, newStatus } = action.payload;
+  
+        return {
+          ...state,
+          loading: false,
+          advanceRequests: state.advanceRequests.map(request =>
+            request.employeeID === employeeID && request.id === requestID
+              ? { ...request, status: newStatus }
+              : request
+          ),
+        };
+      };
+
+      case EDIT_APPROVE_LEAVE_REQUEST_STATUS_SUCCESS: {
+        const { employeeID, requestID, newStatus } = action.payload;
+  
+        return {
+          ...state,
+          loading: false,
+          leaveRequests: state.leaveRequests.map(request =>
+            request.employeeID === employeeID && request.id === requestID
+              ? { ...request, status: newStatus }
+              : request
+          ),
+        };
+      };
+
+      case EDIT_REJECT_LEAVE_REQUEST_STATUS_SUCCESS: {
+        const { employeeID, requestID, newStatus } = action.payload;
+  
+        return {
+          ...state,
+          loading: false,
+          leaveRequests: state.leaveRequests.map(request =>
+            request.employeeID === employeeID && request.id === requestID
+              ? { ...request, status: newStatus }
+              : request
+          ),
+        };
+      };
+
+      case EDIT_APPROVE_HOLIDAY_REQUEST_STATUS_SUCCESS: {
+        const { employeeID, requestID, newStatus } = action.payload;
+  
+        return {
+          ...state,
+          loading: false,
+          holidayRequests: state.holidayRequests.map(request =>
+            request.employeeID === employeeID && request.id === requestID
+              ? { ...request, status: newStatus }
+              : request
+          ),
+        };
+      };
+
+      case EDIT_REJECT_HOLIDAY_REQUEST_STATUS_SUCCESS: {
+        const { employeeID, requestID, newStatus } = action.payload;
+  
+        return {
+          ...state,
+          loading: false,
+          holidayRequests: state.holidayRequests.map(request =>
+            request.employeeID === employeeID && request.id === requestID
+              ? { ...request, status: newStatus }
+              : request
+          ),
+        };
+      };
     default:
       return state;
   }
 }
-
 export default myReducers;
