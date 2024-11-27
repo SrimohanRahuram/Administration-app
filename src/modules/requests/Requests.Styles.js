@@ -64,6 +64,13 @@ const stylesNew = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  inputContainer2: {
+    flexDirection: 'row',
+    width: '100%',
+    marginBottom: 10,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
   image: {
     alignSelf: 'center',
     height: 150,
@@ -106,6 +113,17 @@ const stylesNew = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
   },
+  button2: {
+    backgroundColor: Colors.black,
+    borderRadius: 10,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    padding: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
   buttonText: {
     color: Colors.white,
     textAlign: 'center',
@@ -118,6 +136,69 @@ const stylesNew = StyleSheet.create({
     marginLeft: 10,
     fontWeight: '500',
   },
+
+    ///////////////////
+    modalBody: {
+      flexDirection: 'column',
+      backgroundColor: Colors.white,
+      flex: 1,
+      padding: 20,
+    },
+    modalhead: {
+      color: Colors.black,
+      backgroundColor: Colors.white,
+      fontWeight: '500',
+      fontSize: 12,
+      marginBottom: 5,
+    },
+    modalbutton: {
+      backgroundColor: Colors.black,
+      borderRadius: 10,
+      alignSelf: 'center',
+      justifyContent: 'center',
+      padding: 5,
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingLeft: 20,
+      paddingRight: 20,
+      borderWidth: 2,
+      borderColor: Colors.black,
+      marginLeft: 10,
+    },
+    modaldetailsBody2: {
+      padding: 20,
+      borderWidth: 5,
+      borderColor: Colors.black,
+      borderRadius: 10,
+      marginBottom: 20,
+    },
+    modalText: {
+      color: Colors.black,
+      backgroundColor: Colors.white,
+      fontWeight: '500',
+      fontSize: 15,
+      marginBottom: 10,
+    },
+    modalhead2: {
+      color: Colors.black,
+      fontWeight: '800',
+      fontSize: 17,
+      textAlign: 'center',
+    },
+    modalhead3: {
+      color: Colors.black,
+      fontWeight: '500',
+      fontSize: 15,
+      textAlign: 'center',
+    },
+    requestbuttoncontiner: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: Colors.white,
+      borderRadius: 5,
+      padding: 3,
+      paddingBottom: 5,
+    },
 });
 
 export default stylesNew;

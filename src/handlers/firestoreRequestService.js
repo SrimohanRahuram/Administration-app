@@ -212,6 +212,7 @@ const firestoreRequestService = {
 
 
   editApproveAdvanceRequestStatus: async (employeeID, requestID, newStatus) => {
+ 
     try {
       const employeeDoc = await firestore()
         .collection('Employee')
@@ -271,11 +272,40 @@ const firestoreRequestService = {
     } 
     catch (error) {
       console.error('Error updating LeaveRequest status1: ', error);
-      throw error;
+            throw error;
     }
   },
 
+   getActiveHolidayRequestsByEmployeeID: async employeeID => {
+      if (employeeDoc.exists) {
+        const holidayRequestSnapshot = await firestore()
+          .collection('Employee')
+          .doc(employeeID)
+          .collection('HolidayRequests')
+          .get();
+
+        const HolidayRequestsData = holidayRequestSnapshot.docs
+          .filter(doc => doc.data().status === 'ACTIVE')
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+        console.log(
+          'Retrieved ActiveHolidayRequestsData:',
+          HolidayRequestsData,
+        );
+        return HolidayRequestsData;
+      }
+    } catch (error) {
+      console.error(
+        'Error retrieving ActiveHolidayRequestsData by ID: ',
+        error,
+      );
+
+
   editApproveHolidayRequestStatus: async (employeeID, requestID, newStatus) => {
+  
     try {
       const employeeDoc = await firestore()
         .collection('Employee')
@@ -308,6 +338,32 @@ const firestoreRequestService = {
   },
 
 
+editActiveHolidayRequestsByEmployeeID: async (id, count, employeeID) => {
+    console.log(employeeID);
+  
+      if (employeeDoc.exists) {
+        const holidayRequestRef = firestore()
+          .collection('Employee')
+          .doc(employeeID)
+          .collection('shoplogin')
+          .doc(id);
+        const holidayRequestSnapshot = await holidayRequestRef.get();
+        if (holidayRequestSnapshot.exists) {
+          await holidayRequestRef.update({
+            hoursOfWork: count,
+          });
+          return 'Success';
+        } else {
+          return 'Error';
+        }
+      } else {
+        console.error('Employee document not found');
+      }
+    } catch (error) {
+      console.error('Error updating HolidayRequestsData by ID: ', error);
+      throw error;
+    }
+  },
 };
 
 

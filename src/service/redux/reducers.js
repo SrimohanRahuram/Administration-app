@@ -29,6 +29,7 @@ import { EDIT_REJECT_LEAVE_REQUEST_STATUS_SUCCESS } from './actions';
 import { EDIT_APPROVE_HOLIDAY_REQUEST_STATUS_SUCCESS } from './actions';
 import { EDIT_REJECT_HOLIDAY_REQUEST_STATUS_SUCCESS } from './actions';
 
+import {ACTIVE_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
 
 const initialState = {
   adminInfo: [],
@@ -44,6 +45,7 @@ const initialState = {
   leaveRequests: [],
   holidayRequests: [],
   shop_login: [],
+  activeholidayRequests: [],
 };
 
 function myReducers(state = initialState, action) {
@@ -247,6 +249,11 @@ function myReducers(state = initialState, action) {
               : request
           ),
         };
+
+    case ACTIVE_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID:
+      return {
+        ...state,
+        activeholidayRequests: action.payload,
       };
     default:
       return state;
