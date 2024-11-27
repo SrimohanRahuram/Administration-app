@@ -12,11 +12,19 @@ import Images from '../../constants/images';
 import ProgressOverlay from '../../components/ProgressOverlay';
 import ToastAlert from '../../components/ToastAlert';
 import Entypo from 'react-native-vector-icons/Entypo';
+import { fetchAdminDataById } from '../../service/redux/actions';
 
 export default function AdminHome({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
+ 
+  useEffect(() => {
+    // Fetch admin data when the component mounts
+    dispatch(fetchAdminDataById());
+    console.log('Fetch dispatched');
+  }, [dispatch]);
 
+  const adminData = useSelector(state => state.myReducers.adminInfo);
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backAction);
     return () => {
@@ -36,7 +44,7 @@ export default function AdminHome({navigation}) {
             ...styles.inputContainer,
             justifyContent: 'space-between',
           }}>
-          <Text style={styles.header}>Gowrisan</Text>
+          <Text style={styles.header}>{adminData.username}</Text>
           <TouchableOpacity
             onPress={() => {}}
             style={{
@@ -63,7 +71,7 @@ export default function AdminHome({navigation}) {
                 navigation.navigate('Shops');
               }}
               style={styles.detailsBody2}>
-              <Text style={styles.head}>Shop</Text>
+              <Text style={styles.head}>Shops</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {

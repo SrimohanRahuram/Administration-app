@@ -24,8 +24,16 @@ import {
   HolidayRequestsByEmployeeId,
   ShopLoginByEmployeeId,
   LeaveRequestsByEmployeeId,
-  ActiveHolidayRequestsByEmployeeId,
+  editRejectLeaveRequestStatus,
+  editApproveLeaveRequestStatus,
+  editApproveHolidayRequestStatus,
+  editRejectHolidayRequestStatus,
+  ActiveHolidayRequestsByEmployeeId
 } from '../../service/redux/actions';
+import {format, getWeek, startOfWeek, endOfWeek} from 'date-fns';
+import { editApproveAdvanceRequestStatus } from '../../service/redux/actions';
+import { combineReducers } from 'redux';
+
 import {format, getWeek, startOfWeek, endOfWeek} from 'date-fns';
 import firestoreRequestService from '../../handlers/firestoreRequestService';
 
@@ -200,6 +208,193 @@ export default function EmployeeDetails({navigation}) {
     ...filteredData[key],
     week: key,
   }));
+
+  const handleApproveAdvanceSentRequest = async (requestId) => {
+    try {
+      setIsLoading(true);
+       const newStatus="APPROVED";
+      const employeeID=userinfo.id;
+      console.log(employeeID);
+      console.log(requestId+"requestId");
+
+      const response =  dispatch(editApproveAdvanceRequestStatus(employeeID, requestId, newStatus))
+      .then(response => {
+        console.log('Response:', response); 
+        if (response=="Success") {
+          setIsLoading(false);
+          alert('Status updated successfully!');
+        } else {
+          alert(`Error updating status:`);
+        }// "Success" or error object
+      })
+      .catch(err => {
+        console.error('Error:', err);
+      });
+      console.log("response">>+response);
+
+    
+
+    } catch (error) {
+      console.error('Error dispatching the action:', error);
+    }
+  };
+
+  const handleRejectAdvanceSentRequest = async (requestId) => {
+    try {
+      setIsLoading(true);
+       const newStatus="REJECT";
+      const employeeID=userinfo.id;
+      console.log(employeeID);
+      console.log(requestId+"requestId");
+
+      const response =  dispatch(editApproveAdvanceRequestStatus(employeeID, requestId, newStatus))
+      .then(response => {
+        console.log('Response:', response); 
+        if (response=="Success") {
+          setIsLoading(false);
+          alert('Status updated successfully!');
+        } else {
+          alert(`Error updating status:`);
+        }// "Success" or error object
+      })
+      .catch(err => {
+        console.error('Error:', err);
+      });
+      console.log("response">>+response);
+
+    
+
+    } catch (error) {
+      console.error('Error dispatching the action:', error);
+    }
+  };
+
+  const handleApproveLeaveSentRequest = async (requestId) => {
+    try {
+      setIsLoading(true);
+       const newStatus="APPROVED";
+      const employeeID=userinfo.id;
+      console.log(employeeID);
+      console.log(requestId+"requestId");
+
+      const response =  dispatch(editApproveLeaveRequestStatus(employeeID, requestId, newStatus))
+      .then(response => {
+        console.log('Response:', response); 
+        if (response=="Success") {
+          setIsLoading(false);
+          alert('Status updated successfully!');
+        } else {
+          setIsLoading(false);
+          alert(`Error updating status:`);
+
+        }// "Success" or error object
+      })
+      .catch(err => {
+        console.error('Error:', err);
+      });
+      console.log("response">>+response);
+
+    
+
+    } catch (error) {
+      console.error('Error dispatching the action:', error);
+    }
+  };
+
+  const handleRejectLeaveSentRequest = async (requestId) => {
+    try {
+      setIsLoading(true);
+       const newStatus="REJECT";
+      const employeeID=userinfo.id;
+      console.log(employeeID);
+      console.log(requestId+"requestId");
+
+      const response =  dispatch(editRejectLeaveRequestStatus(employeeID, requestId, newStatus))
+      .then(response => {
+        console.log('Response:', response); 
+        if (response=="Success") {
+          setIsLoading(false);
+          alert('Status updated successfully!');
+        } else {
+          alert(`Error updating status:`);
+        }// "Success" or error object
+      })
+      .catch(err => {
+        console.error('Error:', err);
+      });
+      console.log("response">>+response);
+
+    
+
+    } catch (error) {
+      console.error('Error dispatching the action:', error);
+    }
+  };
+
+  const handleApproveHolidaySentRequest = async (requestId) => {
+    try {
+      setIsLoading(true);
+       const newStatus="APPROVED";
+      const employeeID=userinfo.id;
+      console.log(employeeID);
+      console.log(requestId+"requestId");
+
+      const response =  dispatch(editApproveHolidayRequestStatus(employeeID, requestId, newStatus))
+      .then(response => {
+        console.log('Response:', response); 
+        if (response=="Success") {
+          setIsLoading(false);
+          alert('Status updated successfully!');
+        } else {
+          setIsLoading(false);
+          alert(`Error updating status:`);
+
+        }// "Success" or error object
+      })
+      .catch(err => {
+        console.error('Error:', err);
+      });
+      console.log("response">>+response);
+
+    
+
+    } catch (error) {
+      console.error('Error dispatching the action:', error);
+    }
+  };
+
+  const handleRejectHolidaySentRequest = async (requestId) => {
+    try {
+      setIsLoading(true);
+       const newStatus="REJECT";
+      const employeeID=userinfo.id;
+      console.log(employeeID);
+      console.log(requestId+"requestId");
+
+      const response =  dispatch(editRejectHolidayRequestStatus(employeeID, requestId, newStatus))
+      .then(response => {
+        console.log('Response:', response); 
+        if (response=="Success") {
+          setIsLoading(false);
+          alert('Status updated successfully!');
+        } else {
+          setIsLoading(false);
+          alert(`Error updating status:`);
+        }// "Success" or error object
+      })
+      .catch(err => {
+        console.error('Error:', err);
+      });
+      console.log("response">>+response);
+
+    
+
+    } catch (error) {
+      console.error('Error dispatching the action:', error);
+    }
+  };
+
+
   const reloadAction = () => {
     navigation.reset({
       index: 0,
@@ -241,7 +436,7 @@ export default function EmployeeDetails({navigation}) {
             </TouchableOpacity>
             <View style={{...styles.button, backgroundColor: Colors.white}}>
               <Text style={{...styles.buttonText, color: Colors.black}}>
-                {userinfo.userName}
+                {/* {userinfo.userName} */}
               </Text>
             </View>
             <View />
@@ -520,7 +715,7 @@ export default function EmployeeDetails({navigation}) {
                 borderColor: Colors.black,
                 borderRadius: 10,
                 padding: 0,
-                width: '100%',
+                width: '100%'
               }}>
               {advanceRequests != null && (
                 <FlatList
@@ -605,7 +800,9 @@ export default function EmployeeDetails({navigation}) {
                             borderWidth: 1,
                             borderColor: Colors.black,
                           }}
-                          onPress={() => {}}>
+                          onPress={() => {
+                            handleRejectAdvanceSentRequest(item.id);
+                          }}>
                           <Text style={styles.modalhead3}>Reject</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
@@ -614,7 +811,12 @@ export default function EmployeeDetails({navigation}) {
                             width: '49%',
                             backgroundColor: Colors.black,
                           }}
-                          onPress={() => {}}>
+                          onPress={
+                            () => {
+                              handleApproveAdvanceSentRequest(item.id);
+                            }
+                           
+                            }>
                           <Text
                             style={{...styles.modalhead3, color: Colors.white}}>
                             Approve
@@ -713,7 +915,9 @@ export default function EmployeeDetails({navigation}) {
                             borderWidth: 1,
                             borderColor: Colors.black,
                           }}
-                          onPress={() => {}}>
+                          onPress={() => {
+                            handleRejectLeaveSentRequest(item.id);
+                          }}>
                           <Text style={styles.modalhead3}>Reject</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
@@ -722,7 +926,9 @@ export default function EmployeeDetails({navigation}) {
                             width: '49%',
                             backgroundColor: Colors.black,
                           }}
-                          onPress={() => {}}>
+                          onPress={() => {
+                            handleApproveLeaveSentRequest(item.id);
+                          }}>
                           <Text
                             style={{...styles.modalhead3, color: Colors.white}}>
                             Approve
@@ -821,7 +1027,9 @@ export default function EmployeeDetails({navigation}) {
                             borderWidth: 1,
                             borderColor: Colors.black,
                           }}
-                          onPress={() => {}}>
+                          onPress={() => {
+                            handleRejectHolidaySentRequest(item.id);
+                          }}>
                           <Text style={styles.modalhead3}>Reject</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
@@ -830,7 +1038,9 @@ export default function EmployeeDetails({navigation}) {
                             width: '49%',
                             backgroundColor: Colors.black,
                           }}
-                          onPress={() => {}}>
+                          onPress={() => {
+                            handleApproveHolidaySentRequest(item.id);
+                          }}>
                           <Text
                             style={{...styles.modalhead3, color: Colors.white}}>
                             Approve
@@ -953,7 +1163,9 @@ export default function EmployeeDetails({navigation}) {
                     textAlign: 'left',
                   }}>
                   {Number(selectedItem.totalHours) *
-                    Number(userinfo.perHourSalary)}{' '}
+                    Number
+                    (userinfo.perHourSalary)
+                    }{' '}
                   Pounds
                 </Text>
               </View>
@@ -1053,7 +1265,9 @@ export default function EmployeeDetails({navigation}) {
                 )}
               />
             </View>
-            {Number(userinfo.maxHours) <
+            {Number
+            (userinfo.maxHours)
+             <
             Number(selectedItem.totalHours) * Number(userinfo.perHourSalary) ? (
               <View
                 style={{

@@ -120,6 +120,7 @@ export default function Employees({navigation}) {
     };
 
     try {
+      
       const status = await firestoreEmployeeService.editEmplyeeData(
         Id,
         updatedData,

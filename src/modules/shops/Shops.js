@@ -22,6 +22,7 @@ import {fetchShopData} from '../../service/redux/actions';
 import DocumentPicker from 'react-native-document-picker';
 import {addImage, clearImages} from '../../service/redux/actions';
 import ReactNativeBlobUtil from 'react-native-blob-util';
+import { fetchAdminDataById } from '../../service/redux/actions';
 
 export default function Shops({navigation}) {
   const dispatch = useDispatch();
@@ -59,6 +60,14 @@ export default function Shops({navigation}) {
   useEffect(() => {
     // Fetch shop data when the component mounts
     dispatch(fetchShopData());
+    console.log('Fetch dispatched');
+  }, [dispatch]);
+
+  const adminData = useSelector(state => state.myReducers.adminInfo);
+
+  useEffect(() => {
+    // Fetch admin data when the component mounts
+    dispatch(fetchAdminDataById());
     console.log('Fetch dispatched');
   }, [dispatch]);
 
@@ -186,7 +195,7 @@ export default function Shops({navigation}) {
             alignItems: 'center',
             justifyContent: 'space-between',
           }}>
-          <Text style={styles.header}>Gowrisan</Text>
+          <Text style={styles.header}>{adminData.username}</Text>
           <Text style={styles.header}>Shops</Text>
           <TouchableOpacity
             onPress={() => {
