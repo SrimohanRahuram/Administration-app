@@ -109,7 +109,8 @@ export default function EmployeeDetails({navigation}) {
       setValue(firstItem.name);
       SelectSalaryData(firstItem.key); 
     }
-  }, [dropdowndata]);
+  }, [filteredData]);
+
   useEffect(() => {
     OnPressWorkPlace();
     BackHandler.addEventListener('hardwareBackPress', backAction);
