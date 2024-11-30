@@ -272,6 +272,25 @@ const stylesNew = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
   },
+
+  inputContainer2: {
+    flexDirection: 'row',
+    width: '100%',
+    marginBottom: 10,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  button2: {
+    backgroundColor: Colors.black,
+    borderRadius: 10,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    padding: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
 });
 
 export default stylesNew;
