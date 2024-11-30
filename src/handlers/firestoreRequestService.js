@@ -377,6 +377,90 @@ const firestoreRequestService = {
       throw error;
     }
   },
+
+  getAllAdvanceRequestsByEmployeeID: async employeeID => {
+    try {
+      const employeeDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeID)
+        .get();
+      if (employeeDoc.exists) {
+        const advanceRequestSnapshot = await firestore()
+          .collection('Employee')
+          .doc(employeeID)
+          .collection('AdvanceRequests')
+          .get();
+
+        const AdvanceRequestsData = advanceRequestSnapshot.docs
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+        console.log('RetrievedAdvanceRequestsData:', AdvanceRequestsData);
+        return AdvanceRequestsData;
+      }
+    } catch (error) {
+      console.error('Error retrieving AdvanceRequestsData by ID: ', error);
+      throw error;
+    }
+  },
+
+  getAllLeaveRequestsByEmployeeID: async employeeID => {
+    try {
+      const employeeDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeID)
+        .get();
+      if (employeeDoc.exists) {
+        const leaveRequestSnapshot = await firestore()
+          .collection('Employee')
+          .doc(employeeID)
+          .collection('LeaveRequests')
+          .get();
+
+        const LeaveRequestsData = leaveRequestSnapshot.docs
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+        console.log('Retrieved LeaveRequestsData:', LeaveRequestsData);
+        return LeaveRequestsData;
+      }
+    } catch (error) {
+      console.error('Error retrieving LeaveRequestsData by ID: ', error);
+      throw error;
+    }
+  },
+
+  getAllHolidayRequestsByEmployeeID: async employeeID => {
+    try {
+      const employeeDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeID)
+        .get();
+      if (employeeDoc.exists) {
+        const holidayRequestSnapshot = await firestore()
+          .collection('Employee')
+          .doc(employeeID)
+          .collection('HolidayRequests')
+          .get();
+
+        const HolidayRequestsData = holidayRequestSnapshot.docs
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+        console.log('Retrieved HolidayRequestsData:', HolidayRequestsData);
+        return HolidayRequestsData;
+      }
+    } catch (error) {
+      console.error('Error retrieving HolidayRequestsData by ID: ', error);
+      throw error;
+    }
+  },
 };
 
 

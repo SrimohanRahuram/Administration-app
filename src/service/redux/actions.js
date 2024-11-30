@@ -48,8 +48,13 @@ export const EDIT_REJECT_HOLIDAY_REQUEST_STATUS_SUCCESS='EDIT_REJECT_HOLIDAY_REQ
 export const TOTALHOURS_DATA_BY_EMPLOYEEID='TOTALHOURS_DATA_BY_EMPLOYEEID';
 export const TOTALADVANCE_DATA_BY_EMPLOYEEID='TOTALADVANCE_DATA_BY_EMPLOYEEID';
 
+export const ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID='ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID';
+export const ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID='ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID';
+export const ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID='ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID';
 
-
+export const ADMIN_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID='ADMIN_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID';
+export const ADMIN_ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID='ADMIN_ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID';
+export const ADMIN_ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID='ADMIN_ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID';
 
 
 
@@ -649,6 +654,168 @@ export const employeeTotalAdvanceCalc = () => async dispatch => {
    
   } catch (error) {
     console.error('Error employeeTotalAdvance by ID:', error);
+    throw error;
+  }
+};
+
+export const AdvanceAllRequestsByEmployeeId = () => async dispatch => {
+  try {
+    
+    const employeeId = await AsyncStorage.getItem('employeeId');
+    const employeeIdforRequest = await AsyncStorage.getItem(
+      'employeeIdforRequest',
+    );
+    console.log(employeeIdforRequest+"<<<<employeeIdforRequest")
+
+    const advanceRequestData =
+      await firestoreRequestService.getAllAdvanceRequestsByEmployeeID(
+        employeeId || employeeIdforRequest,
+      );
+    console.log('Fetched Advance Requests Data by ID:', advanceRequestData);
+
+    if (advanceRequestData) {
+      dispatch({
+        type: ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID,
+        payload: advanceRequestData,
+      });
+    } else {
+      console.warn('No advance requests data found for the given ID');
+    }
+  } catch (error) {
+    console.error('Error advance requests data by ID:', error);
+    throw error;
+  }
+};
+
+export const AllLeaveRequestsByEmployeeId = () => async dispatch => {
+  try {
+    const employeeId = await AsyncStorage.getItem('employeeId');
+    const employeeIdforRequest = await AsyncStorage.getItem(
+      'employeeIdforRequest',
+    );
+    console.log(employeeIdforRequest+"<<<<employeeIdforRequestleave");
+    const leaveRequestData =
+      await firestoreRequestService.getAllLeaveRequestsByEmployeeID(
+        employeeId || employeeIdforRequest,
+      );
+    console.log('Fetched leaveRequestData by ID:', leaveRequestData);
+
+    if (leaveRequestData) {
+      dispatch({
+        type: ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID,
+        payload: leaveRequestData,
+      });
+    } else {
+      console.warn('No leaveRequestData found for the given ID');
+    }
+  } catch (error) {
+    console.error('Error leaveRequestData by ID:', error);
+    throw error;
+  }
+};
+
+export const AllHolidayRequestsByEmployeeId = () => async dispatch => {
+  try {
+
+    const employeeId = await AsyncStorage.getItem('employeeId');
+    const employeeIdforRequest = await AsyncStorage.getItem(
+      'employeeIdforRequest',
+    );
+    const holidayRequestData =
+      await firestoreRequestService.getAllHolidayRequestsByEmployeeID(
+        employeeId || employeeIdforRequest,
+      );
+    console.log('Fetched holidayRequestData by ID:', holidayRequestData);
+
+    if (holidayRequestData) {
+      dispatch({
+        type: ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID,
+        payload: holidayRequestData,
+      });
+    } else {
+      console.warn('No holidayRequestData found for the given ID');
+    }
+  } catch (error) {
+    console.error('Error holidayRequestData by ID:', error);
+    throw error;
+  }
+};
+
+export const AdminAdvanceAllRequestsByEmployeeId = () => async dispatch => {
+  try {
+  
+    const employeeIdforRequest = await AsyncStorage.getItem(
+      'employeeIdforRequest',
+    );
+    console.log(employeeIdforRequest+"<<<<employeeIdforRequest")
+
+    const advanceRequestData =
+      await firestoreRequestService.getAllAdvanceRequestsByEmployeeID(
+        employeeIdforRequest,
+      );
+    console.log('Fetched Advance Requests Data by ID:', advanceRequestData);
+
+    if (advanceRequestData) {
+      dispatch({
+        type: ADMIN_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID,
+        payload: advanceRequestData,
+      });
+    } else {
+      console.warn('No advance requests data found for the given ID');
+    }
+  } catch (error) {
+    console.error('Error advance requests data by ID:', error);
+    throw error;
+  }
+};
+
+export const AdminAllLeaveRequestsByEmployeeId = () => async dispatch => {
+  try {
+    const employeeIdforRequest = await AsyncStorage.getItem(
+      'employeeIdforRequest',
+    );
+    console.log(employeeIdforRequest+"<<<<employeeIdforRequestleave");
+    const leaveRequestData =
+      await firestoreRequestService.getAllLeaveRequestsByEmployeeID(
+     employeeIdforRequest,
+      );
+    console.log('Fetched leaveRequestData by ID:', leaveRequestData);
+
+    if (leaveRequestData) {
+      dispatch({
+        type: ADMIN_ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID,
+        payload: leaveRequestData,
+      });
+    } else {
+      console.warn('No leaveRequestData found for the given ID');
+    }
+  } catch (error) {
+    console.error('Error leaveRequestData by ID:', error);
+    throw error;
+  }
+};
+
+export const AdminAllHolidayRequestsByEmployeeId = () => async dispatch => {
+  try {
+    const employeeIdforRequest = await AsyncStorage.getItem(
+      'employeeIdforRequest',
+    );
+    const holidayRequestData =
+      await firestoreRequestService.getAllHolidayRequestsByEmployeeID(
+     employeeIdforRequest,
+      );
+    console.log('Fetched holidayRequestData by ID:', holidayRequestData);
+
+    if (holidayRequestData) {
+      dispatch({
+        type: ADMIN_ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID,
+        payload: holidayRequestData,
+      });
+    } else {
+      console.warn('No holidayRequestData found for the given ID');
+    }
+  } catch (error) {
+    console.error('Error holidayRequestData by ID:', error);
     throw error;
   }
 };
