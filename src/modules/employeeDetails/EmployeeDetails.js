@@ -279,7 +279,10 @@ export default function EmployeeDetails({navigation}) {
       .catch(err => {
         console.error('Error:', err);
       });
-      console.log("response">>+response);    
+      console.log("response">>+response); 
+    }catch (error) {
+      console.error('Error dispatching the action:', error);
+    }   
   };
 
   const handleRejectAdvanceSentRequest = async requestId => {
@@ -306,7 +309,9 @@ export default function EmployeeDetails({navigation}) {
         console.error('Error:', err);
       });
       console.log("response">>+response);  
-
+    }catch (error) {
+      console.error('Error dispatching the action:', error);
+    } 
   };
 
   const handleApproveLeaveSentRequest = async requestId => {
@@ -335,6 +340,9 @@ export default function EmployeeDetails({navigation}) {
         console.error('Error:', err);
       });
       console.log("response">>+response);  
+    }catch (error) {
+      console.error('Error dispatching the action:', error);
+    } 
   };
 
   const handleRejectLeaveSentRequest = async requestId => {
