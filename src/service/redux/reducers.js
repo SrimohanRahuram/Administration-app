@@ -30,6 +30,8 @@ import { EDIT_APPROVE_HOLIDAY_REQUEST_STATUS_SUCCESS } from './actions';
 import { EDIT_REJECT_HOLIDAY_REQUEST_STATUS_SUCCESS } from './actions';
 
 import {ACTIVE_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
+import { TOTALHOURS_DATA_BY_EMPLOYEEID } from './actions';
+import { TOTALADVANCE_DATA_BY_EMPLOYEEID } from './actions';
 
 const initialState = {
   adminInfo: [],
@@ -46,6 +48,8 @@ const initialState = {
   holidayRequests: [],
   shop_login: [],
   activeholidayRequests: [],
+  totalHolidayHours:[],
+  totalAdvance:[],
 };
 
 function myReducers(state = initialState, action) {
@@ -250,11 +254,29 @@ function myReducers(state = initialState, action) {
           ),
         };
 
-    case ACTIVE_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID:
+      }
+
+    case ACTIVE_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID:{
       return {
         ...state,
         activeholidayRequests: action.payload,
       };
+    }
+
+    case TOTALHOURS_DATA_BY_EMPLOYEEID:{
+      return {
+        ...state,
+        totalHolidayHours: action.payload,
+      };
+    }
+
+    case TOTALADVANCE_DATA_BY_EMPLOYEEID:{
+      return {
+        ...state,
+        totalAdvance: action.payload,
+      };
+    }
+    
     default:
       return state;
   }

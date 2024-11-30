@@ -34,7 +34,7 @@ import {format, getWeek, startOfWeek, endOfWeek} from 'date-fns';
 import { editApproveAdvanceRequestStatus } from '../../service/redux/actions';
 import { combineReducers } from 'redux';
 
-import {format, getWeek, startOfWeek, endOfWeek} from 'date-fns';
+
 import firestoreRequestService from '../../handlers/firestoreRequestService';
 
 export default function EmployeeDetails({navigation}) {
@@ -223,6 +223,7 @@ export default function EmployeeDetails({navigation}) {
         if (response=="Success") {
           setIsLoading(false);
           alert('Status updated successfully!');
+          reloadAction();
         } else {
           alert(`Error updating status:`);
         }// "Success" or error object
@@ -253,6 +254,7 @@ export default function EmployeeDetails({navigation}) {
         if (response=="Success") {
           setIsLoading(false);
           alert('Status updated successfully!');
+          reloadAction();
         } else {
           alert(`Error updating status:`);
         }// "Success" or error object
@@ -282,7 +284,9 @@ export default function EmployeeDetails({navigation}) {
         console.log('Response:', response); 
         if (response=="Success") {
           setIsLoading(false);
+          reloadAction();
           alert('Status updated successfully!');
+         
         } else {
           setIsLoading(false);
           alert(`Error updating status:`);
@@ -721,7 +725,7 @@ export default function EmployeeDetails({navigation}) {
                 <FlatList
                   data={advanceRequests}
                   nestedScrollEnabled={true}
-                  keyExtractor={(item, id) => id.toString()}
+                  keyExtractor={(item,id) => id.toString()}
                   renderItem={({item}) => (
                     <View
                       style={{

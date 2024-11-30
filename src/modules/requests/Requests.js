@@ -20,10 +20,12 @@ import ToastAlert from '../../components/ToastAlert';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import firestoreRequestService from '../../handlers/firestoreRequestService';
 import {SelectCountry} from 'react-native-element-dropdown';
+import { employeeTotalAdvanceCalc, employeeTotalHolidayHoursCalc, employeeTotalHoursCalc } from '../../service/redux/actions';
+import { useDispatch } from 'react-redux';
 
 export default function Requests({navigation}) {
-  const [advance, setAdvance] = React.useState('');
-  const [leaveDates, setLeaveDates] = React.useState('');
+  const [advance, setAdvance] = React.useState(0);
+  const [leaveDates, setLeaveDates] = React.useState(0);
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isDatePickerVisible2, setDatePickerVisibility2] = useState(false);
@@ -37,6 +39,33 @@ export default function Requests({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
 
   const [RequestModal, setRequestModal] = useState(false);
+  const [employeeTotalHoliday, setEmployeeTotalHoliday] = useState(false);
+  const [employeeTotalAdvance, setEmployeeTotalAdvance] = useState(false);
+  
+   dispatch=useDispatch();
+
+   useEffect(() => {
+    dispatch(employeeTotalHolidayHoursCalc())
+      .then(response => {
+        setEmployeeTotalHoliday(response); // Update state with the response
+        console.log('Response:', response); // Log the response for debugging
+      })
+      .catch(error => {
+        console.error('Error calculating total holiday hours:', error);
+      });
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(employeeTotalAdvanceCalc())
+      .then(response => {
+        setEmployeeTotalAdvance(response); // Update state with the response
+        console.log('employeeTotalAdvanceCalc:', response); // Log the response for debugging
+      })
+      .catch(error => {
+        console.error('Error calculating total holiday hours:', error);
+      });
+  }, [dispatch]);
+
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backAction);
@@ -118,23 +147,34 @@ export default function Requests({navigation}) {
   };
 
   const handleAdvanceSentRequest = async e => {
+    setIsLoading(true);
     const employeeId = await AsyncStorage.getItem('employeeId');
     const status = await firestoreRequestService.saveAdvanceRequestData(
       advance,
       employeeId,
     );
     if (status == 'Success') {
+      setIsLoading(false);
       ToastAlert.ShowToast(
-        'error',
+        'success',
         'Alert',
         'Sucessfully Advance Request sent..',
       );
       setAdvance('');
       // dispatch();
     }
+    else{
+      setIsLoading(false);
+    ToastAlert.ShowToast(
+      'error',
+      'Alert',
+      'error Advance Request sent..',
+    );
+    }
   };
 
   const handleLeaveSentRequest = async e => {
+    setIsLoading(true);
     const employeeId = await AsyncStorage.getItem('employeeId');
     const status = await firestoreRequestService.saveLeaveRequestData(
       formDate2,
@@ -142,19 +182,31 @@ export default function Requests({navigation}) {
       employeeId,
     );
     if (status == 'Success') {
+      setIsLoading(false);
       ToastAlert.ShowToast(
-        'error',
+        'success',
         'Alert',
-        'Sucessfully Advance Request sent..',
+        'error Advance Request sent..',
       );
+      
       setFormDate2('');
       setToDate2('');
       // dispatch();
     }
+    else{
+    setIsLoading(false);
+    ToastAlert.ShowToast(
+      'error',
+      'Alert',
+      'error Advance Request sent..',
+    );
+    }
   };
 
   const handleHolidaySentRequest = async e => {
+    setIsLoading(true);
     const employeeId = await AsyncStorage.getItem('employeeId');
+
     const status = await firestoreRequestService.saveHolidayRequestData(
       formDate,
       toDate,
@@ -162,8 +214,9 @@ export default function Requests({navigation}) {
       employeeId,
     );
     if (status == 'Success') {
+      setIsLoading(false);
       ToastAlert.ShowToast(
-        'error',
+        'success',
         'Alert',
         'Sucessfully Advance Request sent..',
       );
@@ -172,7 +225,16 @@ export default function Requests({navigation}) {
       setLeaveDates('');
       // dispatch();
     }
+    else{
+      setIsLoading(false);
+      ToastAlert.ShowToast(
+        'error',
+        'Alert',
+        'Sucessfully Advance Request sent..',
+      );
+    }
   };
+
   const salarydata = [
     {key: '1', id: ' 11', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
     {key: '2', id: ' 12', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
@@ -202,12 +264,12 @@ export default function Requests({navigation}) {
               }}>
               <View style={styles.totalDetails}>
                 <Text style={{color: Colors.black, fontWeight: '500'}}>
-                  Total Holiday = 3 hours
+                  Total Holiday = {employeeTotalHoliday}
                 </Text>
               </View>
               <View style={styles.totalDetails}>
                 <Text style={{color: Colors.black, fontWeight: '500'}}>
-                  Total Advance amount = $300
+                  Total Advance amount = ${employeeTotalAdvance}
                 </Text>
               </View>
             </View>
@@ -316,7 +378,7 @@ export default function Requests({navigation}) {
             </View>
             <View style={styles.detailsBody2}>
               <Text style={{...styles.head, marginBottom: 10}}>
-                How many leaves you need to ask?
+                How many Holidays you need to ask?
               </Text>
               <View style={styles.inputContainer}>
                 <Text style={{...styles.head, width: '20%'}}>Hours:</Text>
@@ -325,7 +387,7 @@ export default function Requests({navigation}) {
                     style={styles.input}
                     onChangeText={setLeaveDates}
                     value={leaveDates}
-                    placeholder="Enter Amount"
+                    placeholder="Enter Hours"
                     keyboardType="numeric"
                   />
                 </View>
