@@ -33,6 +33,14 @@ import {ACTIVE_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
 import { TOTALHOURS_DATA_BY_EMPLOYEEID } from './actions';
 import { TOTALADVANCE_DATA_BY_EMPLOYEEID } from './actions';
 
+import { ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID } from './actions';
+import { ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID } from './actions';
+import { ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID } from './actions';
+
+import { ADMIN_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID } from './actions';
+import { ADMIN_ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID } from './actions';
+import { ADMIN_ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID } from './actions';
+
 const initialState = {
   adminInfo: [],
   employeeInfo: [],
@@ -277,6 +285,41 @@ function myReducers(state = initialState, action) {
         totalAdvance: action.payload,
       };
     }
+
+    case ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID:
+      return {
+        ...state,
+        advanceRequests: action.payload,
+      };
+
+      case ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID:
+        return {
+          ...state,
+          leaveRequests: action.payload,
+        };
+  
+      case ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID:
+        return {
+          ...state,
+          holidayRequests: action.payload,
+        };
+        case ADMIN_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID:
+          return {
+            ...state,
+            advanceRequests: action.payload,
+          };
+    
+          case ADMIN_ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID:
+            return {
+              ...state,
+              leaveRequests: action.payload,
+            };
+      
+          case ADMIN_ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID:
+            return {
+              ...state,
+              holidayRequests: action.payload,
+            };
 
     default:
       return state;

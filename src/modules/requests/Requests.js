@@ -20,8 +20,8 @@ import ToastAlert from '../../components/ToastAlert';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import firestoreRequestService from '../../handlers/firestoreRequestService';
 import {SelectCountry} from 'react-native-element-dropdown';
-import { employeeTotalAdvanceCalc, employeeTotalHolidayHoursCalc, employeeTotalHoursCalc } from '../../service/redux/actions';
-import { useDispatch } from 'react-redux';
+import { AdvanceAllRequestsByEmployeeId, AllHolidayRequestsByEmployeeId, AllLeaveRequestsByEmployeeId, employeeTotalAdvanceCalc, employeeTotalHolidayHoursCalc, employeeTotalHoursCalc } from '../../service/redux/actions';
+import { useDispatch ,useSelector} from 'react-redux';
 
 export default function Requests({navigation}) {
   const [advance, setAdvance] = React.useState(0);
@@ -234,6 +234,27 @@ export default function Requests({navigation}) {
       );
     }
   };
+
+  const AllAdvanceData = useSelector(state => state.myReducers.advanceRequests);
+  useEffect(() => {
+    // Fetch admin data when the component mounts
+    dispatch(AdvanceAllRequestsByEmployeeId());
+    console.log('Fetch dispatched');
+  }, [dispatch]);
+
+  const AllLeaveData = useSelector(state => state.myReducers.leaveRequests);
+  useEffect(() => {
+    // Fetch admin data when the component mounts
+    dispatch(AllLeaveRequestsByEmployeeId());
+    console.log('Fetch dispatched');
+  }, [dispatch]);
+
+  const AllHolidayData = useSelector(state => state.myReducers.holidayRequests);
+  useEffect(() => {
+    // Fetch admin data when the component mounts
+    dispatch(AllHolidayRequestsByEmployeeId());
+    console.log('Fetch dispatched');
+  }, [dispatch]);
 
   const salarydata = [
     {key: '1', id: ' 11', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
@@ -476,7 +497,7 @@ export default function Requests({navigation}) {
           setRequestModal(!RequestModal);
         }}>
         <SafeAreaView style={styles.body}>
-          <Text style={styles.header}>Employee Details</Text>
+          <Text style={styles.header}>Request Details</Text>
           <View style={styles.detailsBody}>
             <View style={styles.inputContainer}>
               <TouchableOpacity
@@ -510,12 +531,48 @@ export default function Requests({navigation}) {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}>
-                <Text style={{...styles.modalhead2, width: '33%'}}>Dates</Text>
-                <Text style={{...styles.modalhead2, width: '33%'}}>Hours</Text>
-                <Text style={{...styles.modalhead2, width: '33%'}}>Salary</Text>
+                <Text style={{...styles.modalhead2, width: '50%'}}>Advance</Text>
+                <Text style={{...styles.modalhead2, width: '50%'}}>Status</Text>
               </View>
               <FlatList
-                data={salarydata}
+                data={AllAdvanceData}
+                nestedScrollEnabled={true}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({item}) => (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      borderColor: Colors.white,
+                      borderBottomWidth: 5,
+                      backgroundColor: Colors.lightgray,
+                      height: 50,
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text style={{...styles.modalhead3, width: '50%'}}>
+                    {item.advance}
+                    </Text>
+                    <Text style={{...styles.modalhead3, width: '50%'}}>
+                    {item.status}
+                    </Text>
+                  </View>
+                )}
+              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  borderColor: Colors.gray,
+                  borderBottomWidth: 2,
+                  height: 50,
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={{...styles.modalhead2, width: '33%'}}>From</Text>
+                <Text style={{...styles.modalhead2, width: '33%'}}>To</Text>
+                <Text style={{...styles.modalhead2, width: '33%'}}>Status</Text>
+              </View>
+              <FlatList
+                data={AllLeaveData}
                 nestedScrollEnabled={true}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({item}) => (
@@ -530,18 +587,63 @@ export default function Requests({navigation}) {
                       justifyContent: 'space-between',
                     }}>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                    {item.salary}
+                    {item.from.toDate().toLocaleDateString()}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                    {item.salary}
+                    {item.To.toDate().toLocaleDateString()}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                    {item.salary}
+                    {item.status}
+                    </Text>
+                  </View>
+                )}
+              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  borderColor: Colors.gray,
+                  borderBottomWidth: 2,
+                  height: 50,
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={{...styles.modalhead2, width: '25%'}}>From</Text>
+                <Text style={{...styles.modalhead2, width: '25%'}}>To</Text>
+                <Text style={{...styles.modalhead2, width: '25%'}}>Hours</Text>
+                <Text style={{...styles.modalhead2, width: '25%'}}>Status</Text>
+              </View>
+              <FlatList
+                data={AllHolidayData}
+                nestedScrollEnabled={true}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({item}) => (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      borderColor: Colors.white,
+                      borderBottomWidth: 5,
+                      backgroundColor: Colors.lightgray,
+                      height: 50,
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text style={{...styles.modalhead3, width: '25%'}}>
+                    {item.from.toDate().toLocaleDateString()}
+                    </Text>
+                    <Text style={{...styles.modalhead3, width: '25%'}}>
+                    {item.To.toDate().toLocaleDateString()}
+                    </Text>
+                    <Text style={{...styles.modalhead3, width: '25%'}}>
+                    {item.Hours}
+                    </Text>
+                    <Text style={{...styles.modalhead3, width: '25%'}}>
+                    {item.status}
                     </Text>
                   </View>
                 )}
               />
             </View>
+            
           </View>
         </SafeAreaView>
       </Modal>

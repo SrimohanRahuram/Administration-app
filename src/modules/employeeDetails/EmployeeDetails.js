@@ -29,6 +29,12 @@ import {
   editApproveHolidayRequestStatus,
   editRejectHolidayRequestStatus,
   ActiveHolidayRequestsByEmployeeId,
+  AdvanceAllRequestsByEmployeeId,
+  AllLeaveRequestsByEmployeeId,
+  AllHolidayRequestsByEmployeeId,
+  AdminAdvanceAllRequestsByEmployeeId,
+  AdminAllLeaveRequestsByEmployeeId,
+  AdminAllHolidayRequestsByEmployeeId,
 } from '../../service/redux/actions';
 import {format, getWeek, startOfWeek, endOfWeek} from 'date-fns';
 import {editApproveAdvanceRequestStatus} from '../../service/redux/actions';
@@ -473,6 +479,27 @@ export default function EmployeeDetails({navigation}) {
       setTransformData(transformedData3);
     }
   };
+
+  const AllAdvanceData = useSelector(state => state.myReducers.advanceRequests);
+  useEffect(() => {
+    // Fetch admin data when the component mounts
+    dispatch(AdminAdvanceAllRequestsByEmployeeId());
+    console.log('Fetch dispatched');
+  }, [dispatch]);
+
+  const AllLeaveData = useSelector(state => state.myReducers.leaveRequests);
+  useEffect(() => {
+    // Fetch admin data when the component mounts
+    dispatch(AdminAllLeaveRequestsByEmployeeId());
+    console.log('Fetch dispatched');
+  }, [dispatch]);
+
+  const AllHolidayData = useSelector(state => state.myReducers.holidayRequests);
+  useEffect(() => {
+    // Fetch admin data when the component mounts
+    dispatch(AdminAllHolidayRequestsByEmployeeId());
+    console.log('Fetch dispatched');
+  }, [dispatch]);
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.body}>
@@ -1516,12 +1543,48 @@ export default function EmployeeDetails({navigation}) {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}>
-                <Text style={{...styles.modalhead2, width: '33%'}}>Dates</Text>
-                <Text style={{...styles.modalhead2, width: '33%'}}>Hours</Text>
-                <Text style={{...styles.modalhead2, width: '33%'}}>Salary</Text>
+                <Text style={{...styles.modalhead2, width: '50%'}}>Advance</Text>
+                <Text style={{...styles.modalhead2, width: '50%'}}>Status</Text>
               </View>
               <FlatList
-                data={salarydata}
+                data={AllAdvanceData}
+                nestedScrollEnabled={true}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({item}) => (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      borderColor: Colors.white,
+                      borderBottomWidth: 5,
+                      backgroundColor: Colors.lightgray,
+                      height: 50,
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text style={{...styles.modalhead3, width: '50%'}}>
+                    {item.advance}
+                    </Text>
+                    <Text style={{...styles.modalhead3, width: '50%'}}>
+                    {item.status}
+                    </Text>
+                  </View>
+                )}
+              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  borderColor: Colors.gray,
+                  borderBottomWidth: 2,
+                  height: 50,
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={{...styles.modalhead2, width: '33%'}}>From</Text>
+                <Text style={{...styles.modalhead2, width: '33%'}}>To</Text>
+                <Text style={{...styles.modalhead2, width: '33%'}}>Status</Text>
+              </View>
+              <FlatList
+                data={AllLeaveData}
                 nestedScrollEnabled={true}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({item}) => (
@@ -1536,13 +1599,57 @@ export default function EmployeeDetails({navigation}) {
                       justifyContent: 'space-between',
                     }}>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                      {item.salary}
+                    {item.from.toDate().toLocaleDateString()}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                      {item.salary}
+                    {item.To.toDate().toLocaleDateString()}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                      {item.salary}
+                    {item.status}
+                    </Text>
+                  </View>
+                )}
+              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  borderColor: Colors.gray,
+                  borderBottomWidth: 2,
+                  height: 50,
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={{...styles.modalhead2, width: '25%'}}>From</Text>
+                <Text style={{...styles.modalhead2, width: '25%'}}>To</Text>
+                <Text style={{...styles.modalhead2, width: '25%'}}>Hours</Text>
+                <Text style={{...styles.modalhead2, width: '25%'}}>Status</Text>
+              </View>
+              <FlatList
+                data={AllHolidayData}
+                nestedScrollEnabled={true}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({item}) => (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      borderColor: Colors.white,
+                      borderBottomWidth: 5,
+                      backgroundColor: Colors.lightgray,
+                      height: 50,
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text style={{...styles.modalhead3, width: '25%'}}>
+                    {item.from.toDate().toLocaleDateString()}
+                    </Text>
+                    <Text style={{...styles.modalhead3, width: '25%'}}>
+                    {item.To.toDate().toLocaleDateString()}
+                    </Text>
+                    <Text style={{...styles.modalhead3, width: '25%'}}>
+                    {item.Hours}
+                    </Text>
+                    <Text style={{...styles.modalhead3, width: '25%'}}>
+                    {item.status}
                     </Text>
                   </View>
                 )}
