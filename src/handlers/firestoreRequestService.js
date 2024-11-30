@@ -16,7 +16,7 @@ const firestoreRequestService = {
 
         const newRequest = {
           employeeId: employeeId,
-          advance: advance,
+           advance:Number(advance),
           status: 'INACTIVE',
         };
 
@@ -79,7 +79,7 @@ const firestoreRequestService = {
           employeeId: employeeId,
           from: from,
           To: To,
-          Hours: Hours,
+          Hours: Number(Hours),
           status: 'INACTIVE',
         };
 

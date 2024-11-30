@@ -45,6 +45,9 @@ export const EDIT_REJECT_LEAVE_REQUEST_STATUS_SUCCESS='EDIT_REJECT_LEAVE_REQUEST
 export const EDIT_APPROVE_HOLIDAY_REQUEST_STATUS_SUCCESS='EDIT_APPROVE_HOLIDAY_REQUEST_STATUS_SUCCESS';
 export const EDIT_REJECT_HOLIDAY_REQUEST_STATUS_SUCCESS='EDIT_REJECT_HOLIDAY_REQUEST_STATUS_SUCCESS';
 
+export const TOTALHOURS_DATA_BY_EMPLOYEEID='TOTALHOURS_DATA_BY_EMPLOYEEID';
+export const TOTALADVANCE_DATA_BY_EMPLOYEEID='TOTALADVANCE_DATA_BY_EMPLOYEEID';
+
 
 
 
@@ -309,10 +312,11 @@ export const fetchAdminDataById = () => async dispatch => {
 
 export const AdvanceRequestsByEmployeeId = () => async dispatch => {
   try {
+    
     const employeeIdforRequest = await AsyncStorage.getItem(
       'employeeIdforRequest',
     );
-    console.log(employeeIdforRequest);
+    console.log(employeeIdforRequest+ "employeeIdforRequest");
     const advanceRequestData =
       await firestoreRequestService.getAdvanceRequestsByEmployeeID(
         employeeIdforRequest,
@@ -335,7 +339,7 @@ export const AdvanceRequestsByEmployeeId = () => async dispatch => {
 
 export const LeaveRequestsByEmployeeId = () => async dispatch => {
   try {
-    const employeeIdforRequest = await AsyncStorage.getItem(
+    const employeeIdforRequest = await AsyncStorage.getItem( 
       'employeeIdforRequest',
     );
     console.log(employeeIdforRequest);
@@ -361,6 +365,7 @@ export const LeaveRequestsByEmployeeId = () => async dispatch => {
 
 export const HolidayRequestsByEmployeeId = () => async dispatch => {
   try {
+
     const employeeIdforRequest = await AsyncStorage.getItem(
       'employeeIdforRequest',
     );
@@ -599,6 +604,51 @@ export const ActiveHolidayRequestsByEmployeeId = () => async dispatch => {
     }
   } catch (error) {
     console.error('Error holidayRequestData by ID:', error);
+    throw error;
+  }
+};
+
+export const employeeTotalHolidayHoursCalc = () => async dispatch => {
+  try {
+    const employeeId = await AsyncStorage.getItem('employeeId');
+    const employeeTotalHolidayHours =await firestoreEmployeeService.employeeTotalHoursCalc(
+      employeeId,
+    );
+      
+    console.log('Fetched activeholidayRequestData by ID:', employeeTotalHolidayHours);
+
+    
+      dispatch({
+        type: TOTALHOURS_DATA_BY_EMPLOYEEID,
+        payload: employeeTotalHolidayHours,
+      });
+
+      return employeeTotalHolidayHours;
+    
+  } catch (error) {
+    console.error('Error totalhours by ID:', error);
+    throw error;
+  }
+};
+
+export const employeeTotalAdvanceCalc = () => async dispatch => {
+  try {
+    const employeeId = await AsyncStorage.getItem('employeeId');
+    const employeeTotalAdvance =await firestoreEmployeeService.employeeTotalAdvanceCalc(
+      employeeId,
+    );
+      
+    console.log('Fetched employeeTotalAdvance by ID:', employeeTotalAdvance);
+
+      dispatch({
+        type: TOTALADVANCE_DATA_BY_EMPLOYEEID,
+        payload: employeeTotalAdvance,
+      });
+
+      return employeeTotalAdvance;
+   
+  } catch (error) {
+    console.error('Error employeeTotalAdvance by ID:', error);
     throw error;
   }
 };

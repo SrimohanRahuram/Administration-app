@@ -288,6 +288,73 @@ const firestoreEmployeeService = {
       throw error;
     }
   },
+
+  employeeTotalHoursCalc: async employeeID => {
+    let totalHolidaySum = 0;
+    try {
+      const employeeDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeID)
+        .get();
+      if (employeeDoc.exists) {
+        const employeeTotalHoursCalcSnapshot = await firestore()
+          .collection('Employee')
+          .doc(employeeID)
+          .collection('HolidayRequests')
+          .get();
+          
+        
+        for (const doc of employeeTotalHoursCalcSnapshot.docs) {
+          const data = doc.data();
+          if (data.status === 'APPROVED') { 
+            totalHolidaySum += data.Hours || 0; 
+          }// Add totalHours, default to 0 if not present
+        }
+
+        console.log('totalHolidaySum:', totalHolidaySum);
+       
+      }
+      return totalHolidaySum;
+
+    } catch (error) {
+      console.error('Error retrieving totalHolidaySum by ID: ', error);
+      throw error;
+    }
+  },
+
+  employeeTotalAdvanceCalc: async employeeID => {
+    let totalAdvanceSum = 0;
+    try {
+      const employeeDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeID)
+        .get();
+      if (employeeDoc.exists) {
+        const employeeTotalAdvanceCalcSnapshot = await firestore()
+          .collection('Employee')
+          .doc(employeeID)
+          .collection('AdvanceRequests')
+          .get();
+          
+        
+        for (const doc of employeeTotalAdvanceCalcSnapshot.docs) {
+          const data = doc.data();
+          if (data.status === 'APPROVED') { 
+            totalAdvanceSum += data.advance || 0; 
+          }// Add totalHours, default to 0 if not present
+        }
+
+        console.log('totalAdvanceSum:', totalAdvanceSum);
+       
+      }
+      return totalAdvanceSum;
+
+    } catch (error) {
+      console.error('Error retrieving totalAdvanceSum by ID: ', error);
+      throw error;
+    }
+  },
+
 };
 
 export default firestoreEmployeeService;

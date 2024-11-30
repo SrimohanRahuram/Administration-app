@@ -262,27 +262,24 @@ export default function EmployeeDetails({navigation}) {
       const newStatus = 'APPROVED';
       const employeeID = userinfo.id;
       console.log(employeeID);
-      console.log(requestId + 'requestId');
 
-      const response = dispatch(
-        editApproveAdvanceRequestStatus(employeeID, requestId, newStatus),
-      )
-        .then(response => {
-          console.log('Response:', response);
-          if (response == 'Success') {
-            setIsLoading(false);
-            alert('Status updated successfully!');
-          } else {
-            alert(`Error updating status:`);
-          } // "Success" or error object
-        })
-        .catch(err => {
-          console.error('Error:', err);
-        });
-      console.log('response' >> +response);
-    } catch (error) {
-      console.error('Error dispatching the action:', error);
-    }
+      console.log(requestId+"requestId");
+
+      const response =  dispatch(editApproveAdvanceRequestStatus(employeeID, requestId, newStatus))
+      .then(response => {
+        console.log('Response:', response); 
+        if (response=="Success") {
+          setIsLoading(false);
+          alert('Status updated successfully!');
+          reloadAction();
+        } else {
+          alert(`Error updating status:`);
+        }// "Success" or error object
+      })
+      .catch(err => {
+        console.error('Error:', err);
+      });
+      console.log("response">>+response);    
   };
 
   const handleRejectAdvanceSentRequest = async requestId => {
@@ -291,27 +288,25 @@ export default function EmployeeDetails({navigation}) {
       const newStatus = 'REJECT';
       const employeeID = userinfo.id;
       console.log(employeeID);
-      console.log(requestId + 'requestId');
 
-      const response = dispatch(
-        editApproveAdvanceRequestStatus(employeeID, requestId, newStatus),
-      )
-        .then(response => {
-          console.log('Response:', response);
-          if (response == 'Success') {
-            setIsLoading(false);
-            alert('Status updated successfully!');
-          } else {
-            alert(`Error updating status:`);
-          } // "Success" or error object
-        })
-        .catch(err => {
-          console.error('Error:', err);
-        });
-      console.log('response' >> +response);
-    } catch (error) {
-      console.error('Error dispatching the action:', error);
-    }
+      console.log(requestId+"requestId");
+
+      const response =  dispatch(editApproveAdvanceRequestStatus(employeeID, requestId, newStatus))
+      .then(response => {
+        console.log('Response:', response); 
+        if (response=="Success") {
+          setIsLoading(false);
+          alert('Status updated successfully!');
+          reloadAction();
+        } else {
+          alert(`Error updating status:`);
+        }// "Success" or error object
+      })
+      .catch(err => {
+        console.error('Error:', err);
+      });
+      console.log("response">>+response);  
+
   };
 
   const handleApproveLeaveSentRequest = async requestId => {
@@ -320,28 +315,26 @@ export default function EmployeeDetails({navigation}) {
       const newStatus = 'APPROVED';
       const employeeID = userinfo.id;
       console.log(employeeID);
-      console.log(requestId + 'requestId');
+      console.log(requestId+"requestId");
 
-      const response = dispatch(
-        editApproveLeaveRequestStatus(employeeID, requestId, newStatus),
-      )
-        .then(response => {
-          console.log('Response:', response);
-          if (response == 'Success') {
-            setIsLoading(false);
-            alert('Status updated successfully!');
-          } else {
-            setIsLoading(false);
-            alert(`Error updating status:`);
-          } // "Success" or error object
-        })
-        .catch(err => {
-          console.error('Error:', err);
-        });
-      console.log('response' >> +response);
-    } catch (error) {
-      console.error('Error dispatching the action:', error);
-    }
+      const response =  dispatch(editApproveLeaveRequestStatus(employeeID, requestId, newStatus))
+      .then(response => {
+        console.log('Response:', response); 
+        if (response=="Success") {
+          setIsLoading(false);
+          reloadAction();
+          alert('Status updated successfully!');
+         
+        } else {
+          setIsLoading(false);
+          alert(`Error updating status:`);
+
+        }// "Success" or error object
+      })
+      .catch(err => {
+        console.error('Error:', err);
+      });
+      console.log("response">>+response);  
   };
 
   const handleRejectLeaveSentRequest = async requestId => {
@@ -783,6 +776,7 @@ export default function EmployeeDetails({navigation}) {
             </>
           )}
           {Requests && (
+
             <>
               <View style={styles.inputContainer2}>
                 <TouchableOpacity
