@@ -34,6 +34,7 @@ import {format, getWeek, startOfWeek, endOfWeek} from 'date-fns';
 import {editApproveAdvanceRequestStatus} from '../../service/redux/actions';
 import {combineReducers} from 'redux';
 import firestoreRequestService from '../../handlers/firestoreRequestService';
+import {Dropdown} from 'react-native-element-dropdown';
 
 export default function EmployeeDetails({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
@@ -44,11 +45,15 @@ export default function EmployeeDetails({navigation}) {
   const [Requests, setRequests] = React.useState(false);
   const {userinfo} = useSelector(state => state.myReducers);
   const [filteredData, setFilteredData] = React.useState([]);
+  const [filteredData2, setFilteredData2] = React.useState([]);
+  const [filteredData3, setFilteredData3] = React.useState([]);
   const [selectedItem, setSelectedItem] = React.useState('');
   const [CountModal, setCountModal] = useState(false);
   const [Count, setCount] = React.useState(null);
   const [CountItem, setCountItem] = React.useState(null);
   const [RequestModal, setRequestModal] = useState(false);
+  const [value, setValue] = useState(null);
+  const [transformData, setTransformData] = React.useState([]);
 
   // Accessing advancerequests from your Redux store
   const advanceRequests = useSelector(
@@ -98,7 +103,13 @@ export default function EmployeeDetails({navigation}) {
     console.log('Fetch dispatched');
   }, [dispatch]);
   //next
-
+  useEffect(() => {
+    if (dropdowndata.length > 0) {
+      const firstItem = dropdowndata[0];
+      setValue(firstItem.name);
+      SelectSalaryData(firstItem.key); 
+    }
+  }, [dropdowndata]);
   useEffect(() => {
     OnPressWorkPlace();
     BackHandler.addEventListener('hardwareBackPress', backAction);
@@ -175,6 +186,14 @@ export default function EmployeeDetails({navigation}) {
 
   const groupByWeek = () => {
     const groupedData = {};
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth(); // Current month (0-indexed)
+    const currentYear = currentDate.getFullYear();
+
+    const lastMonthDate = new Date(currentYear, currentMonth - 1, 1); // Start of last month
+    const lastMonth = lastMonthDate.getMonth();
+    const lastMonthYear = lastMonthDate.getFullYear();
+
     shoplogin.forEach(item => {
       const parsedDate = item.createdAt.toDate();
       const weekNumber = getWeek(parsedDate);
@@ -182,6 +201,7 @@ export default function EmployeeDetails({navigation}) {
       const weekKey = `${year}-W${weekNumber}`;
       const startDate = startOfWeek(parsedDate, {weekStartsOn: 1}); // Week starts on Monday
       const endDate = endOfWeek(parsedDate, {weekStartsOn: 1});
+
       if (!groupedData[weekKey]) {
         groupedData[weekKey] = {
           startDate: format(startDate, 'yyyy-MM-dd'),
@@ -190,9 +210,11 @@ export default function EmployeeDetails({navigation}) {
           items: [],
         };
       }
+
       groupedData[weekKey].items.push(item);
       groupedData[weekKey].totalHours += item.hoursOfWork || 0;
     });
+
     const sortedData = Object.entries(groupedData)
       .sort(([a], [b]) => a.localeCompare(b)) // Sort keys in ascending order
       .reduce((acc, [key, value]) => {
@@ -200,14 +222,40 @@ export default function EmployeeDetails({navigation}) {
         return acc;
       }, {});
 
+    const currentMonthData = [];
+    const lastMonthData = [];
+
+    Object.values(sortedData).forEach(week => {
+      const weekStartDate = new Date(week.startDate);
+      if (
+        weekStartDate.getMonth() === currentMonth &&
+        weekStartDate.getFullYear() === currentYear
+      ) {
+        currentMonthData.push(week);
+      } else if (
+        weekStartDate.getMonth() === lastMonth &&
+        weekStartDate.getFullYear() === lastMonthYear
+      ) {
+        lastMonthData.push(week);
+      }
+    });
     setFilteredData(sortedData);
-    console.log('groupByWeek' + JSON.stringify(sortedData));
+    setFilteredData2(currentMonthData);
+    setFilteredData3(lastMonthData);
   };
+
   const transformedData = Object.keys(filteredData).map(key => ({
     ...filteredData[key],
     week: key,
   }));
-
+  const transformedData2 = Object.keys(filteredData2).map(key => ({
+    ...filteredData2[key],
+    week: key,
+  }));
+  const transformedData3 = Object.keys(filteredData3).map(key => ({
+    ...filteredData3[key],
+    week: key,
+  }));
   const handleApproveAdvanceSentRequest = async requestId => {
     try {
       setIsLoading(true);
@@ -409,6 +457,20 @@ export default function EmployeeDetails({navigation}) {
     }
   };
 
+  const dropdowndata = [
+    {key: '1', name: 'All'},
+    {key: '2', name: 'Current month'},
+    {key: '3', name: 'Last month'},
+  ];
+  const SelectSalaryData = Id => {
+    if (Id === '1') {
+      setTransformData(transformedData);
+    } else if (Id === '2') {
+      setTransformData(transformedData2);
+    } else if (Id === '3') {
+      setTransformData(transformedData3);
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.body}>
@@ -547,76 +609,102 @@ export default function EmployeeDetails({navigation}) {
             </View>
           )}
           {Salary && (
-            <View
-              style={{
-                ...styles.modalBody,
-                borderWidth: 5,
-                borderColor: Colors.black,
-                borderRadius: 10,
-                padding: 0,
-                width: '100%',
-              }}>
+            <>
+              <Dropdown
+                style={styles.dropdown}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                data={dropdowndata}
+                maxHeight={300}
+                labelField="name"
+                containerStyle={{marginTop: 8, borderRadius: 10}}
+                itemContainerStyle={styles.label}
+                itemTextStyle={styles.itemTextStyle}
+                valueField="name"
+                placeholder={'Select'}
+                value={value}
+                onChange={item => {
+                  setValue(item.name);
+                  SelectSalaryData(item.key);
+                }}
+              />
               <View
                 style={{
-                  flexDirection: 'row',
-                  borderColor: Colors.gray,
-                  borderBottomWidth: 2,
-                  height: 50,
-                  alignItems: 'center',
+                  ...styles.modalBody,
+                  borderWidth: 5,
+                  borderColor: Colors.black,
+                  borderRadius: 10,
+                  padding: 0,
+                  width: '100%',
                 }}>
-                <Text style={{...styles.modalhead2, width: '25%'}}>From</Text>
-                <Text style={{...styles.modalhead2, width: '25%'}}>To</Text>
-                <Text style={{...styles.modalhead2, width: '10%'}}>Hours</Text>
-                <Text style={{...styles.modalhead2, width: '10%'}}>Salary</Text>
-                <Text style={{...styles.modalhead2, width: '30%'}}>More</Text>
-              </View>
-              <FlatList
-                data={transformedData}
-                nestedScrollEnabled={true}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({item}) => (
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      borderColor: Colors.white,
-                      borderBottomWidth: 5,
-                      backgroundColor: Colors.lightgray,
-                      height: 50,
-                      alignItems: 'center',
-                    }}>
-                    <Text style={{...styles.modalhead3, width: '25%'}}>
-                      {item.startDate}
-                    </Text>
-                    <Text style={{...styles.modalhead3, width: '25%'}}>
-                      {item.endDate}
-                    </Text>
-                    <Text style={{...styles.modalhead3, width: '10%'}}>
-                      {item.totalHours}
-                    </Text>
-                    <Text style={{...styles.modalhead3, width: '10%'}}>
-                      {Number(item.totalHours) * Number(userinfo.perHourSalary)}
-                    </Text>
-                    <TouchableOpacity
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    borderColor: Colors.gray,
+                    borderBottomWidth: 2,
+                    height: 50,
+                    alignItems: 'center',
+                  }}>
+                  <Text style={{...styles.modalhead2, width: '25%'}}>From</Text>
+                  <Text style={{...styles.modalhead2, width: '25%'}}>To</Text>
+                  <Text style={{...styles.modalhead2, width: '10%'}}>
+                    Hours
+                  </Text>
+                  <Text style={{...styles.modalhead2, width: '10%'}}>
+                    Salary
+                  </Text>
+                  <Text style={{...styles.modalhead2, width: '30%'}}>More</Text>
+                </View>
+                <FlatList
+                  data={transformData}
+                  nestedScrollEnabled={true}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({item}) => (
+                    <View
                       style={{
-                        ...styles.requestbuttoncontiner,
-                        width: '29%',
-                        backgroundColor: Colors.black,
-                      }}
-                      onPress={() => {
-                        setSalaryModal(true);
-                        setSelectedItem(item);
-                        // console.log(
-                        //   'view item' + JSON.stringify(item),
-                        // );
+                        flexDirection: 'row',
+                        borderColor: Colors.white,
+                        borderBottomWidth: 5,
+                        backgroundColor: Colors.lightgray,
+                        height: 50,
+                        alignItems: 'center',
                       }}>
-                      <Text style={{...styles.modalhead3, color: Colors.white}}>
-                        View more
+                      <Text style={{...styles.modalhead3, width: '25%'}}>
+                        {item.startDate}
                       </Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              />
-            </View>
+                      <Text style={{...styles.modalhead3, width: '25%'}}>
+                        {item.endDate}
+                      </Text>
+                      <Text style={{...styles.modalhead3, width: '10%'}}>
+                        {item.totalHours}
+                      </Text>
+                      <Text style={{...styles.modalhead3, width: '10%'}}>
+                        {Number(item.totalHours) *
+                          Number(userinfo.perHourSalary)}
+                      </Text>
+                      <TouchableOpacity
+                        style={{
+                          ...styles.requestbuttoncontiner,
+                          width: '29%',
+                          backgroundColor: Colors.black,
+                        }}
+                        onPress={() => {
+                          setSalaryModal(true);
+                          setSelectedItem(item);
+                          // console.log(
+                          //   'view item' + JSON.stringify(item),
+                          // );
+                        }}>
+                        <Text
+                          style={{...styles.modalhead3, color: Colors.white}}>
+                          View more
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                />
+              </View>
+            </>
           )}
           {Holidays && (
             <>
@@ -1445,13 +1533,13 @@ export default function EmployeeDetails({navigation}) {
                       justifyContent: 'space-between',
                     }}>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                    {item.salary}
+                      {item.salary}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                    {item.salary}
+                      {item.salary}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                    {item.salary}
+                      {item.salary}
                     </Text>
                   </View>
                 )}

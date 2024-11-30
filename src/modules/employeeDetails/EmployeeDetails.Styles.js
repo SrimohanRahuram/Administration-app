@@ -291,6 +291,34 @@ const stylesNew = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
   },
+  dropdown: {
+    height: 50,
+    borderRadius: 10,
+    marginBottom: 10,
+    //elevation: 10,
+    backgroundColor: 'white',
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#131212',
+    width:'100%'
+  },
+  label: {
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderColor: '#CCCCCC',
+    borderRadius: 10,
+  },
+  placeholderStyle: {
+    fontSize: 13,
+  },
+  selectedTextStyle: {
+    fontSize: 13,
+    marginLeft: 10,
+  },
+  itemTextStyle: {
+    fontSize: 13,
+    color: '#131212',
+  },
 });
 
 export default stylesNew;
