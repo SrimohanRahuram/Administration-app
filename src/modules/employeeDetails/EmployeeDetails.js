@@ -28,14 +28,13 @@ import {
   editApproveLeaveRequestStatus,
   editApproveHolidayRequestStatus,
   editRejectHolidayRequestStatus,
-  ActiveHolidayRequestsByEmployeeId
+  ActiveHolidayRequestsByEmployeeId,
 } from '../../service/redux/actions';
 import {format, getWeek, startOfWeek, endOfWeek} from 'date-fns';
-import { editApproveAdvanceRequestStatus } from '../../service/redux/actions';
-import { combineReducers } from 'redux';
-
-import {format, getWeek, startOfWeek, endOfWeek} from 'date-fns';
+import {editApproveAdvanceRequestStatus} from '../../service/redux/actions';
+import {combineReducers} from 'redux';
 import firestoreRequestService from '../../handlers/firestoreRequestService';
+import {Dropdown} from 'react-native-element-dropdown';
 
 export default function EmployeeDetails({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
@@ -46,10 +45,15 @@ export default function EmployeeDetails({navigation}) {
   const [Requests, setRequests] = React.useState(false);
   const {userinfo} = useSelector(state => state.myReducers);
   const [filteredData, setFilteredData] = React.useState([]);
+  const [filteredData2, setFilteredData2] = React.useState([]);
+  const [filteredData3, setFilteredData3] = React.useState([]);
   const [selectedItem, setSelectedItem] = React.useState('');
   const [CountModal, setCountModal] = useState(false);
   const [Count, setCount] = React.useState(null);
   const [CountItem, setCountItem] = React.useState(null);
+  const [RequestModal, setRequestModal] = useState(false);
+  const [value, setValue] = useState(null);
+  const [transformData, setTransformData] = React.useState([]);
 
   // Accessing advancerequests from your Redux store
   const advanceRequests = useSelector(
@@ -99,7 +103,13 @@ export default function EmployeeDetails({navigation}) {
     console.log('Fetch dispatched');
   }, [dispatch]);
   //next
-
+  useEffect(() => {
+    if (dropdowndata.length > 0) {
+      const firstItem = dropdowndata[0];
+      setValue(firstItem.name);
+      SelectSalaryData(firstItem.key); 
+    }
+  }, [dropdowndata]);
   useEffect(() => {
     OnPressWorkPlace();
     BackHandler.addEventListener('hardwareBackPress', backAction);
@@ -166,16 +176,24 @@ export default function EmployeeDetails({navigation}) {
   //   {key: '4', id: 'shop 4', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
   //   {key: '5', id: 'shop 5', in: '24/12/2024 12.00', out: '24/12/2024 12.00'},
   // ];
-  // const salarydata = [
-  //   {key: '1', id: ' 11', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
-  //   {key: '2', id: ' 12', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
-  //   {key: '3', id: ' 31', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
-  //   {key: '4', id: ' 14', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
-  //   {key: '5', id: ' 51', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
-  // ];
+  const salarydata = [
+    {key: '1', id: ' 11', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
+    {key: '2', id: ' 12', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
+    {key: '3', id: ' 31', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
+    {key: '4', id: ' 14', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
+    {key: '5', id: ' 51', in: '24/12/2024', out: '24/12/2024', salary: ' 110'},
+  ];
 
   const groupByWeek = () => {
     const groupedData = {};
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth(); // Current month (0-indexed)
+    const currentYear = currentDate.getFullYear();
+
+    const lastMonthDate = new Date(currentYear, currentMonth - 1, 1); // Start of last month
+    const lastMonth = lastMonthDate.getMonth();
+    const lastMonthYear = lastMonthDate.getFullYear();
+
     shoplogin.forEach(item => {
       const parsedDate = item.createdAt.toDate();
       const weekNumber = getWeek(parsedDate);
@@ -183,6 +201,7 @@ export default function EmployeeDetails({navigation}) {
       const weekKey = `${year}-W${weekNumber}`;
       const startDate = startOfWeek(parsedDate, {weekStartsOn: 1}); // Week starts on Monday
       const endDate = endOfWeek(parsedDate, {weekStartsOn: 1});
+
       if (!groupedData[weekKey]) {
         groupedData[weekKey] = {
           startDate: format(startDate, 'yyyy-MM-dd'),
@@ -191,9 +210,11 @@ export default function EmployeeDetails({navigation}) {
           items: [],
         };
       }
+
       groupedData[weekKey].items.push(item);
       groupedData[weekKey].totalHours += item.hoursOfWork || 0;
     });
+
     const sortedData = Object.entries(groupedData)
       .sort(([a], [b]) => a.localeCompare(b)) // Sort keys in ascending order
       .reduce((acc, [key, value]) => {
@@ -201,227 +222,255 @@ export default function EmployeeDetails({navigation}) {
         return acc;
       }, {});
 
+    const currentMonthData = [];
+    const lastMonthData = [];
+
+    Object.values(sortedData).forEach(week => {
+      const weekStartDate = new Date(week.startDate);
+      if (
+        weekStartDate.getMonth() === currentMonth &&
+        weekStartDate.getFullYear() === currentYear
+      ) {
+        currentMonthData.push(week);
+      } else if (
+        weekStartDate.getMonth() === lastMonth &&
+        weekStartDate.getFullYear() === lastMonthYear
+      ) {
+        lastMonthData.push(week);
+      }
+    });
     setFilteredData(sortedData);
-    console.log('groupByWeek' + JSON.stringify(sortedData));
+    setFilteredData2(currentMonthData);
+    setFilteredData3(lastMonthData);
   };
+
   const transformedData = Object.keys(filteredData).map(key => ({
     ...filteredData[key],
     week: key,
   }));
-
-  const handleApproveAdvanceSentRequest = async (requestId) => {
+  const transformedData2 = Object.keys(filteredData2).map(key => ({
+    ...filteredData2[key],
+    week: key,
+  }));
+  const transformedData3 = Object.keys(filteredData3).map(key => ({
+    ...filteredData3[key],
+    week: key,
+  }));
+  const handleApproveAdvanceSentRequest = async requestId => {
     try {
       setIsLoading(true);
-       const newStatus="APPROVED";
-      const employeeID=userinfo.id;
+      const newStatus = 'APPROVED';
+      const employeeID = userinfo.id;
       console.log(employeeID);
-      console.log(requestId+"requestId");
+      console.log(requestId + 'requestId');
 
-      const response =  dispatch(editApproveAdvanceRequestStatus(employeeID, requestId, newStatus))
-      .then(response => {
-        console.log('Response:', response); 
-        if (response=="Success") {
-          setIsLoading(false);
-          alert('Status updated successfully!');
-        } else {
-          alert(`Error updating status:`);
-        }// "Success" or error object
-      })
-      .catch(err => {
-        console.error('Error:', err);
-      });
-      console.log("response">>+response);
-
-    
-
+      const response = dispatch(
+        editApproveAdvanceRequestStatus(employeeID, requestId, newStatus),
+      )
+        .then(response => {
+          console.log('Response:', response);
+          if (response == 'Success') {
+            setIsLoading(false);
+            alert('Status updated successfully!');
+          } else {
+            alert(`Error updating status:`);
+          } // "Success" or error object
+        })
+        .catch(err => {
+          console.error('Error:', err);
+        });
+      console.log('response' >> +response);
     } catch (error) {
       console.error('Error dispatching the action:', error);
     }
   };
 
-  const handleRejectAdvanceSentRequest = async (requestId) => {
+  const handleRejectAdvanceSentRequest = async requestId => {
     try {
       setIsLoading(true);
-       const newStatus="REJECT";
-      const employeeID=userinfo.id;
+      const newStatus = 'REJECT';
+      const employeeID = userinfo.id;
       console.log(employeeID);
-      console.log(requestId+"requestId");
+      console.log(requestId + 'requestId');
 
-      const response =  dispatch(editApproveAdvanceRequestStatus(employeeID, requestId, newStatus))
-      .then(response => {
-        console.log('Response:', response); 
-        if (response=="Success") {
-          setIsLoading(false);
-          alert('Status updated successfully!');
-        } else {
-          alert(`Error updating status:`);
-        }// "Success" or error object
-      })
-      .catch(err => {
-        console.error('Error:', err);
-      });
-      console.log("response">>+response);
-
-    
-
+      const response = dispatch(
+        editApproveAdvanceRequestStatus(employeeID, requestId, newStatus),
+      )
+        .then(response => {
+          console.log('Response:', response);
+          if (response == 'Success') {
+            setIsLoading(false);
+            alert('Status updated successfully!');
+          } else {
+            alert(`Error updating status:`);
+          } // "Success" or error object
+        })
+        .catch(err => {
+          console.error('Error:', err);
+        });
+      console.log('response' >> +response);
     } catch (error) {
       console.error('Error dispatching the action:', error);
     }
   };
 
-  const handleApproveLeaveSentRequest = async (requestId) => {
+  const handleApproveLeaveSentRequest = async requestId => {
     try {
       setIsLoading(true);
-       const newStatus="APPROVED";
-      const employeeID=userinfo.id;
+      const newStatus = 'APPROVED';
+      const employeeID = userinfo.id;
       console.log(employeeID);
-      console.log(requestId+"requestId");
+      console.log(requestId + 'requestId');
 
-      const response =  dispatch(editApproveLeaveRequestStatus(employeeID, requestId, newStatus))
-      .then(response => {
-        console.log('Response:', response); 
-        if (response=="Success") {
-          setIsLoading(false);
-          alert('Status updated successfully!');
-        } else {
-          setIsLoading(false);
-          alert(`Error updating status:`);
-
-        }// "Success" or error object
-      })
-      .catch(err => {
-        console.error('Error:', err);
-      });
-      console.log("response">>+response);
-
-    
-
+      const response = dispatch(
+        editApproveLeaveRequestStatus(employeeID, requestId, newStatus),
+      )
+        .then(response => {
+          console.log('Response:', response);
+          if (response == 'Success') {
+            setIsLoading(false);
+            alert('Status updated successfully!');
+          } else {
+            setIsLoading(false);
+            alert(`Error updating status:`);
+          } // "Success" or error object
+        })
+        .catch(err => {
+          console.error('Error:', err);
+        });
+      console.log('response' >> +response);
     } catch (error) {
       console.error('Error dispatching the action:', error);
     }
   };
 
-  const handleRejectLeaveSentRequest = async (requestId) => {
+  const handleRejectLeaveSentRequest = async requestId => {
     try {
       setIsLoading(true);
-       const newStatus="REJECT";
-      const employeeID=userinfo.id;
+      const newStatus = 'REJECT';
+      const employeeID = userinfo.id;
       console.log(employeeID);
-      console.log(requestId+"requestId");
+      console.log(requestId + 'requestId');
 
-      const response =  dispatch(editRejectLeaveRequestStatus(employeeID, requestId, newStatus))
-      .then(response => {
-        console.log('Response:', response); 
-        if (response=="Success") {
-          setIsLoading(false);
-          alert('Status updated successfully!');
-        } else {
-          alert(`Error updating status:`);
-        }// "Success" or error object
-      })
-      .catch(err => {
-        console.error('Error:', err);
-      });
-      console.log("response">>+response);
-
-    
-
+      const response = dispatch(
+        editRejectLeaveRequestStatus(employeeID, requestId, newStatus),
+      )
+        .then(response => {
+          console.log('Response:', response);
+          if (response == 'Success') {
+            setIsLoading(false);
+            alert('Status updated successfully!');
+          } else {
+            alert(`Error updating status:`);
+          } // "Success" or error object
+        })
+        .catch(err => {
+          console.error('Error:', err);
+        });
+      console.log('response' >> +response);
     } catch (error) {
       console.error('Error dispatching the action:', error);
     }
   };
 
-  const handleApproveHolidaySentRequest = async (requestId) => {
+  const handleApproveHolidaySentRequest = async requestId => {
     try {
       setIsLoading(true);
-       const newStatus="APPROVED";
-      const employeeID=userinfo.id;
+      const newStatus = 'APPROVED';
+      const employeeID = userinfo.id;
       console.log(employeeID);
-      console.log(requestId+"requestId");
+      console.log(requestId + 'requestId');
 
-      const response =  dispatch(editApproveHolidayRequestStatus(employeeID, requestId, newStatus))
-      .then(response => {
-        console.log('Response:', response); 
-        if (response=="Success") {
-          setIsLoading(false);
-          alert('Status updated successfully!');
-        } else {
-          setIsLoading(false);
-          alert(`Error updating status:`);
-
-        }// "Success" or error object
-      })
-      .catch(err => {
-        console.error('Error:', err);
-      });
-      console.log("response">>+response);
-
-    
-
+      const response = dispatch(
+        editApproveHolidayRequestStatus(employeeID, requestId, newStatus),
+      )
+        .then(response => {
+          console.log('Response:', response);
+          if (response == 'Success') {
+            setIsLoading(false);
+            alert('Status updated successfully!');
+          } else {
+            setIsLoading(false);
+            alert(`Error updating status:`);
+          } // "Success" or error object
+        })
+        .catch(err => {
+          console.error('Error:', err);
+        });
+      console.log('response' >> +response);
     } catch (error) {
       console.error('Error dispatching the action:', error);
     }
   };
 
-  const handleRejectHolidaySentRequest = async (requestId) => {
+  const handleRejectHolidaySentRequest = async requestId => {
     try {
       setIsLoading(true);
-       const newStatus="REJECT";
-      const employeeID=userinfo.id;
+      const newStatus = 'REJECT';
+      const employeeID = userinfo.id;
       console.log(employeeID);
-      console.log(requestId+"requestId");
+      console.log(requestId + 'requestId');
 
-      const response =  dispatch(editRejectHolidayRequestStatus(employeeID, requestId, newStatus))
-      .then(response => {
-        console.log('Response:', response); 
-        if (response=="Success") {
-          setIsLoading(false);
-          alert('Status updated successfully!');
-        } else {
-          setIsLoading(false);
-          alert(`Error updating status:`);
-        }// "Success" or error object
-      })
-      .catch(err => {
-        console.error('Error:', err);
-      });
-      console.log("response">>+response);
-
-    
-
+      const response = dispatch(
+        editRejectHolidayRequestStatus(employeeID, requestId, newStatus),
+      )
+        .then(response => {
+          console.log('Response:', response);
+          if (response == 'Success') {
+            setIsLoading(false);
+            alert('Status updated successfully!');
+          } else {
+            setIsLoading(false);
+            alert(`Error updating status:`);
+          } // "Success" or error object
+        })
+        .catch(err => {
+          console.error('Error:', err);
+        });
+      console.log('response' >> +response);
     } catch (error) {
       console.error('Error dispatching the action:', error);
     }
   };
-
 
   const reloadAction = () => {
     navigation.reset({
       index: 0,
-      routes: [{ name: 'EmployeeDetails' }],
+      routes: [{name: 'EmployeeDetails'}],
     });
     return true;
   };
   const EditCount = async e => {
     setIsLoading(true);
-    const status = await firestoreRequestService.editActiveHolidayRequestsByEmployeeID(
-      CountItem.id,
-      Number(Count),
-      userinfo.ID,
-    );
+    const status =
+      await firestoreRequestService.editActiveHolidayRequestsByEmployeeID(
+        CountItem.id,
+        Number(Count),
+        userinfo.ID,
+      );
     if (status == 'Success') {
       setIsLoading(false);
-      ToastAlert.ShowToast(
-        'success',
-        'Alert',
-        'Successfully Edit count',
-      );
+      ToastAlert.ShowToast('success', 'Alert', 'Successfully Edit count');
       reloadAction();
     } else {
       setIsLoading(false);
     }
   };
 
+  const dropdowndata = [
+    {key: '1', name: 'All'},
+    {key: '2', name: 'Current month'},
+    {key: '3', name: 'Last month'},
+  ];
+  const SelectSalaryData = Id => {
+    if (Id === '1') {
+      setTransformData(transformedData);
+    } else if (Id === '2') {
+      setTransformData(transformedData2);
+    } else if (Id === '3') {
+      setTransformData(transformedData3);
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.body}>
@@ -560,76 +609,102 @@ export default function EmployeeDetails({navigation}) {
             </View>
           )}
           {Salary && (
-            <View
-              style={{
-                ...styles.modalBody,
-                borderWidth: 5,
-                borderColor: Colors.black,
-                borderRadius: 10,
-                padding: 0,
-                width: '100%',
-              }}>
+            <>
+              <Dropdown
+                style={styles.dropdown}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                data={dropdowndata}
+                maxHeight={300}
+                labelField="name"
+                containerStyle={{marginTop: 8, borderRadius: 10}}
+                itemContainerStyle={styles.label}
+                itemTextStyle={styles.itemTextStyle}
+                valueField="name"
+                placeholder={'Select'}
+                value={value}
+                onChange={item => {
+                  setValue(item.name);
+                  SelectSalaryData(item.key);
+                }}
+              />
               <View
                 style={{
-                  flexDirection: 'row',
-                  borderColor: Colors.gray,
-                  borderBottomWidth: 2,
-                  height: 50,
-                  alignItems: 'center',
+                  ...styles.modalBody,
+                  borderWidth: 5,
+                  borderColor: Colors.black,
+                  borderRadius: 10,
+                  padding: 0,
+                  width: '100%',
                 }}>
-                <Text style={{...styles.modalhead2, width: '25%'}}>From</Text>
-                <Text style={{...styles.modalhead2, width: '25%'}}>To</Text>
-                <Text style={{...styles.modalhead2, width: '10%'}}>Hours</Text>
-                <Text style={{...styles.modalhead2, width: '10%'}}>Salary</Text>
-                <Text style={{...styles.modalhead2, width: '30%'}}>More</Text>
-              </View>
-              <FlatList
-                data={transformedData}
-                nestedScrollEnabled={true}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({item}) => (
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      borderColor: Colors.white,
-                      borderBottomWidth: 5,
-                      backgroundColor: Colors.lightgray,
-                      height: 50,
-                      alignItems: 'center',
-                    }}>
-                    <Text style={{...styles.modalhead3, width: '25%'}}>
-                      {item.startDate}
-                    </Text>
-                    <Text style={{...styles.modalhead3, width: '25%'}}>
-                      {item.endDate}
-                    </Text>
-                    <Text style={{...styles.modalhead3, width: '10%'}}>
-                      {item.totalHours}
-                    </Text>
-                    <Text style={{...styles.modalhead3, width: '10%'}}>
-                      {Number(item.totalHours) * Number(userinfo.perHourSalary)}
-                    </Text>
-                    <TouchableOpacity
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    borderColor: Colors.gray,
+                    borderBottomWidth: 2,
+                    height: 50,
+                    alignItems: 'center',
+                  }}>
+                  <Text style={{...styles.modalhead2, width: '25%'}}>From</Text>
+                  <Text style={{...styles.modalhead2, width: '25%'}}>To</Text>
+                  <Text style={{...styles.modalhead2, width: '10%'}}>
+                    Hours
+                  </Text>
+                  <Text style={{...styles.modalhead2, width: '10%'}}>
+                    Salary
+                  </Text>
+                  <Text style={{...styles.modalhead2, width: '30%'}}>More</Text>
+                </View>
+                <FlatList
+                  data={transformData}
+                  nestedScrollEnabled={true}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({item}) => (
+                    <View
                       style={{
-                        ...styles.requestbuttoncontiner,
-                        width: '29%',
-                        backgroundColor: Colors.black,
-                      }}
-                      onPress={() => {
-                        setSalaryModal(true);
-                        setSelectedItem(item);
-                        // console.log(
-                        //   'view item' + JSON.stringify(item),
-                        // );
+                        flexDirection: 'row',
+                        borderColor: Colors.white,
+                        borderBottomWidth: 5,
+                        backgroundColor: Colors.lightgray,
+                        height: 50,
+                        alignItems: 'center',
                       }}>
-                      <Text style={{...styles.modalhead3, color: Colors.white}}>
-                        View more
+                      <Text style={{...styles.modalhead3, width: '25%'}}>
+                        {item.startDate}
                       </Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              />
-            </View>
+                      <Text style={{...styles.modalhead3, width: '25%'}}>
+                        {item.endDate}
+                      </Text>
+                      <Text style={{...styles.modalhead3, width: '10%'}}>
+                        {item.totalHours}
+                      </Text>
+                      <Text style={{...styles.modalhead3, width: '10%'}}>
+                        {Number(item.totalHours) *
+                          Number(userinfo.perHourSalary)}
+                      </Text>
+                      <TouchableOpacity
+                        style={{
+                          ...styles.requestbuttoncontiner,
+                          width: '29%',
+                          backgroundColor: Colors.black,
+                        }}
+                        onPress={() => {
+                          setSalaryModal(true);
+                          setSelectedItem(item);
+                          // console.log(
+                          //   'view item' + JSON.stringify(item),
+                          // );
+                        }}>
+                        <Text
+                          style={{...styles.modalhead3, color: Colors.white}}>
+                          View more
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                />
+              </View>
+            </>
           )}
           {Holidays && (
             <>
@@ -708,350 +783,367 @@ export default function EmployeeDetails({navigation}) {
             </>
           )}
           {Requests && (
-            <View
-              style={{
-                ...styles.modalBody,
-                borderWidth: 5,
-                borderColor: Colors.black,
-                borderRadius: 10,
-                padding: 0,
-                width: '100%'
-              }}>
-              {advanceRequests != null && (
-                <FlatList
-                  data={advanceRequests}
-                  nestedScrollEnabled={true}
-                  keyExtractor={(item, id) => id.toString()}
-                  renderItem={({item}) => (
-                    <View
-                      style={{
-                        padding: 5,
-                        borderColor: Colors.black,
-                        borderBottomWidth: 2,
-                      }}>
+            <>
+              <View style={styles.inputContainer2}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setRequestModal(true);
+                  }}
+                  style={styles.button2}>
+                  <Text style={styles.buttonText}>View Request Response</Text>
+                </TouchableOpacity>
+              </View>
+              <View
+                style={{
+                  ...styles.modalBody,
+                  borderWidth: 5,
+                  borderColor: Colors.black,
+                  borderRadius: 10,
+                  padding: 0,
+                  width: '100%',
+                }}>
+                {advanceRequests != null && (
+                  <FlatList
+                    data={advanceRequests}
+                    nestedScrollEnabled={true}
+                    keyExtractor={(item, id) => id.toString()}
+                    renderItem={({item}) => (
                       <View
                         style={{
-                          flexDirection: 'row',
-                          borderColor: Colors.white,
-                          borderBottomWidth: 5,
-                          backgroundColor: Colors.white,
-                          height: 50,
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
+                          padding: 5,
+                          borderColor: Colors.black,
+                          borderBottomWidth: 2,
                         }}>
-                        <Text style={styles.modalhead3}>
-                          {' '}
-                          Request ${item.advance} for Advance Amount?
-                        </Text>
-                      </View>
-                      {item.in && (
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            borderColor: Colors.white,
+                            borderBottomWidth: 5,
+                            backgroundColor: Colors.white,
+                            height: 50,
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                          }}>
+                          <Text style={styles.modalhead3}>
+                            {' '}
+                            Request ${item.advance} for Advance Amount?
+                          </Text>
+                        </View>
+                        {item.in && (
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              marginBottom: 10,
+                            }}>
+                            <View
+                              style={{
+                                ...styles.requestbuttoncontiner,
+                                width: '20%',
+                              }}>
+                              <Text style={styles.modalhead3}>From</Text>
+                            </View>
+                            <View
+                              style={{
+                                ...styles.requestbuttoncontiner,
+                                width: '30%',
+                                borderWidth: 1,
+                                borderColor: Colors.black,
+                              }}>
+                              <Text style={styles.modalhead3}>{item.in}</Text>
+                            </View>
+                            <View
+                              style={{
+                                ...styles.requestbuttoncontiner,
+                                width: '20%',
+                              }}>
+                              <Text style={styles.modalhead3}>To</Text>
+                            </View>
+                            <View
+                              style={{
+                                ...styles.requestbuttoncontiner,
+                                width: '30%',
+                                borderWidth: 1,
+                                borderColor: Colors.black,
+                              }}>
+                              <Text style={styles.modalhead3}>{item.in}</Text>
+                            </View>
+                          </View>
+                        )}
                         <View
                           style={{
                             flexDirection: 'row',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            marginBottom: 10,
+                            marginBottom: 5,
                           }}>
-                          <View
+                          <TouchableOpacity
                             style={{
                               ...styles.requestbuttoncontiner,
-                              width: '20%',
-                            }}>
-                            <Text style={styles.modalhead3}>From</Text>
-                          </View>
-                          <View
-                            style={{
-                              ...styles.requestbuttoncontiner,
-                              width: '30%',
+                              width: '49%',
                               borderWidth: 1,
                               borderColor: Colors.black,
+                            }}
+                            onPress={() => {
+                              handleRejectAdvanceSentRequest(item.id);
                             }}>
-                            <Text style={styles.modalhead3}>{item.in}</Text>
-                          </View>
-                          <View
+                            <Text style={styles.modalhead3}>Reject</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
                             style={{
                               ...styles.requestbuttoncontiner,
-                              width: '20%',
-                            }}>
-                            <Text style={styles.modalhead3}>To</Text>
-                          </View>
-                          <View
-                            style={{
-                              ...styles.requestbuttoncontiner,
-                              width: '30%',
-                              borderWidth: 1,
-                              borderColor: Colors.black,
-                            }}>
-                            <Text style={styles.modalhead3}>{item.in}</Text>
-                          </View>
-                        </View>
-                      )}
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          marginBottom: 5,
-                        }}>
-                        <TouchableOpacity
-                          style={{
-                            ...styles.requestbuttoncontiner,
-                            width: '49%',
-                            borderWidth: 1,
-                            borderColor: Colors.black,
-                          }}
-                          onPress={() => {
-                            handleRejectAdvanceSentRequest(item.id);
-                          }}>
-                          <Text style={styles.modalhead3}>Reject</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          style={{
-                            ...styles.requestbuttoncontiner,
-                            width: '49%',
-                            backgroundColor: Colors.black,
-                          }}
-                          onPress={
-                            () => {
+                              width: '49%',
+                              backgroundColor: Colors.black,
+                            }}
+                            onPress={() => {
                               handleApproveAdvanceSentRequest(item.id);
-                            }
-                           
-                            }>
-                          <Text
-                            style={{...styles.modalhead3, color: Colors.white}}>
-                            Approve
-                          </Text>
-                        </TouchableOpacity>
+                            }}>
+                            <Text
+                              style={{
+                                ...styles.modalhead3,
+                                color: Colors.white,
+                              }}>
+                              Approve
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
                       </View>
-                    </View>
-                  )}
-                />
-              )}
-              {leaveRequests != null && (
-                <FlatList
-                  data={leaveRequests}
-                  nestedScrollEnabled={true}
-                  keyExtractor={(item, id) => id.toString()}
-                  renderItem={({item}) => (
-                    <View
-                      style={{
-                        padding: 5,
-                        borderColor: Colors.black,
-                        borderBottomWidth: 2,
-                      }}>
+                    )}
+                  />
+                )}
+                {leaveRequests != null && (
+                  <FlatList
+                    data={leaveRequests}
+                    nestedScrollEnabled={true}
+                    keyExtractor={(item, id) => id.toString()}
+                    renderItem={({item}) => (
                       <View
                         style={{
-                          flexDirection: 'row',
-                          borderColor: Colors.white,
-                          borderBottomWidth: 5,
-                          backgroundColor: Colors.white,
-                          height: 50,
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
+                          padding: 5,
+                          borderColor: Colors.black,
+                          borderBottomWidth: 2,
                         }}>
-                        <Text style={styles.modalhead3}>
-                          {' '}
-                          Request for Leave?
-                        </Text>
-                      </View>
-                      {item.from && (
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            borderColor: Colors.white,
+                            borderBottomWidth: 5,
+                            backgroundColor: Colors.white,
+                            height: 50,
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                          }}>
+                          <Text style={styles.modalhead3}>
+                            {' '}
+                            Request for Leave?
+                          </Text>
+                        </View>
+                        {item.from && (
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              marginBottom: 10,
+                            }}>
+                            <View
+                              style={{
+                                ...styles.requestbuttoncontiner,
+                                width: '20%',
+                              }}>
+                              <Text style={styles.modalhead3}>From</Text>
+                            </View>
+                            <View
+                              style={{
+                                ...styles.requestbuttoncontiner,
+                                width: '30%',
+                                borderWidth: 1,
+                                borderColor: Colors.black,
+                              }}>
+                              <Text style={styles.modalhead3}>
+                                {' '}
+                                {item.from.toDate().toLocaleDateString()}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                ...styles.requestbuttoncontiner,
+                                width: '20%',
+                              }}>
+                              <Text style={styles.modalhead3}>To</Text>
+                            </View>
+                            <View
+                              style={{
+                                ...styles.requestbuttoncontiner,
+                                width: '30%',
+                                borderWidth: 1,
+                                borderColor: Colors.black,
+                              }}>
+                              <Text style={styles.modalhead3}>
+                                {item.To.toDate().toLocaleDateString()}
+                              </Text>
+                            </View>
+                          </View>
+                        )}
                         <View
                           style={{
                             flexDirection: 'row',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            marginBottom: 10,
+                            marginBottom: 5,
                           }}>
-                          <View
+                          <TouchableOpacity
                             style={{
                               ...styles.requestbuttoncontiner,
-                              width: '20%',
-                            }}>
-                            <Text style={styles.modalhead3}>From</Text>
-                          </View>
-                          <View
-                            style={{
-                              ...styles.requestbuttoncontiner,
-                              width: '30%',
+                              width: '49%',
                               borderWidth: 1,
                               borderColor: Colors.black,
+                            }}
+                            onPress={() => {
+                              handleRejectLeaveSentRequest(item.id);
                             }}>
-                            <Text style={styles.modalhead3}>
-                              {' '}
-                              {item.from.toDate().toLocaleDateString()}
-                            </Text>
-                          </View>
-                          <View
+                            <Text style={styles.modalhead3}>Reject</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
                             style={{
                               ...styles.requestbuttoncontiner,
-                              width: '20%',
+                              width: '49%',
+                              backgroundColor: Colors.black,
+                            }}
+                            onPress={() => {
+                              handleApproveLeaveSentRequest(item.id);
                             }}>
-                            <Text style={styles.modalhead3}>To</Text>
-                          </View>
-                          <View
-                            style={{
-                              ...styles.requestbuttoncontiner,
-                              width: '30%',
-                              borderWidth: 1,
-                              borderColor: Colors.black,
-                            }}>
-                            <Text style={styles.modalhead3}>
-                              {item.To.toDate().toLocaleDateString()}
+                            <Text
+                              style={{
+                                ...styles.modalhead3,
+                                color: Colors.white,
+                              }}>
+                              Approve
                             </Text>
-                          </View>
+                          </TouchableOpacity>
                         </View>
-                      )}
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          marginBottom: 5,
-                        }}>
-                        <TouchableOpacity
-                          style={{
-                            ...styles.requestbuttoncontiner,
-                            width: '49%',
-                            borderWidth: 1,
-                            borderColor: Colors.black,
-                          }}
-                          onPress={() => {
-                            handleRejectLeaveSentRequest(item.id);
-                          }}>
-                          <Text style={styles.modalhead3}>Reject</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          style={{
-                            ...styles.requestbuttoncontiner,
-                            width: '49%',
-                            backgroundColor: Colors.black,
-                          }}
-                          onPress={() => {
-                            handleApproveLeaveSentRequest(item.id);
-                          }}>
-                          <Text
-                            style={{...styles.modalhead3, color: Colors.white}}>
-                            Approve
-                          </Text>
-                        </TouchableOpacity>
                       </View>
-                    </View>
-                  )}
-                />
-              )}
+                    )}
+                  />
+                )}
 
-              {holidayRequests != null && (
-                <FlatList
-                  data={holidayRequests}
-                  nestedScrollEnabled={true}
-                  keyExtractor={(item, id) => id.toString()}
-                  renderItem={({item}) => (
-                    <View
-                      style={{
-                        padding: 5,
-                        borderColor: Colors.black,
-                        borderBottomWidth: 2,
-                      }}>
+                {holidayRequests != null && (
+                  <FlatList
+                    data={holidayRequests}
+                    nestedScrollEnabled={true}
+                    keyExtractor={(item, id) => id.toString()}
+                    renderItem={({item}) => (
                       <View
                         style={{
-                          flexDirection: 'row',
-                          borderColor: Colors.white,
-                          borderBottomWidth: 5,
-                          backgroundColor: Colors.white,
-                          height: 50,
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
+                          padding: 5,
+                          borderColor: Colors.black,
+                          borderBottomWidth: 2,
                         }}>
-                        <Text style={styles.modalhead3}>
-                          {' '}
-                          Request for holiday {item.Hours} hours?
-                        </Text>
-                      </View>
-                      {item.from && (
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            borderColor: Colors.white,
+                            borderBottomWidth: 5,
+                            backgroundColor: Colors.white,
+                            height: 50,
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                          }}>
+                          <Text style={styles.modalhead3}>
+                            {' '}
+                            Request for holiday {item.Hours} hours?
+                          </Text>
+                        </View>
+                        {item.from && (
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              marginBottom: 10,
+                            }}>
+                            <View
+                              style={{
+                                ...styles.requestbuttoncontiner,
+                                width: '20%',
+                              }}>
+                              <Text style={styles.modalhead3}>From</Text>
+                            </View>
+                            <View
+                              style={{
+                                ...styles.requestbuttoncontiner,
+                                width: '30%',
+                                borderWidth: 1,
+                                borderColor: Colors.black,
+                              }}>
+                              <Text style={styles.modalhead3}>
+                                {item.from.toDate().toLocaleDateString()}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                ...styles.requestbuttoncontiner,
+                                width: '20%',
+                              }}>
+                              <Text style={styles.modalhead3}>To</Text>
+                            </View>
+                            <View
+                              style={{
+                                ...styles.requestbuttoncontiner,
+                                width: '30%',
+                                borderWidth: 1,
+                                borderColor: Colors.black,
+                              }}>
+                              <Text style={styles.modalhead3}>
+                                {item.To.toDate().toLocaleDateString()}
+                              </Text>
+                            </View>
+                          </View>
+                        )}
                         <View
                           style={{
                             flexDirection: 'row',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            marginBottom: 10,
+                            marginBottom: 5,
                           }}>
-                          <View
+                          <TouchableOpacity
                             style={{
                               ...styles.requestbuttoncontiner,
-                              width: '20%',
-                            }}>
-                            <Text style={styles.modalhead3}>From</Text>
-                          </View>
-                          <View
-                            style={{
-                              ...styles.requestbuttoncontiner,
-                              width: '30%',
+                              width: '49%',
                               borderWidth: 1,
                               borderColor: Colors.black,
+                            }}
+                            onPress={() => {
+                              handleRejectHolidaySentRequest(item.id);
                             }}>
-                            <Text style={styles.modalhead3}>
-                              {item.from.toDate().toLocaleDateString()}
-                            </Text>
-                          </View>
-                          <View
+                            <Text style={styles.modalhead3}>Reject</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
                             style={{
                               ...styles.requestbuttoncontiner,
-                              width: '20%',
+                              width: '49%',
+                              backgroundColor: Colors.black,
+                            }}
+                            onPress={() => {
+                              handleApproveHolidaySentRequest(item.id);
                             }}>
-                            <Text style={styles.modalhead3}>To</Text>
-                          </View>
-                          <View
-                            style={{
-                              ...styles.requestbuttoncontiner,
-                              width: '30%',
-                              borderWidth: 1,
-                              borderColor: Colors.black,
-                            }}>
-                            <Text style={styles.modalhead3}>
-                              {item.To.toDate().toLocaleDateString()}
+                            <Text
+                              style={{
+                                ...styles.modalhead3,
+                                color: Colors.white,
+                              }}>
+                              Approve
                             </Text>
-                          </View>
+                          </TouchableOpacity>
                         </View>
-                      )}
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          marginBottom: 5,
-                        }}>
-                        <TouchableOpacity
-                          style={{
-                            ...styles.requestbuttoncontiner,
-                            width: '49%',
-                            borderWidth: 1,
-                            borderColor: Colors.black,
-                          }}
-                          onPress={() => {
-                            handleRejectHolidaySentRequest(item.id);
-                          }}>
-                          <Text style={styles.modalhead3}>Reject</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          style={{
-                            ...styles.requestbuttoncontiner,
-                            width: '49%',
-                            backgroundColor: Colors.black,
-                          }}
-                          onPress={() => {
-                            handleApproveHolidaySentRequest(item.id);
-                          }}>
-                          <Text
-                            style={{...styles.modalhead3, color: Colors.white}}>
-                            Approve
-                          </Text>
-                        </TouchableOpacity>
                       </View>
-                    </View>
-                  )}
-                />
-              )}
-            </View>
+                    )}
+                  />
+                )}
+              </View>
+            </>
           )}
         </View>
       </View>
@@ -1163,9 +1255,7 @@ export default function EmployeeDetails({navigation}) {
                     textAlign: 'left',
                   }}>
                   {Number(selectedItem.totalHours) *
-                    Number
-                    (userinfo.perHourSalary)
-                    }{' '}
+                    Number(userinfo.perHourSalary)}{' '}
                   Pounds
                 </Text>
               </View>
@@ -1242,8 +1332,16 @@ export default function EmployeeDetails({navigation}) {
                             .split('T')[0]
                         : 'Date not available'}
                     </Text>
-                    <View style={{width: '33%', flexDirection: 'row',alignItems:'center',justifyContent:'center'}}>
-                      <Text style={{...styles.modalhead3,marginRight:15}}>{item.hoursOfWork}</Text>
+                    <View
+                      style={{
+                        width: '33%',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      <Text style={{...styles.modalhead3, marginRight: 15}}>
+                        {item.hoursOfWork}
+                      </Text>
                       <TouchableOpacity
                         onPress={() => {
                           setCountModal(true);
@@ -1265,9 +1363,7 @@ export default function EmployeeDetails({navigation}) {
                 )}
               />
             </View>
-            {Number
-            (userinfo.maxHours)
-             <
+            {Number(userinfo.maxHours) <
             Number(selectedItem.totalHours) * Number(userinfo.perHourSalary) ? (
               <View
                 style={{
@@ -1326,7 +1422,7 @@ export default function EmployeeDetails({navigation}) {
               }}
               returnKeyType="next"
               multiline={true}
-              keyboardType='numeric'
+              keyboardType="numeric"
             />
             <View style={styles.modalline} />
             <View
@@ -1349,7 +1445,7 @@ export default function EmployeeDetails({navigation}) {
                   // }
                   EditCount();
                   setCountModal(false);
-                  console.log('CountItem'+JSON.stringify(CountItem));
+                  console.log('CountItem' + JSON.stringify(CountItem));
                 }}
                 style={styles.modalbuttonview}>
                 <Text style={styles.modalbuttontext}>Send</Text>
@@ -1370,6 +1466,84 @@ export default function EmployeeDetails({navigation}) {
                   Cancel
                 </Text>
               </TouchableOpacity>
+            </View>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={RequestModal}
+        onRequestClose={() => {
+          setRequestModal(!RequestModal);
+        }}>
+        <SafeAreaView style={styles.body}>
+          <Text style={styles.header}>Employee Details</Text>
+          <View style={styles.detailsBody}>
+            <View style={styles.inputContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  setRequestModal(false);
+                }}>
+                <FontAwesome name="arrow-left" size={25} color={Colors.black} />
+              </TouchableOpacity>
+              <View style={{...styles.button, backgroundColor: Colors.white}}>
+                <Text style={{...styles.buttonText, color: Colors.black}}>
+                  Gowrisan
+                </Text>
+              </View>
+              <View />
+            </View>
+            <View
+              style={{
+                ...styles.modalBody,
+                borderWidth: 5,
+                borderColor: Colors.black,
+                borderRadius: 10,
+                padding: 0,
+                width: '100%',
+              }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  borderColor: Colors.gray,
+                  borderBottomWidth: 2,
+                  height: 50,
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={{...styles.modalhead2, width: '33%'}}>Dates</Text>
+                <Text style={{...styles.modalhead2, width: '33%'}}>Hours</Text>
+                <Text style={{...styles.modalhead2, width: '33%'}}>Salary</Text>
+              </View>
+              <FlatList
+                data={salarydata}
+                nestedScrollEnabled={true}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({item}) => (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      borderColor: Colors.white,
+                      borderBottomWidth: 5,
+                      backgroundColor: Colors.lightgray,
+                      height: 50,
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text style={{...styles.modalhead3, width: '33%'}}>
+                      {item.salary}
+                    </Text>
+                    <Text style={{...styles.modalhead3, width: '33%'}}>
+                      {item.salary}
+                    </Text>
+                    <Text style={{...styles.modalhead3, width: '33%'}}>
+                      {item.salary}
+                    </Text>
+                  </View>
+                )}
+              />
             </View>
           </View>
         </SafeAreaView>
