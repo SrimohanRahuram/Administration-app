@@ -37,7 +37,9 @@ export default function Admin({navigation}) {
 
   // Accessing adminInfo from your Redux store
   const adminData = useSelector(state => state.myReducers.adminInfo);
-
+  const filteredData = adminData.filter(item =>
+    item.username.toLowerCase().includes(search.toLowerCase()),
+  );
   const reloadAction = () => {
     navigation.reset({
       index: 0,
@@ -238,7 +240,7 @@ export default function Admin({navigation}) {
               <Text style={{...styles.modalhead2, width: '15%'}}>Delete</Text>
             </View>
             <FlatList
-              data={adminData}
+              data={filteredData}
               nestedScrollEnabled={true}
               keyExtractor={item => item.id}
               renderItem={({item}) => (
