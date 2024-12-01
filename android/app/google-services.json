@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "880659826646",
-    "project_id": "ukfoodcity-21294",
-    "storage_bucket": "ukfoodcity-21294.appspot.com"
+    "project_number": "771209876176",
+    "project_id": "tapt-7c61b",
+    "storage_bucket": "tapt-7c61b.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:880659826646:android:e2b803f4e90c868b644677",
+        "mobilesdk_app_id": "1:771209876176:android:7f94cd31aafab7840f44d5",
         "android_client_info": {
           "package_name": "com.administrationapp"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDnTbu42S6G-7fw8LFrXqdaHYXdBmR_wP4" 
+          "current_key": "AIzaSyAM5ZGvWI4lKpido04IzCHGk_jdA8WUiuY"
         }
       ],
       "services": {

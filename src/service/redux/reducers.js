@@ -58,6 +58,9 @@ const initialState = {
   activeholidayRequests: [],
   totalHolidayHours:[],
   totalAdvance:[],
+  AllAdvanceRequets:[],
+  AllLeaveRequests:[],
+  AllHolidayRequets:[],
 };
 
 function myReducers(state = initialState, action) {
@@ -306,19 +309,19 @@ function myReducers(state = initialState, action) {
         case ADMIN_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID:
           return {
             ...state,
-            advanceRequests: action.payload,
+            AllAdvanceRequets: action.payload,
           };
     
           case ADMIN_ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID:
             return {
               ...state,
-              leaveRequests: action.payload,
+              AllLeaveRequests: action.payload,
             };
       
           case ADMIN_ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID:
             return {
               ...state,
-              holidayRequests: action.payload,
+              AllHolidayRequets: action.payload,
             };
 
     default:

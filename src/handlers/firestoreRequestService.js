@@ -290,7 +290,7 @@ const firestoreRequestService = {
           .get();
 
         const HolidayRequestsData = holidayRequestSnapshot.docs
-          .filter(doc => doc.data().status === 'ACTIVE')
+          .filter(doc => doc.data().status === 'APPROVED')
           .map(doc => ({
             id: doc.id,
             ...doc.data(),

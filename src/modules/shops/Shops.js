@@ -23,6 +23,7 @@ import DocumentPicker from 'react-native-document-picker';
 import {addImage, clearImages} from '../../service/redux/actions';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { fetchAdminDataById } from '../../service/redux/actions';
+import { tr } from 'date-fns/locale';
 
 export default function Shops({navigation}) {
   const dispatch = useDispatch();
@@ -39,7 +40,17 @@ export default function Shops({navigation}) {
   const [summaryModal, setSummaryModal] = useState(false);
   const [selectedShop, setSelectedShop] = useState(null);
 
+  const reloadAction = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Shops'}],
+    });
+   
+    return true;
+  };
+
   const handleOnSubmit = async e => {
+    setIsLoading(true);
     e.preventDefault();
     const status = await firestoreShopService.saveShopData(
       name,
@@ -48,7 +59,14 @@ export default function Shops({navigation}) {
       contactNo,
     );
     if (status == 'Success') {
-      ToastAlert.ShowToast('error', 'Alert', 'Sucessfully Shop created..');
+      setIsLoading(false);
+      ToastAlert.ShowToast('success', 'Alert', 'Sucessfully Shop created..');
+      dispatch(fetchShopData());
+      setAddShopModal(false);
+    }
+    else {
+      setIsLoading(false);
+      ToastAlert.ShowToast('error', 'Alert', 'Error in  Shop creation.Try again later..');
       dispatch(fetchShopData());
       setAddShopModal(false);
     }
@@ -97,6 +115,7 @@ export default function Shops({navigation}) {
   }, [selectedShop]);
 
   const handleOnUpdate = async e => {
+    setIsLoading(true);
     e.preventDefault();
 
     // Define updated data as an object
@@ -112,7 +131,16 @@ export default function Shops({navigation}) {
         updatedData,
       );
       if (status === 'Success') {
+        setIsLoading(false);
         ToastAlert.ShowToast('success', 'Alert', 'Successfully updated shop.');
+        dispatch(fetchShopData()); // Refresh admin data
+        setEditShopModal(false);
+        reloadAction();
+         // Close the modal
+      }
+      else{
+        setIsLoading(false);
+        ToastAlert.ShowToast('error', 'Alert', 'Error in updating shop.Try Again Later..');
         dispatch(fetchShopData()); // Refresh admin data
         setEditShopModal(false); // Close the modal
       }
@@ -127,13 +155,16 @@ export default function Shops({navigation}) {
   };
 
   const handleOnDelete = async e => {
+    setIsLoading(true);
     try {
       const status = await firestoreShopService.deleteShopData(shopID); // Call your delete function
       if (status === 'Success') {
+        setIsLoading(false);
         ToastAlert.ShowToast('success', 'Alert', 'Successfully deleted shop.');
         setShopModal(false);
         dispatch(fetchShopData());
       } else {
+        setIsLoading(false);
         ToastAlert.ShowToast('error', 'Alert', 'Failed to delete shop.');
       }
     } catch (error) {
@@ -475,6 +506,7 @@ export default function Shops({navigation}) {
                 <TextInput
                   style={styles.input}
                   onChangeText={setShopID}
+                  editable={false}
                   value={shopID}
                   placeholder="Enter ShopId"
                 />

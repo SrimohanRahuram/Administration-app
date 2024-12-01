@@ -38,6 +38,13 @@ export default function Admin({navigation}) {
   // Accessing adminInfo from your Redux store
   const adminData = useSelector(state => state.myReducers.adminInfo);
 
+  const reloadAction = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Admin'}],
+    });
+  }
+
   useEffect(() => {
     // Fetch admin data when the component mounts
     dispatch(fetchAdminData());
@@ -46,6 +53,7 @@ export default function Admin({navigation}) {
 
   // Logging the admin data to see changes
   useEffect(() => {
+   
     console.log('Admin data updated:', adminData);
   }, [adminData]);
 
@@ -70,6 +78,7 @@ export default function Admin({navigation}) {
   };
 
   const handleOnSumbit = async e => {
+    setIsLoading(true);
     e.preventDefault();
     const status = await firestoreAdminService.saveAdminData(
       userName,
@@ -77,13 +86,23 @@ export default function Admin({navigation}) {
       contactNo,
     );
     if (status == 'Success') {
-      ToastAlert.ShowToast('error', 'Alert', 'Sucessfully Admin created..');
+      setIsLoading(false);
+      ToastAlert.ShowToast('success', 'Alert', 'Sucessfully Admin created..');
+   
+      setAddAdminModal(false);
+      reloadAction();
+    }
+    else {
+      setIsLoading(false);
+      ToastAlert.ShowToast('error', 'Alert', 'error In  Admin creation.Try Again Later..');
       dispatch(fetchAdminData());
       setAddAdminModal(false);
     }
+    
   };
 
   const handleOnUpdate = async e => {
+    setIsLoading(true);
     e.preventDefault();
 
     // Define updated data as an object
@@ -98,7 +117,15 @@ export default function Admin({navigation}) {
         updatedData,
       );
       if (status === 'Success') {
+        setIsLoading(true);
         ToastAlert.ShowToast('success', 'Alert', 'Successfully updated admin.');
+        dispatch(fetchAdminData()); // Refresh admin data
+        setEditAdminModal(false); 
+        reloadAction();// Close the modal
+      }
+     else{
+        setIsLoading(true);
+        ToastAlert.ShowToast('error', 'Alert', 'Error In updated admin.');
         dispatch(fetchAdminData()); // Refresh admin data
         setEditAdminModal(false); // Close the modal
       }
@@ -114,14 +141,16 @@ export default function Admin({navigation}) {
     setContactNo('');
   };
 
-  const handleOnDelete = async e => {
-    try {
-      console.log('iraibaa>>>' + userName);
+  const handleOnDelete = async userName => {
+    setIsLoading(true);
+    try { 
       const status = await firestoreAdminService.deleteAdminData(userName); // Call your delete function
       if (status === 'Success') {
-        ToastAlert.ShowToast('success', 'Alert', 'Successfully deleted admin.');
-        dispatch(fetchAdminData()); // Refresh admin data after deletion
+        setIsLoading(false);
+        ToastAlert.ShowToast('success', 'Alert', 'Successfully deleted admin Info.');
+        reloadAction(); // Refresh admin data after deletion
       } else {
+        setIsLoading(false);
         ToastAlert.ShowToast('error', 'Alert', 'Failed to delete admin.');
       }
     } catch (error) {
@@ -248,7 +277,7 @@ export default function Admin({navigation}) {
                     }}
                     onPress={() => {
                       setSelectedAdmin(item);
-                      handleOnDelete();
+                      handleOnDelete(item.username);
                     }}>
                     <FontAwesome name="trash-o" size={25} color={Colors.darkred} />
                   </TouchableOpacity>

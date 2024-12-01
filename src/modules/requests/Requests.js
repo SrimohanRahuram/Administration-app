@@ -44,6 +44,14 @@ export default function Requests({navigation}) {
   
    dispatch=useDispatch();
 
+   const reloadAction = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Requests'}],
+    });
+    return true;
+  };
+
    useEffect(() => {
     dispatch(employeeTotalHolidayHoursCalc())
       .then(response => {
@@ -161,6 +169,7 @@ export default function Requests({navigation}) {
         'Sucessfully Advance Request sent..',
       );
       setAdvance('');
+      reloadAction();
       // dispatch();
     }
     else{
@@ -186,11 +195,12 @@ export default function Requests({navigation}) {
       ToastAlert.ShowToast(
         'success',
         'Alert',
-        'error Advance Request sent..',
+        'Successfully Leave Request sent..',
       );
       
       setFormDate2('');
       setToDate2('');
+      reloadAction();
       // dispatch();
     }
     else{
@@ -198,7 +208,7 @@ export default function Requests({navigation}) {
     ToastAlert.ShowToast(
       'error',
       'Alert',
-      'error Advance Request sent..',
+      'error in Leave Request.Try Again Later..',
     );
     }
   };
@@ -218,11 +228,12 @@ export default function Requests({navigation}) {
       ToastAlert.ShowToast(
         'success',
         'Alert',
-        'Sucessfully Advance Request sent..',
+        'Sucessfully Holiday  Request sent..',
       );
       setFormDate('');
       setToDate('');
       setLeaveDates('');
+      reloadAction();
       // dispatch();
     }
     else{
@@ -230,7 +241,7 @@ export default function Requests({navigation}) {
       ToastAlert.ShowToast(
         'error',
         'Alert',
-        'Sucessfully Advance Request sent..',
+        'error in  Holiday Request sent.Try Again Later..',
       );
     }
   };
@@ -508,7 +519,7 @@ export default function Requests({navigation}) {
               </TouchableOpacity>
               <View style={{...styles.button, backgroundColor: Colors.white}}>
                 <Text style={{...styles.buttonText, color: Colors.black}}>
-                  Gowrisan
+                 
                 </Text>
               </View>
               <View />

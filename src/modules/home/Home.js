@@ -79,7 +79,7 @@ export default function Home({navigation}) {
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, []);
 
-  const handleAdvanceSentRequest = async e => {
+  const handleLoginTimeandDate = async e => {
     setIsLoading(true);
     const employeeId = await AsyncStorage.getItem('employeeId');
     //const currentDate = new Date();
@@ -93,10 +93,15 @@ export default function Home({navigation}) {
       ToastAlert.ShowToast(
         'success',
         'Alert',
-        'Sucessfully Advance Request sent..',
+        'Sucessfully checkIn/Checkout the work..',
       );
     } else {
       setIsLoading(false);
+      ToastAlert.ShowToast(
+        'error',
+        'Alert',
+        'Error CheckIn the Shop..',
+      );
     }
   };
 
@@ -210,7 +215,7 @@ export default function Home({navigation}) {
               onPress={() => {
                 if (value) {
                   setIsEnabled(previousState => !previousState);
-                  handleAdvanceSentRequest();
+                  handleLoginTimeandDate();
                 } else {
                   ToastAlert.ShowToast(
                     'error',

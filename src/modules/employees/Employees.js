@@ -57,6 +57,7 @@ export default function Employees({navigation}) {
   };
 
   const handleOnSubmit = async e => {
+    setIsLoading(true);
     e.preventDefault();
     const status = await firestoreEmployeeService.saveEmployeeData(
       userName,
@@ -70,10 +71,19 @@ export default function Employees({navigation}) {
       maxHolidays,
     );
     if (status == 'Success') {
-      ToastAlert.ShowToast('error', 'Alert', 'Sucessfully Emoloyee created..');
+      setIsLoading(false);
+      ToastAlert.ShowToast('success', 'Alert', 'Sucessfully Emoloyee created..');
+      dispatch(fetchEmployeeData());
+      setAddEmployeeModal(false);
+      reloadAction();
+    }
+    else{
+      setIsLoading(false);
+      ToastAlert.ShowToast('error', 'Alert', 'Error in Emoloyee created.Try Again Later..');
       dispatch(fetchEmployeeData());
       setAddEmployeeModal(false);
     }
+    
   };
 
   // Accessing adminInfo from your Redux store
@@ -83,10 +93,11 @@ export default function Employees({navigation}) {
     // Fetch admin data when the component mounts
     dispatch(fetchEmployeeData());
     console.log('Fetch dispatched');
-  }, [dispatch]);
+  }, [employeeData]);
 
   // Logging the admin data to see changes
   useEffect(() => {
+   
     console.log('employee data updated:', employeeData);
   }, [employeeData]);
 
@@ -105,6 +116,7 @@ export default function Employees({navigation}) {
   }, [selectedEmployee]);
 
   const handleOnUpdate = async e => {
+    setIsLoading(true);
     e.preventDefault();
 
     // Define updated data as an object
@@ -126,10 +138,22 @@ export default function Employees({navigation}) {
         updatedData,
       );
       if (status === 'Success') {
+        setIsLoading(false);
         ToastAlert.ShowToast(
           'success',
           'Alert',
           'Successfully updated employee.',
+        );
+        dispatch(fetchEmployeeData());
+        setEditEmployeeModal(false);
+        reloadAction();
+      }
+      else {
+        setIsLoading(false);
+        ToastAlert.ShowToast(
+          'error',
+          'Alert',
+          'Error in  updating employee.Try Again Later',
         );
         dispatch(fetchEmployeeData());
         setEditEmployeeModal(false);
@@ -140,17 +164,21 @@ export default function Employees({navigation}) {
     }
   };
 
-  const handleOnDelete = async e => {
+  const handleOnDelete = async ID => {
+    setIsLoading(true);
     try {
-      const status = await firestoreEmployeeService.deleteEmployeeData(Id); // Call your delete function
+      const status = await firestoreEmployeeService.deleteEmployeeData(ID); // Call your delete function
       if (status === 'Success') {
+        setIsLoading(false);
         ToastAlert.ShowToast(
           'success',
           'Alert',
           'Successfully deleted Employee.',
         );
-        dispatch(fetchEmployeeData()); // Refresh admin data after deletion
+        dispatch(fetchEmployeeData());
+        reloadAction(); // Refresh admin data after deletion
       } else {
+        setIsLoading(false);
         ToastAlert.ShowToast('error', 'Alert', 'Failed to delete Employee.');
       }
     } catch (error) {
@@ -204,6 +232,13 @@ export default function Employees({navigation}) {
     } else {
       return null;
     }
+  };
+
+  const reloadAction = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Employees'}],
+    });
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -293,7 +328,7 @@ export default function Employees({navigation}) {
                     }}
                     onPress={() => {
                       setSelectedEmployee(item);
-                      handleOnDelete();
+                      handleOnDelete(item.ID);
                     }}>
                     <FontAwesome name="trash-o" size={25} color={Colors.darkred} />
                   </TouchableOpacity>

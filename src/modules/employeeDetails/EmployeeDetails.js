@@ -277,10 +277,18 @@ export default function EmployeeDetails({navigation}) {
         console.log('Response:', response); 
         if (response=="Success") {
           setIsLoading(false);
-          alert('Status updated successfully!');
+          ToastAlert.ShowToast(
+            'success',
+            'Alert',
+            'Advance Request Approved Sucessfully..',
+          );
           reloadAction();
         } else {
-          alert(`Error updating status:`);
+          ToastAlert.ShowToast(
+            'error',
+            'Alert',
+            'Erro in Advance Request Approved .Try Again..',
+          );
         }// "Success" or error object
       })
       .catch(err => {
@@ -306,10 +314,18 @@ export default function EmployeeDetails({navigation}) {
         console.log('Response:', response); 
         if (response=="Success") {
           setIsLoading(false);
-          alert('Status updated successfully!');
+          ToastAlert.ShowToast(
+            'success',
+            'Alert',
+            ' Advance Request Rejected..',
+          );
           reloadAction();
         } else {
-          alert(`Error updating status:`);
+          ToastAlert.ShowToast(
+            'error',
+            'Alert',
+            'Erro in Advance Request Rejection.Try Again Later..',
+          );
         }// "Success" or error object
       })
       .catch(err => {
@@ -334,12 +350,20 @@ export default function EmployeeDetails({navigation}) {
         console.log('Response:', response); 
         if (response=="Success") {
           setIsLoading(false);
+           ToastAlert.ShowToast(
+            'success',
+            'Alert',
+            'Leave Request Approved Sucessfully..',
+          );
           reloadAction();
-          alert('Status updated successfully!');
          
         } else {
           setIsLoading(false);
-          alert(`Error updating status:`);
+          ToastAlert.ShowToast(
+            'error',
+            'Alert',
+            'Erro in Leave Request Approved .Try Again..',
+          );
 
         }// "Success" or error object
       })
@@ -367,9 +391,17 @@ export default function EmployeeDetails({navigation}) {
           console.log('Response:', response);
           if (response == 'Success') {
             setIsLoading(false);
-            alert('Status updated successfully!');
+            ToastAlert.ShowToast(
+              'success',
+              'Alert',
+              ' Leave Request Rejected..',
+            );
           } else {
-            alert(`Error updating status:`);
+            ToastAlert.ShowToast(
+              'error',
+              'Alert',
+              'Erro in Leave Request Rejection.Try Again Later..',
+            );
           } // "Success" or error object
         })
         .catch(err => {
@@ -396,10 +428,19 @@ export default function EmployeeDetails({navigation}) {
           console.log('Response:', response);
           if (response == 'Success') {
             setIsLoading(false);
-            alert('Status updated successfully!');
+            ToastAlert.ShowToast(
+              'success',
+              'Alert',
+              'Holiday Request Approved Sucessfully..',
+            );
+            reloadAction();
           } else {
             setIsLoading(false);
-            alert(`Error updating status:`);
+            ToastAlert.ShowToast(
+              'error',
+              'Alert',
+              'Erro in Holiday Request Approved .Try Again..',
+            );
           } // "Success" or error object
         })
         .catch(err => {
@@ -426,10 +467,18 @@ export default function EmployeeDetails({navigation}) {
           console.log('Response:', response);
           if (response == 'Success') {
             setIsLoading(false);
-            alert('Status updated successfully!');
+            ToastAlert.ShowToast(
+              'success',
+              'Alert',
+              ' Holiday Request Rejected..',
+            );
           } else {
             setIsLoading(false);
-            alert(`Error updating status:`);
+            ToastAlert.ShowToast(
+              'error',
+              'Alert',
+              'Erro in Holiday Request Rejection.Try Again Later..',
+            );
           } // "Success" or error object
         })
         .catch(err => {
@@ -480,21 +529,21 @@ export default function EmployeeDetails({navigation}) {
     }
   };
 
-  const AllAdvanceData = useSelector(state => state.myReducers.advanceRequests);
+  const AllAdvanceData = useSelector(state => state.myReducers.AllAdvanceRequets);
   useEffect(() => {
     // Fetch admin data when the component mounts
     dispatch(AdminAdvanceAllRequestsByEmployeeId());
     console.log('Fetch dispatched');
   }, [dispatch]);
 
-  const AllLeaveData = useSelector(state => state.myReducers.leaveRequests);
+  const AllLeaveData = useSelector(state => state.myReducers.AllLeaveRequests);
   useEffect(() => {
     // Fetch admin data when the component mounts
     dispatch(AdminAllLeaveRequestsByEmployeeId());
     console.log('Fetch dispatched');
   }, [dispatch]);
 
-  const AllHolidayData = useSelector(state => state.myReducers.holidayRequests);
+  const AllHolidayData = useSelector(state => state.myReducers.AllHolidayRequets);
   useEffect(() => {
     // Fetch admin data when the component mounts
     dispatch(AdminAllHolidayRequestsByEmployeeId());
