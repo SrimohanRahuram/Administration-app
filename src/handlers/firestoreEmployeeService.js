@@ -355,6 +355,95 @@ const firestoreEmployeeService = {
     }
   },
 
+  saveLoginTimeAndDateInShopDoc: async (shopName, shopID, employeeId) => {
+    try {
+      const userDoc = await firestore()
+        .collection('Shop')
+        .doc(shopID)
+        .get();
+
+      if (userDoc.exists) {
+        let currentDate = new Date();
+        let hours = currentDate.getHours();
+        let minutes = currentDate.getMinutes();
+        if (minutes < 30) {
+          minutes = 30;
+        } else {
+          minutes = 0;
+          hours += 1;
+        }
+        currentDate.setHours(hours, minutes, 0, 0);
+        const formattedTime = moment(currentDate).format('HH:mm');
+
+        let currentDate2 = new Date();
+        let hours2 = currentDate2.getHours();
+        let minutes2 = currentDate2.getMinutes();
+        if (minutes2 < 30) {
+          minutes2 = 0;
+        } else {
+          minutes2 = 30;
+        }
+        currentDate2.setHours(hours2, minutes2, 0, 0);
+        const formattedTime2 = moment(currentDate2).format('HH:mm');
+
+        const shopLoginRef = firestore()
+          .collection('Shop')
+          .doc(shopID)
+          .collection('loginDetails');
+        const latestDocSnapshot = await shopLoginRef
+          .orderBy('createdAt', 'desc')
+          .limit(1)
+          .get();
+
+        let newStatus = 'ACTIVE';
+        let timeDifference = 0;
+
+        if (!latestDocSnapshot.empty) {
+          const lastDocData = latestDocSnapshot.docs[0].data();
+          const lastDocId = latestDocSnapshot.docs[0].id;
+          if (lastDocData.status === 'ACTIVE') {
+            const lastCheckIn = moment(lastDocData.checkInDateTime, 'HH:mm');
+            const currentTime = moment(formattedTime2, 'HH:mm');
+            if (currentTime.diff(lastCheckIn, 'minutes') < 0) {
+              timeDifference = 0;
+            } else {
+              timeDifference = currentTime.diff(lastCheckIn, 'hours');
+            }
+            newStatus = 'INACTIVE';
+            await shopLoginRef.doc(lastDocId).delete();
+          }
+        }
+
+        const newRequest = {
+          checkInDateTime:
+            newStatus === 'ACTIVE'
+              ? formattedTime
+              : latestDocSnapshot.docs[0]?.data().checkInDateTime,
+          checkOutDateTime:
+            newStatus === 'INACTIVE'
+              ? formattedTime2 > formattedTime
+                ? formattedTime2
+                : formattedTime
+              : '',
+          employeeId: employeeId,
+          status: newStatus,
+          hoursOfWork: timeDifference,
+          createdAt: firestore.FieldValue.serverTimestamp(),
+          shopName: shopName,
+        };
+
+        const advanceRequestRef = shopLoginRef.doc();
+        await advanceRequestRef.set(newRequest);
+
+        console.log('Request Successfully sent!');
+        return 'Success';
+      }
+    } catch (error) {
+      console.error('Error adding Shop data: ', error);
+      throw error;
+    }
+  },
+
 };
 
 export default firestoreEmployeeService;

@@ -1339,7 +1339,8 @@ export default function EmployeeDetails({navigation}) {
                 </Text>
               </View>
             </View>
-            <View
+          
+            {/* <View
               style={{
                 backgroundColor: Colors.rose,
                 width: '100%',
@@ -1366,7 +1367,7 @@ export default function EmployeeDetails({navigation}) {
                   Advance
                 </Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
             <View
               style={{
                 ...styles.modalBody,

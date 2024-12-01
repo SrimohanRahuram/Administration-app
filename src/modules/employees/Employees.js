@@ -44,6 +44,7 @@ export default function Employees({navigation}) {
   const [EditEmployeeModal, setEditEmployeeModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
+
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backAction);
     return () => {
