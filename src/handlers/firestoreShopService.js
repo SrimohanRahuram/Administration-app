@@ -88,6 +88,62 @@ const firestoreShopService={
         }
       },
 
+      LoginDataByShop: async (shopID) => {
+        try {
+          // Access the loginDetails subcollection directly
+          const shopSnapshot = await firestore()
+            .collection('Shop') // Ensure consistent casing
+            .doc(shopID)
+            .collection('loginDetails')
+            .get();
+      
+          if (!shopSnapshot.empty) {
+            const loginData = shopSnapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+      
+            console.log('Retrieved LoginDataByShop:', loginData);
+            return loginData;
+          } else {
+            console.warn(`No login details found for Shop ID: ${shopID}`);
+            return []; // Return an empty array if no data is found
+          }
+        } catch (error) {
+          console.error('Error retrieving LoginDataByShop by ID:', error);
+          throw error;
+        }
+      },
+
+      LoginActiveDataByShop: async (shopID) => {
+        try {
+          // Access the loginDetails subcollection directly
+          const shopSnapshot = await firestore()
+            .collection('Shop') // Ensure consistent casing
+            .doc(shopID)
+            .collection('loginDetails')
+            .get();
+      
+          if (!shopSnapshot.empty) {
+            const loginData = shopSnapshot.docs
+            .filter(doc => doc.data().status === 'ACTIVE')
+            .map((doc) => 
+              ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+      
+            console.log('Retrieved LoginDataByShop:', loginData);
+            return loginData;
+          } else {
+            console.warn(`No login details found for Shop ID: ${shopID}`);
+            return []; // Return an empty array if no data is found
+          }
+        } catch (error) {
+          console.error('Error retrieving LoginDataByShop by ID:', error);
+          throw error;
+        }
+      },
 
 }
 

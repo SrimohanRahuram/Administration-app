@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestoreShopService from '../../handlers/firestoreShopService';
 import firestoreRequestService from '../../handlers/firestoreRequestService';
 import { id } from 'date-fns/locale';
+import { constructFrom } from 'date-fns';
 
 export const ADD_USER_INFO = 'ADD_USER_INFO';
 export const REMOVE_USER = 'REMOVE_USER';
@@ -55,6 +56,9 @@ export const ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID='ALL_HOLIDAY_REQUESTS_DATA_
 export const ADMIN_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID='ADMIN_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID';
 export const ADMIN_ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID='ADMIN_ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID';
 export const ADMIN_ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID='ADMIN_ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID';
+
+export const LOGIN_DATA_BY_SHOP='LOGIN_DATA_BY_SHOP';
+export const LOGIN_ACTIVE_DATA_BY_SHOP='LOGIN_ACTIVE_DATA_BY_SHOP';
 
 
 
@@ -819,3 +823,26 @@ export const AdminAllHolidayRequestsByEmployeeId = () => async dispatch => {
     throw error;
   }
 };
+
+export const LoginDataByShop= (shopID) => async dispatch => {
+  console.log('shopID>>:', shopID);
+  const shopData = await firestoreShopService.LoginDataByShop(shopID);
+  console.log('Fetched Shops Data>>:', shopData);
+
+  dispatch({
+    type: LOGIN_DATA_BY_SHOP,
+    payload: shopData,
+  });
+};
+
+export const LoginActiveDataByShop= (shopID) => async dispatch => {
+  console.log('shopID>>:', shopID);
+  const shopData = await firestoreShopService.LoginActiveDataByShop(shopID);
+  console.log('Fetched Shops Data>>:', shopData);
+
+  dispatch({
+    type: LOGIN_ACTIVE_DATA_BY_SHOP,
+    payload: shopData,
+  });
+};
+

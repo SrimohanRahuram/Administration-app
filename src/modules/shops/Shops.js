@@ -11,6 +11,7 @@ import {
   SafeAreaView
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
+import {format, getWeek, startOfWeek, endOfWeek} from 'date-fns';
 import styles from './Shops.Styles';
 import Colors from '../../constants/Colors';
 import Images from '../../constants/images';
@@ -18,7 +19,7 @@ import ProgressOverlay from '../../components/ProgressOverlay';
 import ToastAlert from '../../components/ToastAlert';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import firestoreShopService from '../../handlers/firestoreShopService';
-import {fetchShopData} from '../../service/redux/actions';
+import {fetchLoginDataShop, fetchShopData, LoginActiveDataByShop, LoginDataByShop} from '../../service/redux/actions';
 import DocumentPicker from 'react-native-document-picker';
 import {addImage, clearImages} from '../../service/redux/actions';
 import ReactNativeBlobUtil from 'react-native-blob-util';
@@ -39,6 +40,80 @@ export default function Shops({navigation}) {
   const [EditShopModal, setEditShopModal] = useState(false);
   const [summaryModal, setSummaryModal] = useState(false);
   const [selectedShop, setSelectedShop] = useState(null);
+
+  const loginDataByShop = useSelector(state => state.myReducers.loginDataByShop);
+  const loginActiveDataByShop = useSelector(state => state.myReducers.loginActiveDataByShop);
+
+  const handleLoginDataByShop = async shopID => {
+    console.log(shopID+"shopID");
+    try {
+      setIsLoading(true);
+      const response =  dispatch(LoginDataByShop(shopID))
+      .then(response => {
+        console.log('Response:', response); 
+        if (response=="Success") {
+          setIsLoading(false);
+          //  ToastAlert.ShowToast(
+          //   'success',
+          //   'Alert',
+          //   'Leave Request Approved Sucessfully..',
+          // );
+          // reloadAction();
+         
+        } else {
+          setIsLoading(false);
+          // ToastAlert.ShowToast(
+          //   'error',
+          //   'Alert',
+          //   'Erro in Leave Request Approved .Try Again..',
+          // );
+
+        }// "Success" or error object
+      })
+      .catch(err => {
+        console.error('Error:', err);
+      });
+      console.log("response">>+response);  
+    }catch (error) {
+      console.error('Error dispatching the action:', error);
+    } 
+  };
+
+  const handleActiveLoginDataByShop = async shopID => {
+    console.log(shopID+"shopID");
+    try {
+      setIsLoading(true);
+      const response =  dispatch(LoginActiveDataByShop(shopID))
+      .then(response => {
+        console.log('Response:', response); 
+        if (response=="Success") {
+          setIsLoading(false);
+          //  ToastAlert.ShowToast(
+          //   'success',
+          //   'Alert',
+          //   'Leave Request Approved Sucessfully..',
+          // );
+          // reloadAction();
+         
+        } else {
+          setIsLoading(false);
+          // ToastAlert.ShowToast(
+          //   'error',
+          //   'Alert',
+          //   'Erro in Leave Request Approved .Try Again..',
+          // );
+
+        }// "Success" or error object
+      })
+      .catch(err => {
+        console.error('Error:', err);
+      });
+      console.log("response">>+response);  
+    }catch (error) {
+      console.error('Error dispatching the action:', error);
+    } 
+  };
+
 
   const reloadAction = () => {
     navigation.reset({
@@ -88,6 +163,9 @@ export default function Shops({navigation}) {
     dispatch(fetchAdminDataById());
     console.log('Fetch dispatched');
   }, [dispatch]);
+
+  
+
 
   // Logging the admin data to see changes
   useEffect(() => {
@@ -273,6 +351,8 @@ export default function Shops({navigation}) {
                 onPress={() => {
                   setSelectedShop(item);
                   setShopModal(true);
+                  handleLoginDataByShop(item.shopID);
+                  handleActiveLoginDataByShop(item.shopID);
                 }}
                 style={styles.detailsBody2}>
                 <Text style={styles.head}>{item.name}</Text>
@@ -449,10 +529,55 @@ export default function Shops({navigation}) {
             <Text style={{...styles.modalText, fontSize: 20}}>
               Current Active Employee
             </Text>
-            <View style={styles.modaldetailsBody2}>
-              <Text style={styles.modalText}>Employee Name:</Text>
-              <Text style={styles.modalText}>Employee ID:</Text>
-              <Text style={styles.modalText}>Login time:</Text>
+            <View
+              style={{
+                ...styles.modalBody,
+                borderWidth: 5,
+                borderColor: Colors.black,
+                borderRadius: 10,
+                marginTop: 10,
+                padding: 0,
+              }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  borderColor: Colors.gray,
+                  borderBottomWidth: 2,
+                  height: 50,
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={{...styles.modalhead2, width: '50%'}}>ID</Text>
+                {/* <Text style={{...styles.modalhead2, width: '33%'}}>Date</Text> */}
+                <Text style={{...styles.modalhead2, width: '50%'}}>From</Text>
+              </View>
+              <FlatList
+                data={loginActiveDataByShop}
+                nestedScrollEnabled={true}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({item}) => (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      borderColor: Colors.white,
+                      borderBottomWidth: 5,
+                      backgroundColor: Colors.lightgray,
+                      height: 50,
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text style={{...styles.modalhead3, width: '50%'}}>
+                    {item.employeeId}
+                    </Text>
+                    {/* <Text style={{...styles.modalhead3, width: '33%'}}>
+                    {item.createdAt.toDate().toLocaleDateString()}
+                    </Text> */}
+                    <Text style={{...styles.modalhead3, width: '50%'}}>
+                    {item.checkInDateTime}
+                    </Text>
+                  </View>
+                )}
+              />
             </View>
           </View>
         </SafeAreaView>
@@ -595,13 +720,16 @@ export default function Shops({navigation}) {
                   borderBottomWidth: 2,
                   height: 50,
                   alignItems: 'center',
+                  justifyContent: 'space-between',
                 }}>
-                <Text style={styles.modalhead2}> ID </Text>
-                <Text style={styles.modalhead2}>Check-In</Text>
-                <Text style={styles.modalhead2}>Check-Out</Text>
+                <Text style={{...styles.modalhead2, width: '20%'}}> ID</Text>
+                <Text style={{...styles.modalhead2, width: '20%'}}>Date</Text>
+                <Text style={{...styles.modalhead2, width: '20%'}}>From</Text>
+                <Text style={{...styles.modalhead2, width: '20%'}}>To</Text>
+                <Text style={{...styles.modalhead2, width: '20%'}}>Status</Text>
               </View>
               <FlatList
-                data={shopsummary}
+                data={loginDataByShop}
                 nestedScrollEnabled={true}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({item}) => (
@@ -613,10 +741,23 @@ export default function Shops({navigation}) {
                       backgroundColor: Colors.lightgray,
                       height: 50,
                       alignItems: 'center',
+                      justifyContent: 'space-between',
                     }}>
-                    <Text style={styles.modalhead3}>{item.id}</Text>
-                    <Text style={styles.modalhead3}>{item.in}</Text>
-                    <Text style={styles.modalhead3}>{item.out}</Text>
+                    <Text style={{...styles.modalhead3, width: '20%'}}>
+                    {item.employeeId}
+                    </Text>
+                    <Text style={{...styles.modalhead3, width: '20%'}}>
+                    {item.createdAt.toDate().toLocaleDateString()}
+                    </Text>
+                    <Text style={{...styles.modalhead3, width: '20%'}}>
+                    {item.checkInDateTime}
+                    </Text>
+                    <Text style={{...styles.modalhead3, width: '20%'}}>
+                    {item.checkOutDateTime}
+                    </Text>
+                    <Text style={{...styles.modalhead3, width: '20%'}}>
+                    {item.status}
+                    </Text>
                   </View>
                 )}
               />

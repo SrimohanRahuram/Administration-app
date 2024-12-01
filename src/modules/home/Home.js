@@ -105,6 +105,32 @@ export default function Home({navigation}) {
     }
   };
 
+  const handleLoginTimeandDateInShopDoc = async e => {
+    setIsLoading(true);
+    const employeeId = await AsyncStorage.getItem('employeeId');
+    //const currentDate = new Date();
+    const status = await firestoreRequestService.saveLoginTimeAndDateInShopDoc(
+      value,
+      shopId,
+      employeeId,
+    );
+    if (status == 'Success') {
+      setIsLoading(false);
+      // ToastAlert.ShowToast(
+      //   'success',
+      //   'Alert',
+      //   'Sucessfully checkIn/Checkout the work..',
+      // );
+    } else {
+      setIsLoading(false);
+      // ToastAlert.ShowToast(
+      //   'error',
+      //   'Alert',
+      //   'Error CheckIn the Shop..',
+      // );
+    }
+  };
+
   useEffect(() => {
     const fetchLastWorkingDetails = async e => {
       try {
@@ -216,6 +242,7 @@ export default function Home({navigation}) {
                 if (value) {
                   setIsEnabled(previousState => !previousState);
                   handleLoginTimeandDate();
+                  handleLoginTimeandDateInShopDoc();
                 } else {
                   ToastAlert.ShowToast(
                     'error',
