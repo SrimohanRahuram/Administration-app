@@ -60,6 +60,9 @@ export default function EmployeeDetails({navigation}) {
   const [RequestModal, setRequestModal] = useState(false);
   const [value, setValue] = useState(null);
   const [transformData, setTransformData] = React.useState([]);
+  const [RequestModal2, setRequestModal2] = useState(false);
+  const [CountModal2, setCountModal2] = useState(false);
+  const [CountModal3, setCountModal3] = useState(false);
 
   // Accessing advancerequests from your Redux store
   const advanceRequests = useSelector(
@@ -113,7 +116,7 @@ export default function EmployeeDetails({navigation}) {
     if (dropdowndata.length > 0) {
       const firstItem = dropdowndata[0];
       setValue(firstItem.name);
-      SelectSalaryData(firstItem.key); 
+      SelectSalaryData(firstItem.key);
     }
   }, [filteredData]);
 
@@ -270,26 +273,28 @@ export default function EmployeeDetails({navigation}) {
       const employeeID = userinfo.id;
       console.log(employeeID);
 
-      console.log(requestId+"requestId");
+      console.log(requestId + 'requestId');
 
-      const response =  dispatch(editApproveAdvanceRequestStatus(employeeID, requestId, newStatus))
-      .then(response => {
-        console.log('Response:', response); 
-        if (response=="Success") {
-          setIsLoading(false);
-          alert('Status updated successfully!');
-          reloadAction();
-        } else {
-          alert(`Error updating status:`);
-        }// "Success" or error object
-      })
-      .catch(err => {
-        console.error('Error:', err);
-      });
-      console.log("response">>+response); 
-    }catch (error) {
+      const response = dispatch(
+        editApproveAdvanceRequestStatus(employeeID, requestId, newStatus),
+      )
+        .then(response => {
+          console.log('Response:', response);
+          if (response == 'Success') {
+            setIsLoading(false);
+            alert('Status updated successfully!');
+            reloadAction();
+          } else {
+            alert(`Error updating status:`);
+          } // "Success" or error object
+        })
+        .catch(err => {
+          console.error('Error:', err);
+        });
+      console.log('response' >> +response);
+    } catch (error) {
       console.error('Error dispatching the action:', error);
-    }   
+    }
   };
 
   const handleRejectAdvanceSentRequest = async requestId => {
@@ -299,26 +304,28 @@ export default function EmployeeDetails({navigation}) {
       const employeeID = userinfo.id;
       console.log(employeeID);
 
-      console.log(requestId+"requestId");
+      console.log(requestId + 'requestId');
 
-      const response =  dispatch(editApproveAdvanceRequestStatus(employeeID, requestId, newStatus))
-      .then(response => {
-        console.log('Response:', response); 
-        if (response=="Success") {
-          setIsLoading(false);
-          alert('Status updated successfully!');
-          reloadAction();
-        } else {
-          alert(`Error updating status:`);
-        }// "Success" or error object
-      })
-      .catch(err => {
-        console.error('Error:', err);
-      });
-      console.log("response">>+response);  
-    }catch (error) {
+      const response = dispatch(
+        editApproveAdvanceRequestStatus(employeeID, requestId, newStatus),
+      )
+        .then(response => {
+          console.log('Response:', response);
+          if (response == 'Success') {
+            setIsLoading(false);
+            alert('Status updated successfully!');
+            reloadAction();
+          } else {
+            alert(`Error updating status:`);
+          } // "Success" or error object
+        })
+        .catch(err => {
+          console.error('Error:', err);
+        });
+      console.log('response' >> +response);
+    } catch (error) {
       console.error('Error dispatching the action:', error);
-    } 
+    }
   };
 
   const handleApproveLeaveSentRequest = async requestId => {
@@ -327,29 +334,29 @@ export default function EmployeeDetails({navigation}) {
       const newStatus = 'APPROVED';
       const employeeID = userinfo.id;
       console.log(employeeID);
-      console.log(requestId+"requestId");
+      console.log(requestId + 'requestId');
 
-      const response =  dispatch(editApproveLeaveRequestStatus(employeeID, requestId, newStatus))
-      .then(response => {
-        console.log('Response:', response); 
-        if (response=="Success") {
-          setIsLoading(false);
-          reloadAction();
-          alert('Status updated successfully!');
-         
-        } else {
-          setIsLoading(false);
-          alert(`Error updating status:`);
-
-        }// "Success" or error object
-      })
-      .catch(err => {
-        console.error('Error:', err);
-      });
-      console.log("response">>+response);  
-    }catch (error) {
+      const response = dispatch(
+        editApproveLeaveRequestStatus(employeeID, requestId, newStatus),
+      )
+        .then(response => {
+          console.log('Response:', response);
+          if (response == 'Success') {
+            setIsLoading(false);
+            reloadAction();
+            alert('Status updated successfully!');
+          } else {
+            setIsLoading(false);
+            alert(`Error updating status:`);
+          } // "Success" or error object
+        })
+        .catch(err => {
+          console.error('Error:', err);
+        });
+      console.log('response' >> +response);
+    } catch (error) {
       console.error('Error dispatching the action:', error);
-    } 
+    }
   };
 
   const handleRejectLeaveSentRequest = async requestId => {
@@ -812,15 +819,21 @@ export default function EmployeeDetails({navigation}) {
             </>
           )}
           {Requests && (
-
             <>
               <View style={styles.inputContainer2}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setRequestModal2(true);
+                  }}
+                  style={styles.button2}>
+                  <Text style={styles.buttonText}>Edit Request </Text>
+                </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
                     setRequestModal(true);
                   }}
                   style={styles.button2}>
-                  <Text style={styles.buttonText}>View Request Response</Text>
+                  <Text style={styles.buttonText}>View Request </Text>
                 </TouchableOpacity>
               </View>
               <View
@@ -1543,7 +1556,9 @@ export default function EmployeeDetails({navigation}) {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}>
-                <Text style={{...styles.modalhead2, width: '50%'}}>Advance</Text>
+                <Text style={{...styles.modalhead2, width: '50%'}}>
+                  Advance
+                </Text>
                 <Text style={{...styles.modalhead2, width: '50%'}}>Status</Text>
               </View>
               <FlatList
@@ -1562,10 +1577,10 @@ export default function EmployeeDetails({navigation}) {
                       justifyContent: 'space-between',
                     }}>
                     <Text style={{...styles.modalhead3, width: '50%'}}>
-                    {item.advance}
+                      {item.advance}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '50%'}}>
-                    {item.status}
+                      {item.status}
                     </Text>
                   </View>
                 )}
@@ -1599,13 +1614,13 @@ export default function EmployeeDetails({navigation}) {
                       justifyContent: 'space-between',
                     }}>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                    {item.from.toDate().toLocaleDateString()}
+                      {item.from.toDate().toLocaleDateString()}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                    {item.To.toDate().toLocaleDateString()}
+                      {item.To.toDate().toLocaleDateString()}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                    {item.status}
+                      {item.status}
                     </Text>
                   </View>
                 )}
@@ -1640,20 +1655,287 @@ export default function EmployeeDetails({navigation}) {
                       justifyContent: 'space-between',
                     }}>
                     <Text style={{...styles.modalhead3, width: '25%'}}>
-                    {item.from.toDate().toLocaleDateString()}
+                      {item.from.toDate().toLocaleDateString()}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '25%'}}>
-                    {item.To.toDate().toLocaleDateString()}
+                      {item.To.toDate().toLocaleDateString()}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '25%'}}>
-                    {item.Hours}
+                      {item.Hours}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '25%'}}>
-                    {item.status}
+                      {item.status}
                     </Text>
                   </View>
                 )}
               />
+            </View>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={RequestModal2}
+        onRequestClose={() => {
+          setRequestModal2(!RequestModal2);
+        }}>
+        <SafeAreaView style={styles.body}>
+          <Text style={styles.header}>Employee Details</Text>
+          <View style={styles.detailsBody}>
+            <View style={styles.inputContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  setRequestModal2(false);
+                }}>
+                <FontAwesome name="arrow-left" size={25} color={Colors.black} />
+              </TouchableOpacity>
+              <View style={{...styles.button, backgroundColor: Colors.white}}>
+                <Text style={{...styles.buttonText, color: Colors.black}}>
+                  {userinfo.userName}
+                </Text>
+              </View>
+              <View />
+            </View>
+
+            <View
+              style={{
+                ...styles.modalBody,
+                borderWidth: 5,
+                borderColor: Colors.black,
+                borderRadius: 10,
+                padding: 0,
+                width: '100%',
+              }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  borderColor: Colors.gray,
+                  borderBottomWidth: 2,
+                  height: 50,
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={{...styles.modalhead2, width: '33%'}}>Dates</Text>
+                <Text style={{...styles.modalhead2, width: '33%'}}>Hours</Text>
+                <Text style={{...styles.modalhead2, width: '33%'}}>Salary</Text>
+              </View>
+              <FlatList
+                data={salarydata}
+                nestedScrollEnabled={true}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({item}) => (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      borderColor: Colors.white,
+                      borderBottomWidth: 5,
+                      backgroundColor: Colors.lightgray,
+                      height: 50,
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text style={{...styles.modalhead3, width: '33%'}}>
+                      {item.in}
+                      {/* {item.in
+                        ? new Date(item.createdAt.toDate())
+                            .toISOString()
+                            .split('T')[0]
+                        : 'Date not available'} */}
+                    </Text>
+                    <View
+                      style={{
+                        width: '33%',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      <Text style={{...styles.modalhead3, marginRight: 15}}>
+                        {item.salary}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setCountModal(true);
+                          //setCountItem(item);
+                        }}>
+                        <FontAwesome
+                          name="pencil"
+                          size={25}
+                          color={Colors.black}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    <View
+                      style={{
+                        width: '33%',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      <Text style={{...styles.modalhead3, marginRight: 15}}>
+                        {item.salary}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setCountModal(true);
+                          //setCountItem(item);
+                        }}>
+                        <FontAwesome
+                          name="pencil"
+                          size={25}
+                          color={Colors.black}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+              />
+            </View>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={CountModal2}
+        onRequestClose={() => {
+          setCountModal2(!CountModal2);
+        }}>
+        <SafeAreaView
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}>
+          <View style={styles.modalcontainer}>
+            <View style={styles.modalheaderview}>
+              <Text style={styles.modalheadertext}>Edit Hours</Text>
+            </View>
+
+            <TextInput
+              style={styles.modaltextinput}
+              onChangeText={Count => setCount(Count)}
+              textColor="#BB0000"
+              value={Count}
+              placeholder={' hours..'}
+              placeholderTextColor="#D9D9D9"
+              theme={{
+                colors: {
+                  primary: 'transparent',
+                  underlineColor: 'transparent',
+                },
+              }}
+              returnKeyType="next"
+              multiline={true}
+              keyboardType="numeric"
+            />
+            <View style={styles.modalline} />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+              }}>
+              <TouchableOpacity
+                onPress={() => {                
+                  setCountModal2(false);
+                }}
+                style={styles.modalbuttonview}>
+                <Text style={styles.modalbuttontext}>Send</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setCountModal2(false);
+                  setCount(null);
+                }}
+                style={{
+                  ...styles.modalbuttonview,
+                  backgroundColor: Colors.white,
+                  borderWidth: 1,
+                  borderColor: Colors.lightgray,
+                }}>
+                <Text
+                  style={{...styles.modalbuttontext, color: Colors.darkText}}>
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={CountModal3}
+        onRequestClose={() => {
+          setCountModal3(!CountModal3);
+        }}>
+        <SafeAreaView
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}>
+          <View style={styles.modalcontainer}>
+            <View style={styles.modalheaderview}>
+              <Text style={styles.modalheadertext}>Edit Salary</Text>
+            </View>
+
+            <TextInput
+              style={styles.modaltextinput}
+              onChangeText={Count => setCount(Count)}
+              textColor="#BB0000"
+              value={Count}
+              placeholder={' hours..'}
+              placeholderTextColor="#D9D9D9"
+              theme={{
+                colors: {
+                  primary: 'transparent',
+                  underlineColor: 'transparent',
+                },
+              }}
+              returnKeyType="next"
+              multiline={true}
+              keyboardType="numeric"
+            />
+            <View style={styles.modalline} />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  
+                  setCountModal3(false);
+                }}
+                style={styles.modalbuttonview}>
+                <Text style={styles.modalbuttontext}>Send</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setCountModal3(false);
+                  setCount(null);
+                }}
+                style={{
+                  ...styles.modalbuttonview,
+                  backgroundColor: Colors.white,
+                  borderWidth: 1,
+                  borderColor: Colors.lightgray,
+                }}>
+                <Text
+                  style={{...styles.modalbuttontext, color: Colors.darkText}}>
+                  Cancel
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         </SafeAreaView>
