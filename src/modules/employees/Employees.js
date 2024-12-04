@@ -86,7 +86,6 @@ export default function Employees({navigation}) {
     }
     
   };
-
   // Accessing adminInfo from your Redux store
   const employeeData = useSelector(state => state.myReducers.employeeInfo);
 
@@ -94,8 +93,9 @@ export default function Employees({navigation}) {
     // Fetch admin data when the component mounts
     dispatch(fetchEmployeeData());
     console.log('Fetch dispatched');
-  }, [employeeData]);
+  }, [dispatch]);
 
+  
   useEffect(() => {
     if (selectedEmployee) {
       setUserName(selectedEmployee.userName);

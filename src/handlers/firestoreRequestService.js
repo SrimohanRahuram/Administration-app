@@ -18,6 +18,7 @@ const firestoreRequestService = {
           employeeId: employeeId,
            advance:Number(advance),
           status: 'INACTIVE',
+          requestTime: firestore.FieldValue.serverTimestamp(),
         };
 
         //   const docID = 'specificDocID';
@@ -228,7 +229,7 @@ const firestoreRequestService = {
   
         const requestDoc = await requestDocRef.get();
         if (requestDoc.exists) {
-          await requestDocRef.update({ status: newStatus });
+          await requestDocRef.update({ status: newStatus , requestTime: firestore.FieldValue.serverTimestamp() });
           console.log(`Advance request ${requestID} status updated to: ${newStatus}`);
           return { success: true, message: 'Status updated successfully' };
         } else {
@@ -260,7 +261,7 @@ const firestoreRequestService = {
   
         const requestDoc = await requestDocRef.get();
         if (requestDoc.exists) {
-          await requestDocRef.update({ status: newStatus });
+          await requestDocRef.update({ status: newStatus ,  requestTime: firestore.FieldValue.serverTimestamp() });
           console.log(`Leave request ${requestID} status updated to: ${newStatus}`);
           return { success: true, message: 'Status updated successfully' };
         } else {

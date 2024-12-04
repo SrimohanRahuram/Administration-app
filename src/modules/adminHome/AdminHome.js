@@ -13,14 +13,10 @@ import ProgressOverlay from '../../components/ProgressOverlay';
 import ToastAlert from '../../components/ToastAlert';
 import Entypo from 'react-native-vector-icons/Entypo';
 
-
 export default function AdminHome({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
  
-
-
-
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backAction);
     return () => {

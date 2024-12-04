@@ -8,7 +8,7 @@ import {
   Modal,
   Image,
   TextInput,
-  SafeAreaView
+  SafeAreaView,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import styles from './Admin.Styles';
@@ -32,18 +32,25 @@ export default function Admin({navigation}) {
   const [password, setPassword] = React.useState('');
   const [contactNo, setContactNo] = React.useState('');
   const [EditAdminModal, setEditAdminModal] = useState(false);
-  const [search, setSearch] = React.useState('');
   const [selectedAdmin, setSelectedAdmin] = useState(null);
 
   // Accessing adminInfo from your Redux store
-  const adminData = useSelector(state => state.myReducers.adminInfo);
- 
+  //const adminData = useSelector(state => state.myReducers.adminInfo);
+  const [search, setSearch] = React.useState('');
+
+  const adminData = useSelector(state => state.myReducers.adminInfo) || [];
+  const filteredData = Array.isArray(adminData)
+    ? adminData.filter(item =>
+        item.username.toLowerCase().includes(search.toLowerCase()),
+      )
+    : [];
+
   const reloadAction = () => {
     navigation.reset({
       index: 0,
       routes: [{name: 'Admin'}],
     });
-  }
+  };
 
   useEffect(() => {
     // Fetch admin data when the component mounts
@@ -53,7 +60,6 @@ export default function Admin({navigation}) {
 
   // Logging the admin data to see changes
   useEffect(() => {
-   
     console.log('Admin data updated:', adminData);
   }, [adminData]);
 
@@ -72,7 +78,7 @@ export default function Admin({navigation}) {
       setContactNo(selectedAdmin.contactNo); // Set contact number from selectedAdmin
     }
   }, [selectedAdmin]);
- 
+
   const backAction = () => {
     navigation.navigate('AdminHome');
   };
@@ -88,17 +94,19 @@ export default function Admin({navigation}) {
     if (status == 'Success') {
       setIsLoading(false);
       ToastAlert.ShowToast('success', 'Alert', 'Sucessfully Admin created..');
-   
+
       setAddAdminModal(false);
       reloadAction();
-    }
-    else {
+    } else {
       setIsLoading(false);
-      ToastAlert.ShowToast('error', 'Alert', 'error In  Admin creation.Try Again Later..');
+      ToastAlert.ShowToast(
+        'error',
+        'Alert',
+        'error In  Admin creation.Try Again Later..',
+      );
       dispatch(fetchAdminData());
       setAddAdminModal(false);
     }
-    
   };
 
   const handleOnUpdate = async e => {
@@ -120,10 +128,9 @@ export default function Admin({navigation}) {
         setIsLoading(true);
         ToastAlert.ShowToast('success', 'Alert', 'Successfully updated admin.');
         dispatch(fetchAdminData()); // Refresh admin data
-        setEditAdminModal(false); 
-        reloadAction();// Close the modal
-      }
-     else{
+        setEditAdminModal(false);
+        reloadAction(); // Close the modal
+      } else {
         setIsLoading(true);
         ToastAlert.ShowToast('error', 'Alert', 'Error In updated admin.');
         dispatch(fetchAdminData()); // Refresh admin data
@@ -143,11 +150,15 @@ export default function Admin({navigation}) {
 
   const handleOnDelete = async userName => {
     setIsLoading(true);
-    try { 
+    try {
       const status = await firestoreAdminService.deleteAdminData(userName); // Call your delete function
       if (status === 'Success') {
         setIsLoading(false);
-        ToastAlert.ShowToast('success', 'Alert', 'Successfully deleted admin Info.');
+        ToastAlert.ShowToast(
+          'success',
+          'Alert',
+          'Successfully deleted admin Info.',
+        );
         reloadAction(); // Refresh admin data after deletion
       } else {
         setIsLoading(false);
@@ -279,7 +290,11 @@ export default function Admin({navigation}) {
                       setSelectedAdmin(item);
                       handleOnDelete(item.username);
                     }}>
-                    <FontAwesome name="trash-o" size={25} color={Colors.darkred} />
+                    <FontAwesome
+                      name="trash-o"
+                      size={25}
+                      color={Colors.darkred}
+                    />
                   </TouchableOpacity>
                 </View>
               )}

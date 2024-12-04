@@ -277,7 +277,7 @@ const stylesNew = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     marginBottom: 10,
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   button2: {
