@@ -96,12 +96,6 @@ export default function Employees({navigation}) {
     console.log('Fetch dispatched');
   }, [employeeData]);
 
-  // Logging the admin data to see changes
-  useEffect(() => {
-   
-    console.log('employee data updated:', employeeData);
-  }, [employeeData]);
-
   useEffect(() => {
     if (selectedEmployee) {
       setUserName(selectedEmployee.userName);
