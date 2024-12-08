@@ -179,6 +179,7 @@ const firestoreEmployeeService = {
         }
         currentDate.setHours(hours, minutes, 0, 0);
         const formattedTime = moment(currentDate).format('HH:mm');
+        console.log('formattedTime'+formattedTime);
 
         let currentDate2 = new Date();
         let hours2 = currentDate2.getHours();
@@ -190,7 +191,8 @@ const firestoreEmployeeService = {
         }
         currentDate2.setHours(hours2, minutes2, 0, 0);
         const formattedTime2 = moment(currentDate2).format('HH:mm');
-
+        
+        console.log('formattedTime2'+formattedTime2);
         const shopLoginRef = firestore()
           .collection('Employee')
           .doc(employeeId)
@@ -226,9 +228,9 @@ const firestoreEmployeeService = {
               : latestDocSnapshot.docs[0]?.data().checkInDateTime,
           checkOutDateTime:
             newStatus === 'INACTIVE'
-              ? formattedTime2 > formattedTime
+              ? formattedTime2 > latestDocSnapshot.docs[0]?.data().checkInDateTime
                 ? formattedTime2
-                : formattedTime
+                : latestDocSnapshot.docs[0]?.data().checkInDateTime
               : '',
           shopID: shopID,
           status: newStatus,
