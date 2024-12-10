@@ -199,6 +199,195 @@ export default function Admin({navigation}) {
       return null;
     }
   };
+  const handleExportPress = () => {
+    Alert.alert(
+      'Export Sales Report',
+      'Do you want to export the sales report?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: generateExcel,
+        },
+      ],
+    );
+  };
+  const generateExcel = async () => {
+    // Create a new workbook
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sales Report');
+
+    // Set title at the top
+    worksheet.mergeCells('A1:I1');
+    const titleCell = worksheet.getCell('A1');
+    titleCell.value = 'SALES REPORT';
+    titleCell.font = {bold: true, size: 16, color: {argb: 'FFFFFFFF'}};
+    titleCell.alignment = {horizontal: 'center', vertical: 'middle'};
+    titleCell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: {argb: '4BACC6'},
+    };
+
+    // Define headers
+    const headers = [
+      'Agent Name',
+      'Agent ID',
+      'Outlet ID',
+      'Outlet Name',
+      'Created Date',
+      'Sales Amount',
+      'Payment Method',
+      'Paid Amount',
+      'Products', // Placeholder for products
+    ];
+
+    const headerRow = worksheet.addRow(headers);
+
+    // Style headers
+    headerRow.eachCell(cell => {
+      cell.font = {bold: true, color: {argb: 'FFFFFFFF'}};
+      cell.alignment = {horizontal: 'center', vertical: 'middle'};
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: '4F81BD'},
+      };
+      cell.border = {
+        top: {style: 'thin'},
+        left: {style: 'thin'},
+        bottom: {style: 'thin'},
+        right: {style: 'thin'},
+      };
+    });
+
+    // Add rows for each sale and handle products
+    filteredSales.forEach(sale => {
+      // Add the main sale row first
+      const mainRow = worksheet.addRow([
+        sale.agent_name,
+        sale.agent_id,
+        sale.outlet_id,
+        sale.outlet_name,
+        sale.created_date,
+        sale.sales_amount,
+        sale.payment_method,
+        sale.paid_amount || 'N/A',
+        '', // Products placeholder
+      ]);
+
+      // Style main sale row
+      mainRow.eachCell({includeEmpty: true}, cell => {
+        cell.alignment = {horizontal: 'left', vertical: 'middle'};
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: {argb: 'D9D9D9'}, // Light gray background color
+        };
+        cell.border = {
+          top: {style: 'thin'},
+          left: {style: 'thin'},
+          bottom: {style: 'thin'},
+          right: {style: 'thin'},
+        };
+      });
+
+      // If products exist, add them in separate rows
+      if (sale.products.length > 0) {
+        sale.products.forEach(product => {
+          const productRow = worksheet.addRow([
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '', // Empty cells for sale columns
+            `${product.product_name} (Qty: ${product.quantity}, Unit Price: ${product.unit_price})`,
+          ]);
+
+          // Style product row
+          productRow.eachCell({includeEmpty: true}, cell => {
+            cell.alignment = {horizontal: 'left', vertical: 'middle'};
+            cell.fill = {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: {argb: 'D9D9D9'}, // Light gray background color
+            };
+            cell.border = {
+              top: {style: 'thin'},
+              left: {style: 'thin'},
+              bottom: {style: 'thin'},
+              right: {style: 'thin'},
+            };
+          });
+        });
+      } else {
+        // If no products, display a message in the products column
+        mainRow.getCell(8).value = 'No products';
+        mainRow.getCell(8).alignment = {horizontal: 'left', vertical: 'middle'};
+      }
+    });
+
+    // Add total_sales_amount at the bottom
+    const totalSalesRow = worksheet.addRow([
+      `Annual sales: Rs.${reportDetails.total_sales_amount}`,
+    ]);
+
+    // Merge the total sales row cells across the entire width and style it
+    worksheet.mergeCells(`A${totalSalesRow.number}:I${totalSalesRow.number}`);
+    totalSalesRow.getCell(1).alignment = {
+      horizontal: 'right',
+      vertical: 'middle',
+    };
+    totalSalesRow.getCell(1).font = {bold: true};
+
+    // Add the current date at the bottom of the sheet
+    const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+    const dateRow = worksheet.addRow([`Report Generated on: ${currentDate}`]);
+
+    // Merge the date row cells across the entire width and style it
+    worksheet.mergeCells(`A${dateRow.number}:I${dateRow.number}`);
+    dateRow.getCell(1).alignment = {horizontal: 'right', vertical: 'middle'};
+    dateRow.getCell(1).font = {italic: true};
+
+    // Set column widths for better visibility
+    worksheet.columns = [
+      {key: 'agent_name', width: 15},
+      {key: 'agent_id', width: 15},
+      {key: 'outlet_id', width: 15},
+      {key: 'outlet_name', width: 25},
+      {key: 'created_date', width: 20},
+      {key: 'sales_amount', width: 20},
+      {key: 'payment_method', width: 20},
+      {key: 'paid_amount', width: 20},
+      {key: 'products', width: 70}, // Wider for product descriptions
+    ];
+
+    // Generate a unique file name with a timestamp
+    const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, ''); // Format timestamp as YYYYMMDD_HHmmss
+    const fileName = `Sales_Report_${timestamp}.xlsx`;
+
+    // Define the file path with a unique file name
+    const filePath = `${RNFS.DownloadDirectoryPath}/${fileName}`;
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    // Save the file using RNFS
+    RNFS.writeFile(filePath, buffer.toString('base64'), 'base64')
+      .then(() => {
+        Alert.alert(
+          'Export Success',
+          `Excel file has been saved at ${filePath}`,
+        );
+      })
+      .catch(error => {
+        Alert.alert('Export Failed', 'Error: ' + error.message);
+      });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
