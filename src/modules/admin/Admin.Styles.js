@@ -118,6 +118,7 @@ const stylesNew = StyleSheet.create({
     alignItems: 'center',
     paddingLeft: 20,
     paddingRight: 20,
+    width:'48%'
   },
   buttonView: {
     flexDirection: 'row',

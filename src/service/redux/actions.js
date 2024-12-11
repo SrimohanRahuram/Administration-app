@@ -60,6 +60,7 @@ export const ADMIN_ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID='ADMIN_ALL_HOLIDAY_RE
 export const LOGIN_DATA_BY_SHOP='LOGIN_DATA_BY_SHOP';
 export const LOGIN_ACTIVE_DATA_BY_SHOP='LOGIN_ACTIVE_DATA_BY_SHOP';
 
+export const FETCH_EMPLOYEE_ALL_DATA = 'FETCH_EMPLOYEE_ALL_DATA';
 
 
 export const addUserToRedux = data => dispatch => {
@@ -846,3 +847,12 @@ export const LoginActiveDataByShop= (shopID) => async dispatch => {
   });
 };
 
+export const fetchEmployeesAllData = () => async dispatch => {
+  const employeeAllData = await firestoreEmployeeService.getEmployeesAll();
+  console.log('fetchEmployeesAllData:');
+
+  dispatch({
+    type: FETCH_EMPLOYEE_ALL_DATA,
+    payload: employeeAllData,
+  });
+};

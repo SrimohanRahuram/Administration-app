@@ -22,6 +22,7 @@ import {fetchAdminData} from '../../service/redux/actions';
 import DocumentPicker from 'react-native-document-picker';
 import {addImage, clearImages} from '../../service/redux/actions';
 import ReactNativeBlobUtil from 'react-native-blob-util';
+import {fetchEmployeesAllData} from '../../service/redux/actions';
 
 export default function Admin({navigation}) {
   const dispatch = useDispatch();
@@ -199,6 +200,12 @@ export default function Admin({navigation}) {
       return null;
     }
   };
+  useEffect(() => {
+    // Fetch admin data when the component mounts
+    dispatch(fetchEmployeesAllData());
+    console.log('Fetch dispatched');
+  }, [dispatch]);
+
   const handleExportPress = () => {
     Alert.alert(
       'Export Sales Report',
@@ -394,6 +401,17 @@ export default function Admin({navigation}) {
       <View style={styles.body}>
         <Text style={styles.header}>Admin</Text>
         <View style={styles.detailsBody}>
+          <View
+            style={{...styles.inputContainer, justifyContent: 'space-between'}}>
+            <TouchableOpacity onPress={() => {}} style={styles.button}>
+              <Text style={styles.buttonText}>Excel </Text>
+              <FontAwesome name="file-excel-o" color={Colors.white} size={13} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => {}} style={styles.button}>
+              <Text style={styles.buttonText}>Excel(Year) </Text>
+              <FontAwesome name="file-excel-o" color={Colors.white} size={13} />
+            </TouchableOpacity>
+          </View>
           <View style={styles.inputContainer}>
             <TouchableOpacity
               onPress={() => {

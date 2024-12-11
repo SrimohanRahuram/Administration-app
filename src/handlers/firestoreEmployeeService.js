@@ -133,13 +133,10 @@ const firestoreEmployeeService = {
       throw error;
     }
   },
- 
+
   getAdminDataByID: async adminId => {
     try {
-      const adminDoc = await firestore()
-        .collection('Admin')
-        .doc(adminId)
-        .get();
+      const adminDoc = await firestore().collection('Admin').doc(adminId).get();
 
       if (!adminDoc.exists) {
         Alert.alert('Error', 'Employee does not exist.');
@@ -158,7 +155,6 @@ const firestoreEmployeeService = {
       throw error;
     }
   },
-
 
   saveLoginTimeAndDate: async (shopName, shopID, employeeId) => {
     try {
@@ -179,7 +175,7 @@ const firestoreEmployeeService = {
         }
         currentDate.setHours(hours, minutes, 0, 0);
         const formattedTime = moment(currentDate).format('HH:mm');
-        console.log('formattedTime'+formattedTime);
+        console.log('formattedTime' + formattedTime);
 
         let currentDate2 = new Date();
         let hours2 = currentDate2.getHours();
@@ -191,8 +187,8 @@ const firestoreEmployeeService = {
         }
         currentDate2.setHours(hours2, minutes2, 0, 0);
         const formattedTime2 = moment(currentDate2).format('HH:mm');
-        
-        console.log('formattedTime2'+formattedTime2);
+
+        console.log('formattedTime2' + formattedTime2);
         const shopLoginRef = firestore()
           .collection('Employee')
           .doc(employeeId)
@@ -228,7 +224,8 @@ const firestoreEmployeeService = {
               : latestDocSnapshot.docs[0]?.data().checkInDateTime,
           checkOutDateTime:
             newStatus === 'INACTIVE'
-              ? formattedTime2 > latestDocSnapshot.docs[0]?.data().checkInDateTime
+              ? formattedTime2 >
+                latestDocSnapshot.docs[0]?.data().checkInDateTime
                 ? formattedTime2
                 : latestDocSnapshot.docs[0]?.data().checkInDateTime
               : '',
@@ -271,7 +268,8 @@ const firestoreEmployeeService = {
           shopID: lastDocData.shopID || 'No shopID',
           shopName: lastDocData.shopName || 'No shopName',
           checkInDateTime: lastDocData.checkInDateTime || 'No checkInDateTime',
-          checkOutDateTime: lastDocData.checkOutDateTime || 'No checkOutDateTime',
+          checkOutDateTime:
+            lastDocData.checkOutDateTime || 'No checkOutDateTime',
           createdAt: lastDocData.createdAt || 'No createdAt',
         };
       } else {
@@ -304,20 +302,17 @@ const firestoreEmployeeService = {
           .doc(employeeID)
           .collection('HolidayRequests')
           .get();
-          
-        
+
         for (const doc of employeeTotalHoursCalcSnapshot.docs) {
           const data = doc.data();
-          if (data.status === 'APPROVED') { 
-            totalHolidaySum += data.Hours || 0; 
-          }// Add totalHours, default to 0 if not present
+          if (data.status === 'APPROVED') {
+            totalHolidaySum += data.Hours || 0;
+          } // Add totalHours, default to 0 if not present
         }
 
         console.log('totalHolidaySum:', totalHolidaySum);
-       
       }
       return totalHolidaySum;
-
     } catch (error) {
       console.error('Error retrieving totalHolidaySum by ID: ', error);
       throw error;
@@ -337,20 +332,17 @@ const firestoreEmployeeService = {
           .doc(employeeID)
           .collection('AdvanceRequests')
           .get();
-          
-        
+
         for (const doc of employeeTotalAdvanceCalcSnapshot.docs) {
           const data = doc.data();
-          if (data.status === 'APPROVED') { 
-            totalAdvanceSum += data.advance || 0; 
-          }// Add totalHours, default to 0 if not present
+          if (data.status === 'APPROVED') {
+            totalAdvanceSum += data.advance || 0;
+          } // Add totalHours, default to 0 if not present
         }
 
         console.log('totalAdvanceSum:', totalAdvanceSum);
-       
       }
       return totalAdvanceSum;
-
     } catch (error) {
       console.error('Error retrieving totalAdvanceSum by ID: ', error);
       throw error;
@@ -359,10 +351,7 @@ const firestoreEmployeeService = {
 
   saveLoginTimeAndDateInShopDoc: async (shopName, shopID, employeeId) => {
     try {
-      const userDoc = await firestore()
-        .collection('Shop')
-        .doc(shopID)
-        .get();
+      const userDoc = await firestore().collection('Shop').doc(shopID).get();
 
       if (userDoc.exists) {
         let currentDate = new Date();
@@ -446,6 +435,58 @@ const firestoreEmployeeService = {
     }
   },
 
+  getEmployeesAll: async () => {
+    console.log('fetchEmployeesAllData:');
+
+    try {
+      const employeeCollection = await firestore().collection('Employee').get();
+      const employees = [];
+
+      for (const doc of employeeCollection.docs) {
+        const employeeData = {
+          id: doc.id,
+          userName: doc.data().userName,
+        };
+
+        const subcollections = [
+          'AdvanceRequests',
+          'HolidayRequests',
+          'LeaveRequests',
+          'shoplogin',
+        ];
+        const subcollectionData = {};
+
+        for (const subcollection of subcollections) {
+          const subcollectionDocs = await firestore()
+            .collection('Employee')
+            .doc(doc.id)
+            .collection(subcollection)
+            .get();
+
+          subcollectionData[subcollection] = subcollectionDocs.docs.map(
+            subDoc => ({
+              id: subDoc.id,
+              ...subDoc.data(),
+            }),
+          );
+        }
+
+        employees.push({...employeeData, ...subcollectionData});
+      }
+
+      console.log(
+        'Retrieved employee data with subcollections:',
+        JSON.stringify(employees),
+      );
+      return employees;
+    } catch (error) {
+      console.error(
+        'Error retrieving employee data with subcollections: ',
+        error,
+      );
+      throw error;
+    }
+  },
 };
 
 export default firestoreEmployeeService;
