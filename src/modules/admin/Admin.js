@@ -9,6 +9,7 @@ import {
   Image,
   TextInput,
   SafeAreaView,
+  Alert
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import styles from './Admin.Styles';
@@ -23,6 +24,8 @@ import DocumentPicker from 'react-native-document-picker';
 import {addImage, clearImages} from '../../service/redux/actions';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import {fetchEmployeesAllData} from '../../service/redux/actions';
+import RNFS from 'react-native-fs';
+import ExcelJS from 'exceljs';
 
 export default function Admin({navigation}) {
   const dispatch = useDispatch();
@@ -38,6 +41,7 @@ export default function Admin({navigation}) {
   // Accessing adminInfo from your Redux store
   //const adminData = useSelector(state => state.myReducers.adminInfo);
   const [search, setSearch] = React.useState('');
+  const {employeeAllInfo} = useSelector(state => state.myReducers);
 
   const adminData = useSelector(state => state.myReducers.adminInfo) || [];
   const filteredData = Array.isArray(adminData)
@@ -225,7 +229,7 @@ export default function Admin({navigation}) {
   const generateExcel = async () => {
     // Create a new workbook
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Sales Report');
+    const worksheet = workbook.addWorksheet('employeeAllInfo Report');
 
     // Set title at the top
     worksheet.mergeCells('A1:I1');
@@ -241,8 +245,8 @@ export default function Admin({navigation}) {
 
     // Define headers
     const headers = [
-      'Agent Name',
       'Agent ID',
+      'Agent Name',
       'Outlet ID',
       'Outlet Name',
       'Created Date',
@@ -272,86 +276,67 @@ export default function Admin({navigation}) {
     });
 
     // Add rows for each sale and handle products
-    filteredSales.forEach(sale => {
+    employeeAllInfo.forEach(sale => {
       // Add the main sale row first
-      const mainRow = worksheet.addRow([
-        sale.agent_name,
-        sale.agent_id,
-        sale.outlet_id,
-        sale.outlet_name,
-        sale.created_date,
-        sale.sales_amount,
-        sale.payment_method,
-        sale.paid_amount || 'N/A',
-        '', // Products placeholder
-      ]);
-
-      // Style main sale row
-      mainRow.eachCell({includeEmpty: true}, cell => {
-        cell.alignment = {horizontal: 'left', vertical: 'middle'};
+      const mainRow = worksheet.addRow([sale.id, sale.userName]);
+    
+      // Style the main sale row
+      mainRow.eachCell({ includeEmpty: true }, cell => {
+        cell.alignment = { horizontal: 'left', vertical: 'middle' };
         cell.fill = {
           type: 'pattern',
           pattern: 'solid',
-          fgColor: {argb: 'D9D9D9'}, // Light gray background color
+          fgColor: { argb: 'D9D9D9' }, // Light gray background color
         };
         cell.border = {
-          top: {style: 'thin'},
-          left: {style: 'thin'},
-          bottom: {style: 'thin'},
-          right: {style: 'thin'},
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
         };
       });
-
-      // If products exist, add them in separate rows
-      if (sale.products.length > 0) {
-        sale.products.forEach(product => {
-          const productRow = worksheet.addRow([
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '', // Empty cells for sale columns
-            `${product.product_name} (Qty: ${product.quantity}, Unit Price: ${product.unit_price})`,
+    
+      // Check if there are any AdvanceRequests for the user
+      if (sale.AdvanceRequests && sale.AdvanceRequests.length > 0) {
+        sale.AdvanceRequests.forEach(request => {
+          // Add a row for each advance request
+          const requestRow = worksheet.addRow([
+            '', // Leave the first column blank to align under the user's name
+            '', // Leave the second column blank
+            request.id,
+            request.advance,
+            request.status,
+            new Date(request.requestTime.seconds * 1000).toLocaleString() // Convert timestamp to readable date
           ]);
-
-          // Style product row
-          productRow.eachCell({includeEmpty: true}, cell => {
-            cell.alignment = {horizontal: 'left', vertical: 'middle'};
-            cell.fill = {
-              type: 'pattern',
-              pattern: 'solid',
-              fgColor: {argb: 'D9D9D9'}, // Light gray background color
-            };
+    
+          // Style the advance request rows
+          requestRow.eachCell({ includeEmpty: true }, cell => {
+            cell.alignment = { horizontal: 'left', vertical: 'middle' };
             cell.border = {
-              top: {style: 'thin'},
-              left: {style: 'thin'},
-              bottom: {style: 'thin'},
-              right: {style: 'thin'},
+              top: { style: 'thin' },
+              left: { style: 'thin' },
+              bottom: { style: 'thin' },
+              right: { style: 'thin' },
             };
           });
         });
       } else {
-        // If no products, display a message in the products column
-        mainRow.getCell(8).value = 'No products';
-        mainRow.getCell(8).alignment = {horizontal: 'left', vertical: 'middle'};
+        // Add a placeholder row if no AdvanceRequests
+        const noRequestRow = worksheet.addRow(['', '', 'No Advance Requests']);
+        noRequestRow.eachCell({ includeEmpty: true }, cell => {
+          cell.alignment = { horizontal: 'left', vertical: 'middle' };
+          cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' },
+          };
+        });
       }
     });
+    
 
-    // Add total_sales_amount at the bottom
-    const totalSalesRow = worksheet.addRow([
-      `Annual sales: Rs.${reportDetails.total_sales_amount}`,
-    ]);
 
-    // Merge the total sales row cells across the entire width and style it
-    worksheet.mergeCells(`A${totalSalesRow.number}:I${totalSalesRow.number}`);
-    totalSalesRow.getCell(1).alignment = {
-      horizontal: 'right',
-      vertical: 'middle',
-    };
-    totalSalesRow.getCell(1).font = {bold: true};
 
     // Add the current date at the bottom of the sheet
     const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
@@ -375,15 +360,11 @@ export default function Admin({navigation}) {
       {key: 'products', width: 70}, // Wider for product descriptions
     ];
 
-    // Generate a unique file name with a timestamp
+    // Generate a unique file name with a timestamp and download
     const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, ''); // Format timestamp as YYYYMMDD_HHmmss
-    const fileName = `Sales_Report_${timestamp}.xlsx`;
-
-    // Define the file path with a unique file name
+    const fileName = `employeeAllInfot_${timestamp}.xlsx`;
     const filePath = `${RNFS.DownloadDirectoryPath}/${fileName}`;
     const buffer = await workbook.xlsx.writeBuffer();
-
-    // Save the file using RNFS
     RNFS.writeFile(filePath, buffer.toString('base64'), 'base64')
       .then(() => {
         Alert.alert(
@@ -403,7 +384,11 @@ export default function Admin({navigation}) {
         <View style={styles.detailsBody}>
           <View
             style={{...styles.inputContainer, justifyContent: 'space-between'}}>
-            <TouchableOpacity onPress={() => {}} style={styles.button}>
+            <TouchableOpacity
+              onPress={() => {
+                handleExportPress();
+              }}
+              style={styles.button}>
               <Text style={styles.buttonText}>Excel </Text>
               <FontAwesome name="file-excel-o" color={Colors.white} size={13} />
             </TouchableOpacity>
