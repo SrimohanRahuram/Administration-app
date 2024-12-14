@@ -50,6 +50,7 @@ const firestoreRequestService = {
           from: from,
           To: To,
           status: 'INACTIVE',
+          CreatedTime: firestore.FieldValue.serverTimestamp(),
         };
 
         //   const docID = 'specificDocID';
@@ -379,6 +380,102 @@ const firestoreRequestService = {
     }
   },
 
+  editAdvancePaymentByAdmin: async (id, EditAdvance, employeeID) => {
+    console.log(employeeID);
+    try {
+      const employeeDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeID)
+        .get();
+
+      if (employeeDoc.exists) {
+        const advanceRequestRef = firestore()
+          .collection('Employee')
+          .doc(employeeID)
+          .collection('AdvanceRequests')
+          .doc(id);
+        const advanceRequestSnapshot = await advanceRequestRef.get();
+        if (advanceRequestSnapshot.exists) {
+          await advanceRequestRef.update({
+            advance: EditAdvance,
+          });
+          return 'Success';
+        } else {
+          return 'Error';
+        }
+      } else {
+        console.error('Employee document not found');
+      }
+    } catch (error) {
+      console.error('Error updating advanceRequest by ID: ', error);
+      throw error;
+    }
+  },
+
+  editAdvanceStatusByAdmin: async (id, EditAdvanceStatus, employeeID) => {
+    console.log(employeeID);
+    try {
+      const employeeDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeID)
+        .get();
+
+      if (employeeDoc.exists) {
+        const advanceRequestRef = firestore()
+          .collection('Employee')
+          .doc(employeeID)
+          .collection('AdvanceRequests')
+          .doc(id);
+        const advanceRequestSnapshot = await advanceRequestRef.get();
+        if (advanceRequestSnapshot.exists) {
+          await advanceRequestRef.update({
+            status: EditAdvanceStatus,
+          });
+          return 'Success';
+        } else {
+          return 'Error';
+        }
+      } else {
+        console.error('Employee document not found');
+      }
+    } catch (error) {
+      console.error('Error updating advanceRequest by ID: ', error);
+      throw error;
+    }
+  },
+
+  editHolidayHoursByAdmin: async (id, EditHolidayHours, employeeID) => {
+    console.log(employeeID);
+    try {
+      const employeeDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeID)
+        .get();
+
+      if (employeeDoc.exists) {
+        const advanceRequestRef = firestore()
+          .collection('Employee')
+          .doc(employeeID)
+          .collection('HolidayRequests')
+          .doc(id);
+        const advanceRequestSnapshot = await advanceRequestRef.get();
+        if (advanceRequestSnapshot.exists) {
+          await advanceRequestRef.update({
+            Hours: EditHolidayHours,
+          });
+          return 'Success';
+        } else {
+          return 'Error';
+        }
+      } else {
+        console.error('Employee document not found');
+      }
+    } catch (error) {
+      console.error('Error updating advanceRequest by ID: ', error);
+      throw error;
+    }
+  },
+
   getAllAdvanceRequestsByEmployeeID: async employeeID => {
     try {
       const employeeDoc = await firestore()
@@ -400,6 +497,35 @@ const firestoreRequestService = {
 
         console.log('RetrievedAdvanceRequestsData:', AdvanceRequestsData);
         return AdvanceRequestsData;
+      }
+    } catch (error) {
+      console.error('Error retrieving AdvanceRequestsData by ID: ', error);
+      throw error;
+    }
+  },
+
+  getAllApprovedAdvanceRequestsByEmployeeID: async employeeID => {
+    try {
+      const employeeDoc = await firestore()
+        .collection('Employee')
+        .doc(employeeID)
+        .get();
+      if (employeeDoc.exists) {
+        const approvedAdvanceRequestSnapshot = await firestore()
+          .collection('Employee')
+          .doc(employeeID)
+          .collection('AdvanceRequests')
+          .get();
+
+        const approvedAdvanceRequestsData = approvedAdvanceRequestSnapshot.docs
+        .filter(doc => doc.data().status == 'APPROVED')
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+        console.log('RetrievedAdvanceRequestsData:', approvedAdvanceRequestsData);
+        return approvedAdvanceRequestsData;
       }
     } catch (error) {
       console.error('Error retrieving AdvanceRequestsData by ID: ', error);

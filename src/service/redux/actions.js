@@ -60,6 +60,8 @@ export const ADMIN_ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID='ADMIN_ALL_HOLIDAY_RE
 export const LOGIN_DATA_BY_SHOP='LOGIN_DATA_BY_SHOP';
 export const LOGIN_ACTIVE_DATA_BY_SHOP='LOGIN_ACTIVE_DATA_BY_SHOP';
 
+export const ADMIN_APPROVED_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID='ADMIN_APPROVED_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID';
+
 
 
 export const addUserToRedux = data => dispatch => {
@@ -767,6 +769,32 @@ export const AdminAdvanceAllRequestsByEmployeeId = () => async dispatch => {
     } else {
       console.warn('No advance requests data found for the given ID');
     }
+  } catch (error) {
+    console.error('Error advance requests data by ID:', error);
+    throw error;
+  }
+};
+
+export const AdminApprovedAdvanceAllRequestsByEmployeeId = () => async dispatch => {
+  try {
+  
+    const employeeIdforRequest = await AsyncStorage.getItem(
+      'employeeIdforRequest',
+    );
+    console.log(employeeIdforRequest+"<<<<employeeIdforRequest")
+
+    const approvedAdvanceRequestData =
+      await firestoreRequestService.getAllApprovedAdvanceRequestsByEmployeeID(
+        employeeIdforRequest,
+      );
+    console.log('Fetched Advance Requests Data by ID:', approvedAdvanceRequestData);
+
+    if (approvedAdvanceRequestData) {
+      dispatch({
+        type: ADMIN_APPROVED_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID,
+        payload: approvedAdvanceRequestData,
+      });
+    } 
   } catch (error) {
     console.error('Error advance requests data by ID:', error);
     throw error;
