@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -35,6 +36,7 @@ import {
   AdminAdvanceAllRequestsByEmployeeId,
   AdminAllLeaveRequestsByEmployeeId,
   AdminAllHolidayRequestsByEmployeeId,
+  AdminApprovedAdvanceAllRequestsByEmployeeId,
 } from '../../service/redux/actions';
 import {format, getWeek, startOfWeek, endOfWeek} from 'date-fns';
 import {editApproveAdvanceRequestStatus} from '../../service/redux/actions';
@@ -57,9 +59,21 @@ export default function EmployeeDetails({navigation}) {
   const [CountModal, setCountModal] = useState(false);
   const [Count, setCount] = React.useState(null);
   const [CountItem, setCountItem] = React.useState(null);
+  const [EditAdvanceModal, setEditAdvanceModal] = useState(false);
+  const [EditAdvance, setEditAdvance] = React.useState(null);
+  const [EditAdvanceItem, setEditAdvanceItem] = React.useState(null);
+  const [EditAdvanceStatusModal, setEditAdvanceStatusModal] = useState(false);
+  const [EditAdvanceStatus, setEditAdvanceStatus] = React.useState(null);
+  const [EditAdvanceStatusItem, setEditAdvanceStatusItem] = React.useState(null);
+  const [EditHolidayHoursModal, setEditHolidayHoursModal] = useState(false);
+  const [EditHolidayHours, setEditHolidayHours] = React.useState(null);
+  const [EditHolidayHoursItem, setEditHolidayHoursItem] = React.useState(null);
   const [RequestModal, setRequestModal] = useState(false);
   const [value, setValue] = useState(null);
   const [transformData, setTransformData] = React.useState([]);
+  const [RequestModal2, setRequestModal2] = useState(false);
+  const [CountModal2, setCountModal2] = useState(false);
+  const [CountModal3, setCountModal3] = useState(false);
 
   // Accessing advancerequests from your Redux store
   const advanceRequests = useSelector(
@@ -113,7 +127,7 @@ export default function EmployeeDetails({navigation}) {
     if (dropdowndata.length > 0) {
       const firstItem = dropdowndata[0];
       setValue(firstItem.name);
-      SelectSalaryData(firstItem.key); 
+      SelectSalaryData(firstItem.key);
     }
   }, [filteredData]);
 
@@ -270,7 +284,7 @@ export default function EmployeeDetails({navigation}) {
       const employeeID = userinfo.id;
       console.log(employeeID);
 
-      console.log(requestId+"requestId");
+      console.log(requestId + 'requestId');
 
       const response =  dispatch(editApproveAdvanceRequestStatus(employeeID, requestId, newStatus))
       .then(response => {
@@ -297,7 +311,7 @@ export default function EmployeeDetails({navigation}) {
       console.log("response">>+response); 
     }catch (error) {
       console.error('Error dispatching the action:', error);
-    }   
+    }
   };
 
   const handleRejectAdvanceSentRequest = async requestId => {
@@ -307,7 +321,7 @@ export default function EmployeeDetails({navigation}) {
       const employeeID = userinfo.id;
       console.log(employeeID);
 
-      console.log(requestId+"requestId");
+      console.log(requestId + 'requestId');
 
       const response =  dispatch(editApproveAdvanceRequestStatus(employeeID, requestId, newStatus))
       .then(response => {
@@ -334,7 +348,7 @@ export default function EmployeeDetails({navigation}) {
       console.log("response">>+response);  
     }catch (error) {
       console.error('Error dispatching the action:', error);
-    } 
+    }
   };
 
   const handleApproveLeaveSentRequest = async requestId => {
@@ -343,7 +357,7 @@ export default function EmployeeDetails({navigation}) {
       const newStatus = 'APPROVED';
       const employeeID = userinfo.id;
       console.log(employeeID);
-      console.log(requestId+"requestId");
+      console.log(requestId + 'requestId');
 
       const response =  dispatch(editApproveLeaveRequestStatus(employeeID, requestId, newStatus))
       .then(response => {
@@ -373,7 +387,7 @@ export default function EmployeeDetails({navigation}) {
       console.log("response">>+response);  
     }catch (error) {
       console.error('Error dispatching the action:', error);
-    } 
+    }
   };
 
   const handleRejectLeaveSentRequest = async requestId => {
@@ -514,6 +528,59 @@ export default function EmployeeDetails({navigation}) {
     }
   };
 
+  const EditAdvanceamount = async e => {
+    setIsLoading(true);
+    const status =
+      await firestoreRequestService.editAdvancePaymentByAdmin(
+        EditAdvanceItem.id,
+        Number(EditAdvance),
+        userinfo.ID,
+      );
+    if (status == 'Success') {
+      setIsLoading(false);
+      ToastAlert.ShowToast('success', 'Alert', 'Successfully Advance Edited');
+      reloadAction();
+    } else {
+      setIsLoading(false);
+    }
+  };
+
+  const EditAdvanceStatusamount = async e => {
+    setIsLoading(true);
+    const status =
+      await firestoreRequestService.editAdvanceStatusByAdmin(
+        EditAdvanceStatusItem.id,
+        String(EditAdvanceStatus),
+        userinfo.ID,
+      );
+    if (status == 'Success') {
+      setIsLoading(false);
+      ToastAlert.ShowToast('success', 'Alert', 'Successfully Advance Status Edited');
+      reloadAction();
+    } else {
+      setIsLoading(false);
+    }
+  };
+
+  const EditHolidayhoursbyAdmin = async e => {
+    setIsLoading(true);
+    console.log("EditHolidayHours>>>",EditHolidayHours);
+    const status =
+      await firestoreRequestService.editHolidayHoursByAdmin(
+        EditHolidayHoursItem.id,
+        
+        Number(EditHolidayHours),
+        userinfo.ID,
+      );
+    if (status == 'Success') {
+      setIsLoading(false);
+      ToastAlert.ShowToast('success', 'Alert', 'Successfully HolidayHours Edited');
+      reloadAction();
+    } else {
+      setIsLoading(false);
+    }
+  };
+
   const dropdowndata = [
     {key: '1', name: 'All'},
     {key: '2', name: 'Current month'},
@@ -533,6 +600,13 @@ export default function EmployeeDetails({navigation}) {
   useEffect(() => {
     // Fetch admin data when the component mounts
     dispatch(AdminAdvanceAllRequestsByEmployeeId());
+    console.log('Fetch dispatched');
+  }, [dispatch]);
+
+  const AllApprovedAdvanceData = useSelector(state => state.myReducers.approvedAdvanceRequets);
+  useEffect(() => {
+    // Fetch admin data when the component mounts
+    dispatch(AdminApprovedAdvanceAllRequestsByEmployeeId());
     console.log('Fetch dispatched');
   }, [dispatch]);
 
@@ -851,9 +925,20 @@ export default function EmployeeDetails({navigation}) {
                               .split('T')[0]
                           : 'Date not available'}
                       </Text>
-                      <Text style={{...styles.modalhead3, width: '33%'}}>
-                        {item.Hours}
-                      </Text>
+                      <Text style={{ color: Colors.black, fontSize: 16 }}>
+                    {item.Hours}
+                    </Text>
+                 <TouchableOpacity
+                onPress={() => {
+                    setEditHolidayHoursModal(true);
+                    setEditHolidayHoursItem(item);
+                  }}>
+                  <FontAwesome
+                    name="pencil"
+                    size={25}
+                    color={Colors.black}
+                  />
+                </TouchableOpacity>
                     </View>
                   )}
                 />
@@ -861,15 +946,21 @@ export default function EmployeeDetails({navigation}) {
             </>
           )}
           {Requests && (
-
             <>
               <View style={styles.inputContainer2}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setRequestModal2(true);
+                  }}
+                  style={styles.button2}>
+                  <Text style={styles.buttonText}>View  Advance Details</Text>
+                </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
                     setRequestModal(true);
                   }}
                   style={styles.button2}>
-                  <Text style={styles.buttonText}>View Request Response</Text>
+                  <Text style={styles.buttonText}>View All Request </Text>
                 </TouchableOpacity>
               </View>
               <View
@@ -1484,7 +1575,7 @@ export default function EmployeeDetails({navigation}) {
           }}>
           <View style={styles.modalcontainer}>
             <View style={styles.modalheaderview}>
-              <Text style={styles.modalheadertext}>Edit Count</Text>
+              <Text style={styles.modalheadertext}>Edit Hours</Text>
             </View>
 
             <TextInput
@@ -1552,6 +1643,243 @@ export default function EmployeeDetails({navigation}) {
       </Modal>
 
       <Modal
+        animationType="fade"
+        transparent={true}
+        visible={EditAdvanceModal}
+        onRequestClose={() => {
+          setEditAdvanceModal(!EditAdvanceModal);
+        }}>
+        <SafeAreaView
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}>
+          <View style={styles.modalcontainer}>
+            <View style={styles.modalheaderview}>
+              <Text style={styles.modalheadertext}>Edit Advance payment</Text>
+            </View>
+
+            <TextInput
+              style={styles.modaltextinput}
+              onChangeText={EditAdvance => setEditAdvance(EditAdvance)}
+              textColor="#BB0000"
+              value={EditAdvance}
+              placeholder={'pending Advance amount..'}
+              placeholderTextColor="#D9D9D9"
+              theme={{
+                colors: {
+                  primary: 'transparent',
+                  underlineColor: 'transparent',
+                },
+              }}
+              returnKeyType="next"
+              multiline={true}
+              keyboardType="numeric"
+            />
+            <View style={styles.modalline} />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  // if (Count) {
+                  //   //CountNotToCome();
+                  // } else {
+                  //   ToastAlert.ShowToast(
+                  //     'error',
+                  //     'Alert',
+                  //     'Please add hours',
+                  //   );
+                  // }
+                  EditAdvanceamount();
+                  setEditAdvanceModal(false);
+                  console.log('EditAdvanceItem' + JSON.stringify(EditAdvanceItem));
+                }}
+                style={styles.modalbuttonview}>
+                <Text style={styles.modalbuttontext}>Send</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setEditAdvanceModal(false);
+                  setEditAdvance(null);
+                }}
+                style={{
+                  ...styles.modalbuttonview,
+                  backgroundColor: Colors.white,
+                  borderWidth: 1,
+                  borderColor: Colors.lightgray,
+                }}>
+                <Text
+                  style={{...styles.modalbuttontext, color: Colors.darkText}}>
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+     
+      <Modal
+  animationType="fade"
+  transparent={true}
+  visible={EditAdvanceStatusModal}
+  onRequestClose={() => {
+    setEditAdvanceStatusModal(!EditAdvanceStatusModal);
+  }}>
+  <SafeAreaView
+    style={{
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    }}>
+    <View style={styles.modalcontainer}>
+      <View style={styles.modalheaderview}>
+        <Text style={styles.modalheadertext}>Edit Advance Status</Text>
+      </View>
+
+      <View style={{ alignSelf: 'stretch', paddingHorizontal: 15 }}>
+      <View style={styles.dropdownContainer}>
+  <Picker
+    selectedValue={EditAdvanceStatus}
+    onValueChange={(itemValue) => setEditAdvanceStatus(itemValue)}
+    style={styles.picker}
+    dropdownIconColor="#BB0000">
+    <Picker.Item label="APPROVED" value="APPROVED" />
+    <Picker.Item label="FINISHED" value="FINISHED" />
+  </Picker>
+</View>
+</View>
+      <View style={styles.modalline} />
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+          
+        }}>
+        <TouchableOpacity
+          onPress={() => {
+            EditAdvanceStatusamount();
+            setEditAdvanceStatusModal(false);
+            console.log('EditAdvanceStatusItem' + JSON.stringify(EditAdvanceStatusItem));
+          }}
+          style={styles.modalbuttonview}>
+          <Text style={styles.modalbuttontext}>Send</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            setEditAdvanceStatusModal(false);
+            setEditAdvanceStatus(null);
+          }}
+          style={{
+            ...styles.modalbuttonview,
+            backgroundColor: Colors.white,
+            borderWidth: 1,
+            borderColor: Colors.lightgray,
+          }}>
+          <Text
+            style={{ ...styles.modalbuttontext, color: Colors.darkText }}>
+            Cancel
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </SafeAreaView>
+</Modal>
+
+<Modal
+        animationType="fade"
+        transparent={true}
+        visible={EditHolidayHoursModal}
+        onRequestClose={() => {
+          setEditHolidayHoursModal(!EditHolidayHoursModal);
+        }}>
+        <SafeAreaView
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}>
+          <View style={styles.modalcontainer}>
+            <View style={styles.modalheaderview}>
+              <Text style={styles.modalheadertext}>Edit Holiday Hours</Text>
+            </View>
+
+            <TextInput
+              style={styles.modaltextinput}
+              onChangeText={EditHolidayHours => setEditHolidayHours(EditHolidayHours)}
+              textColor="#BB0000"
+              value={EditHolidayHours}
+              placeholder={'Holiday Hours..'}
+              placeholderTextColor="#D9D9D9"
+              theme={{
+                colors: {
+                  primary: 'transparent',
+                  underlineColor: 'transparent',
+                },
+              }}
+              returnKeyType="next"
+              multiline={true}
+              keyboardType="numeric"
+            />
+            <View style={styles.modalline} />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  // if (Count) {
+                  //   //CountNotToCome();
+                  // } else {
+                  //   ToastAlert.ShowToast(
+                  //     'error',
+                  //     'Alert',
+                  //     'Please add hours',
+                  //   );
+                  // }
+                  EditHolidayhoursbyAdmin();
+                  setEditHolidayHoursModal(false);
+                  console.log('EditHolidayHoursItem' + JSON.stringify(EditHolidayHoursItem));
+                }}
+                style={styles.modalbuttonview}>
+                <Text style={styles.modalbuttontext}>Send</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setEditHolidayHoursModal(false);
+                  setEditHolidayHours(null);
+                }}
+                style={{
+                  ...styles.modalbuttonview,
+                  backgroundColor: Colors.white,
+                  borderWidth: 1,
+                  borderColor: Colors.lightgray,
+                }}>
+                <Text
+                  style={{...styles.modalbuttontext, color: Colors.darkText}}>
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      <Modal
         animationType="slide"
         transparent={true}
         visible={RequestModal}
@@ -1570,7 +1898,7 @@ export default function EmployeeDetails({navigation}) {
               </TouchableOpacity>
               <View style={{...styles.button, backgroundColor: Colors.white}}>
                 <Text style={{...styles.buttonText, color: Colors.black}}>
-                  Gowrisan
+                {userinfo.userName}
                 </Text>
               </View>
               <View />
@@ -1589,12 +1917,17 @@ export default function EmployeeDetails({navigation}) {
                   flexDirection: 'row',
                   borderColor: Colors.gray,
                   borderBottomWidth: 2,
-                  height: 50,
+                  height: 30,
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}>
-                <Text style={{...styles.modalhead2, width: '50%'}}>Advance</Text>
-                <Text style={{...styles.modalhead2, width: '50%'}}>Status</Text>
+                <Text style={{...styles.modalhead2, width: '33%'}}>
+                  Advance
+                </Text>
+                <Text style={{...styles.modalhead2, width: '33%'}}>
+                  Date
+                </Text>
+                <Text style={{...styles.modalhead2, width: '33%'}}>Status</Text>
               </View>
               <FlatList
                 data={AllAdvanceData}
@@ -1611,11 +1944,14 @@ export default function EmployeeDetails({navigation}) {
                       alignItems: 'center',
                       justifyContent: 'space-between',
                     }}>
-                    <Text style={{...styles.modalhead3, width: '50%'}}>
-                    {item.advance}
+                    <Text style={{...styles.modalhead3, width: '33%'}}>
+                      {item.advance}
                     </Text>
-                    <Text style={{...styles.modalhead3, width: '50%'}}>
-                    {item.status}
+                    <Text style={{...styles.modalhead3, width: '33%'}}>
+                      {item.requestTime.toDate().toLocaleDateString()}
+                    </Text>
+                    <Text style={{...styles.modalhead3, width: '33%'}}>
+                      {item.status}
                     </Text>
                   </View>
                 )}
@@ -1625,7 +1961,7 @@ export default function EmployeeDetails({navigation}) {
                   flexDirection: 'row',
                   borderColor: Colors.gray,
                   borderBottomWidth: 2,
-                  height: 50,
+                  height: 30,
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}>
@@ -1649,13 +1985,13 @@ export default function EmployeeDetails({navigation}) {
                       justifyContent: 'space-between',
                     }}>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                    {item.from.toDate().toLocaleDateString()}
+                      {item.from.toDate().toLocaleDateString()}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                    {item.To.toDate().toLocaleDateString()}
+                      {item.To.toDate().toLocaleDateString()}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '33%'}}>
-                    {item.status}
+                      {item.status}
                     </Text>
                   </View>
                 )}
@@ -1665,7 +2001,7 @@ export default function EmployeeDetails({navigation}) {
                   flexDirection: 'row',
                   borderColor: Colors.gray,
                   borderBottomWidth: 2,
-                  height: 50,
+                  height: 30,
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}>
@@ -1690,20 +2026,288 @@ export default function EmployeeDetails({navigation}) {
                       justifyContent: 'space-between',
                     }}>
                     <Text style={{...styles.modalhead3, width: '25%'}}>
-                    {item.from.toDate().toLocaleDateString()}
+                      {item.from.toDate().toLocaleDateString()}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '25%'}}>
-                    {item.To.toDate().toLocaleDateString()}
+                      {item.To.toDate().toLocaleDateString()}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '25%'}}>
-                    {item.Hours}
+                      {item.Hours}
                     </Text>
                     <Text style={{...styles.modalhead3, width: '25%'}}>
-                    {item.status}
+                      {item.status}
                     </Text>
                   </View>
                 )}
               />
+            </View>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={RequestModal2}
+        onRequestClose={() => {
+          setRequestModal2(!RequestModal2);
+        }}>
+        <SafeAreaView style={styles.body}>
+          <Text style={styles.header}>Employee Details</Text>
+          <View style={styles.detailsBody}>
+            <View style={styles.inputContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  setRequestModal2(false);
+                }}>
+                <FontAwesome name="arrow-left" size={25} color={Colors.black} />
+              </TouchableOpacity>
+              <View style={{...styles.button, backgroundColor: Colors.white}}>
+                <Text style={{...styles.buttonText, color: Colors.black}}>
+                  {userinfo.userName} Approve Advance Requests
+                </Text>
+              </View>
+              <View />
+            </View>
+
+            <View
+              style={{
+                ...styles.modalBody,
+                borderWidth: 5,
+                borderColor: Colors.black,
+                borderRadius: 10,
+                padding: 0,
+                width: '100%',
+              }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  borderColor: Colors.gray,
+                  borderBottomWidth: 2,
+                  height: 50,
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={{...styles.modalhead2, width: '33%'}}>Date</Text>
+                <Text style={{...styles.modalhead2, width: '33%'}}>Advance</Text>
+                <Text style={{...styles.modalhead2, width: '33%'}}>Status</Text>
+              </View>
+              <FlatList
+                data={AllApprovedAdvanceData}
+                nestedScrollEnabled={true}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({item}) => (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      borderColor: Colors.white,
+                      borderBottomWidth: 5,
+                      backgroundColor: Colors.lightgray,
+                      height: 50,
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text style={{...styles.modalhead3, width: '33%'}}>
+                   
+                    {item.requestTime.toDate().toLocaleDateString()}
+                      {/* {item.in
+                        ? new Date(item.createdAt.toDate())
+                            .toISOString()
+                            .split('T')[0]
+                        : 'Date not available'} */}
+                    </Text>
+                    <View
+                      style={{
+                        width: '33%',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      <Text style={{...styles.modalhead3, marginRight: 15}}>
+                      {item.advance}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setEditAdvanceModal(true);
+                          setEditAdvanceItem(item);
+                        }}>
+                        <FontAwesome
+                          name="pencil"
+                          size={25}
+                          color={Colors.black}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    <View
+                      style={{
+                        width: '33%',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      <Text style={{...styles.modalhead3, marginRight: 15}}>
+                      {item.status}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setEditAdvanceStatusModal(true);
+                          setEditAdvanceStatusItem(item);
+                        }}>
+                        <FontAwesome
+                          name="pencil"
+                          size={25}
+                          color={Colors.black}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+              />
+            </View>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={CountModal2}
+        onRequestClose={() => {
+          setCountModal2(!CountModal2);
+        }}>
+        <SafeAreaView
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}>
+          <View style={styles.modalcontainer}>
+            <View style={styles.modalheaderview}>
+              <Text style={styles.modalheadertext}>Edit Hours</Text>
+            </View>
+
+            <TextInput
+              style={styles.modaltextinput}
+              onChangeText={Count => setCount(Count)}
+              textColor="#BB0000"
+              value={Count}
+              placeholder={' hours..'}
+              placeholderTextColor="#D9D9D9"
+              theme={{
+                colors: {
+                  primary: 'transparent',
+                  underlineColor: 'transparent',
+                },
+              }}
+              returnKeyType="next"
+              multiline={true}
+              keyboardType="numeric"
+            />
+            <View style={styles.modalline} />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+              }}>
+              <TouchableOpacity
+                onPress={() => {                
+                  setCountModal2(false);
+                }}
+                style={styles.modalbuttonview}>
+                <Text style={styles.modalbuttontext}>Send</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setCountModal2(false);
+                  setCount(null);
+                }}
+                style={{
+                  ...styles.modalbuttonview,
+                  backgroundColor: Colors.white,
+                  borderWidth: 1,
+                  borderColor: Colors.lightgray,
+                }}>
+                <Text
+                  style={{...styles.modalbuttontext, color: Colors.darkText}}>
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={CountModal3}
+        onRequestClose={() => {
+          setCountModal3(!CountModal3);
+        }}>
+        <SafeAreaView
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}>
+          <View style={styles.modalcontainer}>
+            <View style={styles.modalheaderview}>
+              <Text style={styles.modalheadertext}>Edit Salary</Text>
+            </View>
+
+            <TextInput
+              style={styles.modaltextinput}
+              onChangeText={Count => setCount(Count)}
+              textColor="#BB0000"
+              value={Count}
+              placeholder={' hours..'}
+              placeholderTextColor="#D9D9D9"
+              theme={{
+                colors: {
+                  primary: 'transparent',
+                  underlineColor: 'transparent',
+                },
+              }}
+              returnKeyType="next"
+              multiline={true}
+              keyboardType="numeric"
+            />
+            <View style={styles.modalline} />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  
+                  setCountModal3(false);
+                }}
+                style={styles.modalbuttonview}>
+                <Text style={styles.modalbuttontext}>Send</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setCountModal3(false);
+                  setCount(null);
+                }}
+                style={{
+                  ...styles.modalbuttonview,
+                  backgroundColor: Colors.white,
+                  borderWidth: 1,
+                  borderColor: Colors.lightgray,
+                }}>
+                <Text
+                  style={{...styles.modalbuttontext, color: Colors.darkText}}>
+                  Cancel
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         </SafeAreaView>

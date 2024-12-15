@@ -542,8 +542,13 @@ export default function Requests({navigation}) {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}>
-                <Text style={{...styles.modalhead2, width: '50%'}}>Advance</Text>
-                <Text style={{...styles.modalhead2, width: '50%'}}>Status</Text>
+               <Text style={{...styles.modalhead2, width: '33%'}}>
+                  Advance
+                </Text>
+                <Text style={{...styles.modalhead2, width: '33%'}}>
+                  Date
+                </Text>
+                <Text style={{...styles.modalhead2, width: '33%'}}>Status</Text>
               </View>
               <FlatList
                 data={AllAdvanceData}
@@ -560,11 +565,14 @@ export default function Requests({navigation}) {
                       alignItems: 'center',
                       justifyContent: 'space-between',
                     }}>
-                    <Text style={{...styles.modalhead3, width: '50%'}}>
-                    {item.advance}
+                   <Text style={{...styles.modalhead3, width: '33%'}}>
+                      {item.advance}
                     </Text>
-                    <Text style={{...styles.modalhead3, width: '50%'}}>
-                    {item.status}
+                    <Text style={{...styles.modalhead3, width: '33%'}}>
+                      {item.requestTime.toDate().toLocaleDateString()}
+                    </Text>
+                    <Text style={{...styles.modalhead3, width: '33%'}}>
+                      {item.status}
                     </Text>
                   </View>
                 )}
