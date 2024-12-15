@@ -19,6 +19,7 @@ const firestoreRequestService = {
            advance:Number(advance),
           status: 'INACTIVE',
           requestTime: firestore.FieldValue.serverTimestamp(),
+          CreatedTime: firestore.FieldValue.serverTimestamp(),
         };
 
         //   const docID = 'specificDocID';
@@ -83,6 +84,7 @@ const firestoreRequestService = {
           To: To,
           Hours: Number(Hours),
           status: 'INACTIVE',
+          CreatedTime: firestore.FieldValue.serverTimestamp(),
         };
 
         //   const docID = 'specificDocID';
