@@ -10,7 +10,7 @@ import {
   Image,
   TextInput,
   ScrollView,
-  SafeAreaView
+  SafeAreaView,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import styles from './Employees.Styles';
@@ -42,7 +42,6 @@ export default function Employees({navigation}) {
   const [maxHolidays, setmaxHolidays] = React.useState('');
 
   const [EditEmployeeModal, setEditEmployeeModal] = useState(false);
-  const [search, setSearch] = React.useState('');
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
 
@@ -73,27 +72,38 @@ export default function Employees({navigation}) {
     );
     if (status == 'Success') {
       setIsLoading(false);
-      ToastAlert.ShowToast('success', 'Alert', 'Sucessfully Emoloyee created..');
+      ToastAlert.ShowToast(
+        'success',
+        'Alert',
+        'Sucessfully Emoloyee created..',
+      );
       dispatch(fetchEmployeeData());
       setAddEmployeeModal(false);
       reloadAction();
-    }
-    else{
+    } else {
       setIsLoading(false);
-      ToastAlert.ShowToast('error', 'Alert', 'Error in Emoloyee created.Try Again Later..');
+      ToastAlert.ShowToast(
+        'error',
+        'Alert',
+        'Error in Emoloyee created.Try Again Later..',
+      );
       dispatch(fetchEmployeeData());
       setAddEmployeeModal(false);
     }
-    
   };
   // Accessing adminInfo from your Redux store
   const employeeData = useSelector(state => state.myReducers.employeeInfo);
-
+  const [search, setSearch] = React.useState('');
+  const filteredData = employeeData.filter(item =>
+    item.userName.toLowerCase().includes(search.toLowerCase()),
+  );
   useEffect(() => {
     // Fetch admin data when the component mounts
     dispatch(fetchEmployeeData());
     console.log('Fetch dispatched');
   }, [dispatch]);
+
+
 
   
   useEffect(() => {
@@ -127,7 +137,6 @@ export default function Employees({navigation}) {
     };
 
     try {
-      
       const status = await firestoreEmployeeService.editEmplyeeData(
         Id,
         updatedData,
@@ -142,8 +151,7 @@ export default function Employees({navigation}) {
         dispatch(fetchEmployeeData());
         setEditEmployeeModal(false);
         reloadAction();
-      }
-      else {
+      } else {
         setIsLoading(false);
         ToastAlert.ShowToast(
           'error',
@@ -235,6 +243,7 @@ export default function Employees({navigation}) {
       routes: [{name: 'Employees'}],
     });
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.body}>
@@ -283,7 +292,7 @@ export default function Employees({navigation}) {
               <Text style={{...styles.modalhead2, width: '30%'}}>More</Text>
             </View>
             <FlatList
-              data={employeeData}
+              data={filteredData}
               nestedScrollEnabled={true}
               keyExtractor={item => item.id}
               renderItem={({item}) => (
@@ -325,7 +334,11 @@ export default function Employees({navigation}) {
                       setSelectedEmployee(item);
                       handleOnDelete(item.ID);
                     }}>
-                    <FontAwesome name="trash-o" size={25} color={Colors.darkred} />
+                    <FontAwesome
+                      name="trash-o"
+                      size={25}
+                      color={Colors.darkred}
+                    />
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={{
@@ -337,11 +350,14 @@ export default function Employees({navigation}) {
                       padding: 3,
                       paddingBottom: 5,
                     }}
-                    onPress  ={async () => {
+                    onPress={async () => {
                       setSelectedEmployee(item);
                       dispatch(addUserToRedux(item));
 
-                      await AsyncStorage.setItem('employeeIdforRequest', item.ID);
+                      await AsyncStorage.setItem(
+                        'employeeIdforRequest',
+                        item.ID,
+                      );
                       console.log(Id);
                       navigation.navigate('EmployeeDetails');
                     }}>
