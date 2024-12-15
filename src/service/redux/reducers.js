@@ -1,4 +1,8 @@
-import {ADD_USER_INFO, HolidayRequestsByEmployeeId, LOGIN_ACTIVE_DATA_BY_SHOP} from './actions';
+import {
+  ADD_USER_INFO,
+  HolidayRequestsByEmployeeId,
+  LOGIN_ACTIVE_DATA_BY_SHOP,
+} from './actions';
 import {REMOVE_USER} from './actions';
 import {CHANGE_ONLINE_STATUS} from './actions';
 import {ITINERARY_LIST} from './actions';
@@ -30,20 +34,21 @@ import {EDIT_APPROVE_HOLIDAY_REQUEST_STATUS_SUCCESS} from './actions';
 import {EDIT_REJECT_HOLIDAY_REQUEST_STATUS_SUCCESS} from './actions';
 
 import {ACTIVE_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
-import { TOTALHOURS_DATA_BY_EMPLOYEEID } from './actions';
-import { TOTALADVANCE_DATA_BY_EMPLOYEEID } from './actions';
+import {TOTALHOURS_DATA_BY_EMPLOYEEID} from './actions';
+import {TOTALADVANCE_DATA_BY_EMPLOYEEID} from './actions';
 
-import { ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID } from './actions';
-import { ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID } from './actions';
-import { ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID } from './actions';
+import {ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
+import {ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
+import {ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
 
-import { ADMIN_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID } from './actions';
-import { ADMIN_ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID } from './actions';
-import { ADMIN_ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID } from './actions';
+import {ADMIN_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
+import {ADMIN_ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
+import {ADMIN_ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
 
+
+import {LOGIN_DATA_BY_SHOP} from './actions';
+import {FETCH_EMPLOYEE_ALL_DATA} from './actions';
 import { ADMIN_APPROVED_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID } from './actions';
-
-import { LOGIN_DATA_BY_SHOP } from './actions';
 
 const initialState = {
   adminInfo: [],
@@ -60,13 +65,14 @@ const initialState = {
   holidayRequests: [],
   shop_login: [],
   activeholidayRequests: [],
-  totalHolidayHours:[],
-  totalAdvance:[],
-  AllAdvanceRequets:[],
-  AllLeaveRequests:[],
-  AllHolidayRequets:[],
-  loginDataByShop:[],
-  loginActiveDataByShop:[],
+  totalHolidayHours: [],
+  totalAdvance: [],
+  AllAdvanceRequets: [],
+  AllLeaveRequests: [],
+  AllHolidayRequets: [],
+  loginDataByShop: [],
+  loginActiveDataByShop: [],
+  employeeAllInfo: [],
   approvedAdvanceRequets:[],
 };
 
@@ -262,7 +268,6 @@ function myReducers(state = initialState, action) {
     case EDIT_REJECT_HOLIDAY_REQUEST_STATUS_SUCCESS: {
       const {employeeID, requestID, newStatus} = action.payload;
 
-
       return {
         ...state,
         loading: false,
@@ -273,23 +278,21 @@ function myReducers(state = initialState, action) {
         ),
       };
     }
-    case ACTIVE_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID:{
-
+    case ACTIVE_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID: {
       return {
         ...state,
         activeholidayRequests: action.payload,
       };
-
     }
 
-    case TOTALHOURS_DATA_BY_EMPLOYEEID:{
+    case TOTALHOURS_DATA_BY_EMPLOYEEID: {
       return {
         ...state,
         totalHolidayHours: action.payload,
       };
     }
 
-    case TOTALADVANCE_DATA_BY_EMPLOYEEID:{
+    case TOTALADVANCE_DATA_BY_EMPLOYEEID: {
       return {
         ...state,
         totalAdvance: action.payload,
@@ -302,46 +305,51 @@ function myReducers(state = initialState, action) {
         advanceRequests: action.payload,
       };
 
-      case ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID:
-        return {
-          ...state,
-          leaveRequests: action.payload,
-        };
-  
-      case ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID:
-        return {
-          ...state,
-          holidayRequests: action.payload,
-        };
-        case ADMIN_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID:
-          return {
-            ...state,
-            AllAdvanceRequets: action.payload,
-          };
+
+    case ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID:
+      return {
+        ...state,
+        leaveRequests: action.payload,
+      };
+
+    case ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID:
+      return {
+        ...state,
+        holidayRequests: action.payload,
+      };
+    case ADMIN_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID:
+      return {
+        ...state,
+        AllAdvanceRequets: action.payload,
+      };
+
+    case ADMIN_ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID:
+      return {
+        ...state,
+        AllLeaveRequests: action.payload,
+      };
+
+    case ADMIN_ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID:
+      return {
+        ...state,
+        AllHolidayRequets: action.payload,
+      };
+
+    case LOGIN_DATA_BY_SHOP:
+      return {...state, loginDataByShop: action.payload};
+
+    case LOGIN_ACTIVE_DATA_BY_SHOP:
+      return {...state, loginActiveDataByShop: action.payload};
 
           case ADMIN_APPROVED_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID:
             return {
               ...state,
               approvedAdvanceRequets: action.payload,
             };
+
     
-          case ADMIN_ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID:
-            return {
-              ...state,
-              AllLeaveRequests: action.payload,
-            };
-      
-          case ADMIN_ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID:
-            return {
-              ...state,
-              AllHolidayRequets: action.payload,
-            };
-
-            case LOGIN_DATA_BY_SHOP:
-              return {...state, loginDataByShop: action.payload};  
-
-              case LOGIN_ACTIVE_DATA_BY_SHOP:
-              return {...state, loginActiveDataByShop: action.payload};    
+      case FETCH_EMPLOYEE_ALL_DATA:
+        return {...state, employeeAllInfo: action.payload};
 
     default:
       return state;
