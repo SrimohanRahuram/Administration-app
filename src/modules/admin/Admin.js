@@ -219,10 +219,10 @@ export default function Admin({navigation}) {
       {
         text: 'Yes',
         onPress: () => {
-          //AdvanceRequest_generateExcel();
-          //HolidayRequest_generateExcel();
-          //LeaveRequest_generateExcel();
-          //WorkPlace_generateExcel();
+          AdvanceRequest_generateExcel();
+          HolidayRequest_generateExcel();
+          LeaveRequest_generateExcel();
+          WorkPlace_generateExcel();
           Salary_generateExcel();
         },
       },
