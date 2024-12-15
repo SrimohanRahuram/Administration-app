@@ -45,8 +45,10 @@ import {ADMIN_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
 import {ADMIN_ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
 import {ADMIN_ALL_HOLIDAY_REQUESTS_DATA_BY_EMPLOYEEID} from './actions';
 
+
 import {LOGIN_DATA_BY_SHOP} from './actions';
 import {FETCH_EMPLOYEE_ALL_DATA} from './actions';
+import { ADMIN_APPROVED_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID } from './actions';
 
 const initialState = {
   adminInfo: [],
@@ -71,7 +73,7 @@ const initialState = {
   loginDataByShop: [],
   loginActiveDataByShop: [],
   employeeAllInfo: [],
-
+  approvedAdvanceRequets:[],
 };
 
 function myReducers(state = initialState, action) {
@@ -303,6 +305,7 @@ function myReducers(state = initialState, action) {
         advanceRequests: action.payload,
       };
 
+
     case ALL_LEAVE_REQUESTS_DATA_BY_EMPLOYEEID:
       return {
         ...state,
@@ -337,6 +340,12 @@ function myReducers(state = initialState, action) {
 
     case LOGIN_ACTIVE_DATA_BY_SHOP:
       return {...state, loginActiveDataByShop: action.payload};
+
+          case ADMIN_APPROVED_ADVANCE_ALL_REQUESTS_DATA_BY_EMPLOYEEID:
+            return {
+              ...state,
+              approvedAdvanceRequets: action.payload,
+            };
 
     
       case FETCH_EMPLOYEE_ALL_DATA:

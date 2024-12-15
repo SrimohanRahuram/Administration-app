@@ -354,7 +354,10 @@ export default function Shops({navigation}) {
                   handleLoginDataByShop(item.shopID);
                   handleActiveLoginDataByShop(item.shopID);
                 }}
-                style={styles.detailsBody2}>
+                style={[
+                  styles.detailsBody2,
+                  { width: showoutletList.length === 1 ? '99%' : '49%' },
+                ]}>
                 <Text style={styles.head}>{item.name}</Text>
               </TouchableOpacity>
             )}
