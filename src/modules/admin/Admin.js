@@ -9,7 +9,7 @@ import {
   Image,
   TextInput,
   SafeAreaView,
-  Alert
+  Alert,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import styles from './Admin.Styles';
@@ -211,53 +211,48 @@ export default function Admin({navigation}) {
   }, [dispatch]);
 
   const handleExportPress = () => {
-    Alert.alert(
-      'Export Sales Report',
-      'Do you want to export the sales report?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
+    Alert.alert('Export Reports', 'Do you want to export the reports?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Yes',
+        onPress: () => {
+          //AdvanceRequest_generateExcel();
+          //HolidayRequest_generateExcel();
+          //LeaveRequest_generateExcel();
+          //WorkPlace_generateExcel();
+          Salary_generateExcel();
         },
-        {
-          text: 'Yes',
-          onPress: generateExcel,
-        },
-      ],
-    );
+      },
+    ]);
   };
-  const generateExcel = async () => {
+  const AdvanceRequest_generateExcel = async () => {
     // Create a new workbook
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('employeeAllInfo Report');
-
+    const worksheet = workbook.addWorksheet('Advance_Request_Report');
     // Set title at the top
-    worksheet.mergeCells('A1:I1');
+    worksheet.mergeCells('A1:F1');
     const titleCell = worksheet.getCell('A1');
-    titleCell.value = 'SALES REPORT';
-    titleCell.font = {bold: true, size: 16, color: {argb: 'FFFFFFFF'}};
+    titleCell.value = 'Advance Request Report';
+    titleCell.font = {bold: true, color: {argb: 'FFFFFFFF'}};
     titleCell.alignment = {horizontal: 'center', vertical: 'middle'};
     titleCell.fill = {
       type: 'pattern',
       pattern: 'solid',
       fgColor: {argb: '4BACC6'},
     };
-
     // Define headers
     const headers = [
       'Agent ID',
       'Agent Name',
-      'Outlet ID',
-      'Outlet Name',
-      'Created Date',
-      'Sales Amount',
-      'Payment Method',
-      'Paid Amount',
-      'Products', // Placeholder for products
+      'Request ID',
+      'Request Advance',
+      'Request Status',
+      'Request Date',
     ];
-
     const headerRow = worksheet.addRow(headers);
-
     // Style headers
     headerRow.eachCell(cell => {
       cell.font = {bold: true, color: {argb: 'FFFFFFFF'}};
@@ -274,95 +269,73 @@ export default function Admin({navigation}) {
         right: {style: 'thin'},
       };
     });
-
-    // Add rows for each sale and handle products
-    employeeAllInfo.forEach(sale => {
-      // Add the main sale row first
-      const mainRow = worksheet.addRow([sale.id, sale.userName]);
-    
-      // Style the main sale row
-      mainRow.eachCell({ includeEmpty: true }, cell => {
-        cell.alignment = { horizontal: 'left', vertical: 'middle' };
-        cell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'D9D9D9' }, // Light gray background color
-        };
-        cell.border = {
-          top: { style: 'thin' },
-          left: { style: 'thin' },
-          bottom: { style: 'thin' },
-          right: { style: 'thin' },
-        };
-      });
-    
+    // Add rows for each data and handle products
+    employeeAllInfo.forEach(data => {
       // Check if there are any AdvanceRequests for the user
-      if (sale.AdvanceRequests && sale.AdvanceRequests.length > 0) {
-        sale.AdvanceRequests.forEach(request => {
+      if (data.AdvanceRequests && data.AdvanceRequests.length > 0) {
+        data.AdvanceRequests.forEach(request => {
           // Add a row for each advance request
           const requestRow = worksheet.addRow([
-            '', // Leave the first column blank to align under the user's name
-            '', // Leave the second column blank
+            data.id, // Leave the first column blank to align under the user's name
+            data.userName, // Leave the second column blank
             request.id,
             request.advance,
             request.status,
-            new Date(request.requestTime.seconds * 1000).toLocaleString() // Convert timestamp to readable date
+            new Date(request.requestTime.seconds * 1000).toLocaleString(), // Convert timestamp to readable date
           ]);
-    
           // Style the advance request rows
-          requestRow.eachCell({ includeEmpty: true }, cell => {
-            cell.alignment = { horizontal: 'left', vertical: 'middle' };
+          requestRow.eachCell({includeEmpty: true}, cell => {
+            cell.alignment = {horizontal: 'right', vertical: 'middle'};
             cell.border = {
-              top: { style: 'thin' },
-              left: { style: 'thin' },
-              bottom: { style: 'thin' },
-              right: { style: 'thin' },
+              top: {style: 'thin'},
+              left: {style: 'thin'},
+              bottom: {style: 'thin'},
+              right: {style: 'thin'},
             };
           });
         });
       } else {
         // Add a placeholder row if no AdvanceRequests
-        const noRequestRow = worksheet.addRow(['', '', 'No Advance Requests']);
-        noRequestRow.eachCell({ includeEmpty: true }, cell => {
-          cell.alignment = { horizontal: 'left', vertical: 'middle' };
+        const noRequestRow = worksheet.addRow([
+          data.id,
+          data.userName,
+          '',
+          '',
+          '',
+          '',
+        ]);
+        noRequestRow.eachCell({includeEmpty: true}, cell => {
+          cell.alignment = {horizontal: 'right', vertical: 'middle'};
           cell.border = {
-            top: { style: 'thin' },
-            left: { style: 'thin' },
-            bottom: { style: 'thin' },
-            right: { style: 'thin' },
+            top: {style: 'thin'},
+            left: {style: 'thin'},
+            bottom: {style: 'thin'},
+            right: {style: 'thin'},
           };
         });
       }
     });
-    
-
-
 
     // Add the current date at the bottom of the sheet
     const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
     const dateRow = worksheet.addRow([`Report Generated on: ${currentDate}`]);
-
     // Merge the date row cells across the entire width and style it
-    worksheet.mergeCells(`A${dateRow.number}:I${dateRow.number}`);
+    worksheet.mergeCells(`A${dateRow.number}:F${dateRow.number}`);
     dateRow.getCell(1).alignment = {horizontal: 'right', vertical: 'middle'};
     dateRow.getCell(1).font = {italic: true};
 
     // Set column widths for better visibility
     worksheet.columns = [
-      {key: 'agent_name', width: 15},
-      {key: 'agent_id', width: 15},
-      {key: 'outlet_id', width: 15},
-      {key: 'outlet_name', width: 25},
-      {key: 'created_date', width: 20},
-      {key: 'sales_amount', width: 20},
-      {key: 'payment_method', width: 20},
-      {key: 'paid_amount', width: 20},
-      {key: 'products', width: 70}, // Wider for product descriptions
+      {key: 'agent_name', width: 30},
+      {key: 'agent_id', width: 30},
+      {key: 'request_id', width: 30},
+      {key: 'request_advance', width: 30},
+      {key: 'request_status', width: 30},
+      {key: 'request_date', width: 30},
     ];
-
     // Generate a unique file name with a timestamp and download
     const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, ''); // Format timestamp as YYYYMMDD_HHmmss
-    const fileName = `employeeAllInfot_${timestamp}.xlsx`;
+    const fileName = `AdvanceRequestReport_${timestamp}.xlsx`;
     const filePath = `${RNFS.DownloadDirectoryPath}/${fileName}`;
     const buffer = await workbook.xlsx.writeBuffer();
     RNFS.writeFile(filePath, buffer.toString('base64'), 'base64')
@@ -376,7 +349,442 @@ export default function Admin({navigation}) {
         Alert.alert('Export Failed', 'Error: ' + error.message);
       });
   };
+  const HolidayRequest_generateExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Holiday_Request_Report');
+    worksheet.mergeCells('A1:G1');
+    const titleCell = worksheet.getCell('A1');
+    titleCell.value = 'Holiday Request Report';
+    titleCell.font = {bold: true, color: {argb: 'FFFFFFFF'}};
+    titleCell.alignment = {horizontal: 'center', vertical: 'middle'};
+    titleCell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: {argb: '4BACC6'},
+    };
+    const headers = [
+      'Agent ID',
+      'Agent Name',
+      'Holiday ID',
+      'Holiday Status',
+      'Holiday From',
+      'Holiday To',
+      'Holiday Hours',
+    ];
+    const headerRow = worksheet.addRow(headers);
+    headerRow.eachCell(cell => {
+      cell.font = {bold: true, color: {argb: 'FFFFFFFF'}};
+      cell.alignment = {horizontal: 'center', vertical: 'middle'};
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: '4F81BD'},
+      };
+      cell.border = {
+        top: {style: 'thin'},
+        left: {style: 'thin'},
+        bottom: {style: 'thin'},
+        right: {style: 'thin'},
+      };
+    });
+    employeeAllInfo.forEach(data => {
+      if (data.HolidayRequests && data.HolidayRequests.length > 0) {
+        data.HolidayRequests.forEach(request => {
+          const requestRow = worksheet.addRow([
+            data.id,
+            data.userName,
+            request.id,
+            request.status,
+            new Date(request.from.seconds * 1000).toLocaleString(),
+            new Date(request.To.seconds * 1000).toLocaleString(),
+            request.Hours,
+          ]);
+          requestRow.eachCell({includeEmpty: true}, cell => {
+            cell.alignment = {horizontal: 'right', vertical: 'middle'};
+            cell.border = {
+              top: {style: 'thin'},
+              left: {style: 'thin'},
+              bottom: {style: 'thin'},
+              right: {style: 'thin'},
+            };
+          });
+        });
+      } else {
+        const noRequestRow = worksheet.addRow([
+          data.id,
+          data.userName,
+          '',
+          '',
+          '',
+          '',
+          '',
+        ]);
+        noRequestRow.eachCell({includeEmpty: true}, cell => {
+          cell.alignment = {horizontal: 'right', vertical: 'middle'};
+          cell.border = {
+            top: {style: 'thin'},
+            left: {style: 'thin'},
+            bottom: {style: 'thin'},
+            right: {style: 'thin'},
+          };
+        });
+      }
+    });
 
+    const currentDate = new Date().toISOString().split('T')[0];
+    const dateRow = worksheet.addRow([`Report Generated on: ${currentDate}`]);
+    worksheet.mergeCells(`A${dateRow.number}:G${dateRow.number}`);
+    dateRow.getCell(1).alignment = {horizontal: 'right', vertical: 'middle'};
+    dateRow.getCell(1).font = {italic: true};
+
+    worksheet.columns = [
+      {key: 'agent_name', width: 30},
+      {key: 'agent_id', width: 30},
+      {key: 'request_id', width: 30},
+      {key: 'request_status', width: 30},
+      {key: 'request_to', width: 30},
+      {key: 'request_from', width: 30},
+      {key: 'request_hours', width: 30},
+    ];
+    const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, '');
+    const fileName = `HolidayRequestReport_${timestamp}.xlsx`;
+    const filePath = `${RNFS.DownloadDirectoryPath}/${fileName}`;
+    const buffer = await workbook.xlsx.writeBuffer();
+    RNFS.writeFile(filePath, buffer.toString('base64'), 'base64')
+      .then(() => {
+        Alert.alert(
+          'Export Success',
+          `Excel file has been saved at ${filePath}`,
+        );
+      })
+      .catch(error => {
+        Alert.alert('Export Failed', 'Error: ' + error.message);
+      });
+  };
+  const LeaveRequest_generateExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Leave_Request_Report');
+    worksheet.mergeCells('A1:F1');
+    const titleCell = worksheet.getCell('A1');
+    titleCell.value = 'Leave Request Report';
+    titleCell.font = {bold: true, color: {argb: 'FFFFFFFF'}};
+    titleCell.alignment = {horizontal: 'center', vertical: 'middle'};
+    titleCell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: {argb: '4BACC6'},
+    };
+    const headers = [
+      'Agent ID',
+      'Agent Name',
+      'Leave ID',
+      'Leave Status',
+      'Leave From',
+      'Leave To',
+    ];
+    const headerRow = worksheet.addRow(headers);
+    headerRow.eachCell(cell => {
+      cell.font = {bold: true, color: {argb: 'FFFFFFFF'}};
+      cell.alignment = {horizontal: 'center', vertical: 'middle'};
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: '4F81BD'},
+      };
+      cell.border = {
+        top: {style: 'thin'},
+        left: {style: 'thin'},
+        bottom: {style: 'thin'},
+        right: {style: 'thin'},
+      };
+    });
+    employeeAllInfo.forEach(data => {
+      if (data.LeaveRequests && data.LeaveRequests.length > 0) {
+        data.LeaveRequests.forEach(request => {
+          const requestRow = worksheet.addRow([
+            data.id,
+            data.userName,
+            request.id,
+            request.status,
+            new Date(request.from.seconds * 1000).toLocaleString(),
+            new Date(request.To.seconds * 1000).toLocaleString(),
+          ]);
+          requestRow.eachCell({includeEmpty: true}, cell => {
+            cell.alignment = {horizontal: 'right', vertical: 'middle'};
+            cell.border = {
+              top: {style: 'thin'},
+              left: {style: 'thin'},
+              bottom: {style: 'thin'},
+              right: {style: 'thin'},
+            };
+          });
+        });
+      } else {
+        const noRequestRow = worksheet.addRow([
+          data.id,
+          data.userName,
+          '',
+          '',
+          '',
+          '',
+        ]);
+        noRequestRow.eachCell({includeEmpty: true}, cell => {
+          cell.alignment = {horizontal: 'right', vertical: 'middle'};
+          cell.border = {
+            top: {style: 'thin'},
+            left: {style: 'thin'},
+            bottom: {style: 'thin'},
+            right: {style: 'thin'},
+          };
+        });
+      }
+    });
+
+    const currentDate = new Date().toISOString().split('T')[0];
+    const dateRow = worksheet.addRow([`Report Generated on: ${currentDate}`]);
+    worksheet.mergeCells(`A${dateRow.number}:F${dateRow.number}`);
+    dateRow.getCell(1).alignment = {horizontal: 'right', vertical: 'middle'};
+    dateRow.getCell(1).font = {italic: true};
+
+    worksheet.columns = [
+      {key: 'agent_name', width: 30},
+      {key: 'agent_id', width: 30},
+      {key: 'leave_id', width: 30},
+      {key: 'leave_status', width: 30},
+      {key: 'leave_to', width: 30},
+      {key: 'leave_from', width: 30},
+    ];
+    const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, '');
+    const fileName = `LeaveRequestReport_${timestamp}.xlsx`;
+    const filePath = `${RNFS.DownloadDirectoryPath}/${fileName}`;
+    const buffer = await workbook.xlsx.writeBuffer();
+    RNFS.writeFile(filePath, buffer.toString('base64'), 'base64')
+      .then(() => {
+        Alert.alert(
+          'Export Success',
+          `Excel file has been saved at ${filePath}`,
+        );
+      })
+      .catch(error => {
+        Alert.alert('Export Failed', 'Error: ' + error.message);
+      });
+  };
+  const WorkPlace_generateExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('WorkPlace_Report');
+    worksheet.mergeCells('A1:F1');
+    const titleCell = worksheet.getCell('A1');
+    titleCell.value = 'WorkPlace Report';
+    titleCell.font = {bold: true, color: {argb: 'FFFFFFFF'}};
+    titleCell.alignment = {horizontal: 'center', vertical: 'middle'};
+    titleCell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: {argb: '4BACC6'},
+    };
+    const headers = [
+      'Agent ID',
+      'Agent Name',
+      'WorkPlace ID',
+      'WorkPlace Shop Name',
+      'WorkPlace From',
+      'WorkPlace To',
+    ];
+    const headerRow = worksheet.addRow(headers);
+    headerRow.eachCell(cell => {
+      cell.font = {bold: true, color: {argb: 'FFFFFFFF'}};
+      cell.alignment = {horizontal: 'center', vertical: 'middle'};
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: '4F81BD'},
+      };
+      cell.border = {
+        top: {style: 'thin'},
+        left: {style: 'thin'},
+        bottom: {style: 'thin'},
+        right: {style: 'thin'},
+      };
+    });
+    employeeAllInfo.forEach(data => {
+      if (data.shoplogin && data.shoplogin.length > 0) {
+        data.shoplogin.forEach(request => {
+          const requestRow = worksheet.addRow([
+            data.id,
+            data.userName,
+            request.id,
+            request.shopName,
+            request.checkInDateTime,
+            request.checkOutDateTime,
+          ]);
+          requestRow.eachCell({includeEmpty: true}, cell => {
+            cell.alignment = {horizontal: 'right', vertical: 'middle'};
+            cell.border = {
+              top: {style: 'thin'},
+              left: {style: 'thin'},
+              bottom: {style: 'thin'},
+              right: {style: 'thin'},
+            };
+          });
+        });
+      } else {
+        const noRequestRow = worksheet.addRow([
+          data.id,
+          data.userName,
+          '',
+          '',
+          '',
+          '',
+        ]);
+        noRequestRow.eachCell({includeEmpty: true}, cell => {
+          cell.alignment = {horizontal: 'right', vertical: 'middle'};
+          cell.border = {
+            top: {style: 'thin'},
+            left: {style: 'thin'},
+            bottom: {style: 'thin'},
+            right: {style: 'thin'},
+          };
+        });
+      }
+    });
+
+    const currentDate = new Date().toISOString().split('T')[0];
+    const dateRow = worksheet.addRow([`Report Generated on: ${currentDate}`]);
+    worksheet.mergeCells(`A${dateRow.number}:F${dateRow.number}`);
+    dateRow.getCell(1).alignment = {horizontal: 'right', vertical: 'middle'};
+    dateRow.getCell(1).font = {italic: true};
+
+    worksheet.columns = [
+      {key: 'agent_name', width: 30},
+      {key: 'agent_id', width: 30},
+      {key: 'workplace_id', width: 30},
+      {key: 'workplace_shopname', width: 30},
+      {key: 'workplace_to', width: 30},
+      {key: 'workplace_from', width: 30},
+    ];
+    const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, '');
+    const fileName = `WorkPlaceReport_${timestamp}.xlsx`;
+    const filePath = `${RNFS.DownloadDirectoryPath}/${fileName}`;
+    const buffer = await workbook.xlsx.writeBuffer();
+    RNFS.writeFile(filePath, buffer.toString('base64'), 'base64')
+      .then(() => {
+        Alert.alert(
+          'Export Success',
+          `Excel file has been saved at ${filePath}`,
+        );
+      })
+      .catch(error => {
+        Alert.alert('Export Failed', 'Error: ' + error.message);
+      });
+  };
+  const Salary_generateExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Salary_Report');
+    worksheet.mergeCells('A1:F1');
+    const titleCell = worksheet.getCell('A1');
+    titleCell.value = 'Salary Report';
+    titleCell.font = {bold: true, color: {argb: 'FFFFFFFF'}};
+    titleCell.alignment = {horizontal: 'center', vertical: 'middle'};
+    titleCell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: {argb: '4BACC6'},
+    };
+    const headers = [
+      'Agent ID',
+      'Agent Name',
+      'Salary ID',
+      'Salary',
+      'Salary From',
+      'Salary To',
+    ];
+    const headerRow = worksheet.addRow(headers);
+    headerRow.eachCell(cell => {
+      cell.font = {bold: true, color: {argb: 'FFFFFFFF'}};
+      cell.alignment = {horizontal: 'center', vertical: 'middle'};
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: '4F81BD'},
+      };
+      cell.border = {
+        top: {style: 'thin'},
+        left: {style: 'thin'},
+        bottom: {style: 'thin'},
+        right: {style: 'thin'},
+      };
+    });
+    employeeAllInfo.forEach(data => {
+      if (data.shoplogin && data.shoplogin.length > 0) {
+        data.shoplogin.forEach(request => {
+          const requestRow = worksheet.addRow([
+            data.id,
+            data.userName,
+            request.id,
+            Number(request.hoursOfWork) * Number(data.perHourSalary),
+            request.checkInDateTime,
+            request.checkOutDateTime,
+          ]);
+          requestRow.eachCell({includeEmpty: true}, cell => {
+            cell.alignment = {horizontal: 'right', vertical: 'middle'};
+            cell.border = {
+              top: {style: 'thin'},
+              left: {style: 'thin'},
+              bottom: {style: 'thin'},
+              right: {style: 'thin'},
+            };
+          });
+        });
+      } else {
+        const noRequestRow = worksheet.addRow([
+          data.id,
+          data.userName,
+          '',
+          '',
+          '',
+          '',
+        ]);
+        noRequestRow.eachCell({includeEmpty: true}, cell => {
+          cell.alignment = {horizontal: 'right', vertical: 'middle'};
+          cell.border = {
+            top: {style: 'thin'},
+            left: {style: 'thin'},
+            bottom: {style: 'thin'},
+            right: {style: 'thin'},
+          };
+        });
+      }
+    });
+
+    const currentDate = new Date().toISOString().split('T')[0];
+    const dateRow = worksheet.addRow([`Report Generated on: ${currentDate}`]);
+    worksheet.mergeCells(`A${dateRow.number}:F${dateRow.number}`);
+    dateRow.getCell(1).alignment = {horizontal: 'right', vertical: 'middle'};
+    dateRow.getCell(1).font = {italic: true};
+
+    worksheet.columns = [
+      {key: 'agent_name', width: 30},
+      {key: 'agent_id', width: 30},
+      {key: 'salary_id', width: 30},
+      {key: 'salary', width: 30},
+      {key: 'salary_to', width: 30},
+      {key: 'salary_from', width: 30},
+    ];
+    const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, '');
+    const fileName = `SalaryReport_${timestamp}.xlsx`;
+    const filePath = `${RNFS.DownloadDirectoryPath}/${fileName}`;
+    const buffer = await workbook.xlsx.writeBuffer();
+    RNFS.writeFile(filePath, buffer.toString('base64'), 'base64')
+      .then(() => {
+        Alert.alert(
+          'Export Success',
+          `Excel file has been saved at ${filePath}`,
+        );
+      })
+      .catch(error => {
+        Alert.alert('Export Failed', 'Error: ' + error.message);
+      });
+  };
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.body}>

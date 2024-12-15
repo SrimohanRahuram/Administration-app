@@ -446,6 +446,7 @@ const firestoreEmployeeService = {
         const employeeData = {
           id: doc.id,
           userName: doc.data().userName,
+          perHourSalary: doc.data().perHourSalary,
         };
 
         const subcollections = [
