@@ -219,11 +219,24 @@ export default function Admin({navigation}) {
       {
         text: 'Yes',
         onPress: () => {
-          AdvanceRequest_generateExcel();
-          HolidayRequest_generateExcel();
           LeaveRequest_generateExcel();
           WorkPlace_generateExcel();
           Salary_generateExcel();
+        },
+      },
+    ]);
+  };
+  const handleExportPress2 = () => {
+    Alert.alert('Export Reports', 'Do you want to export the reports?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Yes',
+        onPress: () => {
+          AdvanceRequest_generateExcel();
+          HolidayRequest_generateExcel();
         },
       },
     ]);
@@ -269,30 +282,34 @@ export default function Admin({navigation}) {
         right: {style: 'thin'},
       };
     });
-    // Add rows for each data and handle products
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const lastYear = currentYear - 1;
+    const rangeStart = new Date(lastYear, 3, 1);
+    const rangeEnd = new Date(currentYear, 2, 31, 23, 59, 59);
     employeeAllInfo.forEach(data => {
-      // Check if there are any AdvanceRequests for the user
       if (data.AdvanceRequests && data.AdvanceRequests.length > 0) {
         data.AdvanceRequests.forEach(request => {
-          // Add a row for each advance request
-          const requestRow = worksheet.addRow([
-            data.id, // Leave the first column blank to align under the user's name
-            data.userName, // Leave the second column blank
-            request.id,
-            request.advance,
-            request.status,
-            new Date(request.requestTime.seconds * 1000).toLocaleString(), // Convert timestamp to readable date
-          ]);
-          // Style the advance request rows
-          requestRow.eachCell({includeEmpty: true}, cell => {
-            cell.alignment = {horizontal: 'right', vertical: 'middle'};
-            cell.border = {
-              top: {style: 'thin'},
-              left: {style: 'thin'},
-              bottom: {style: 'thin'},
-              right: {style: 'thin'},
-            };
-          });
+          const createdAtDate = new Date(request.CreatedTime.seconds * 1000);
+          if (createdAtDate >= rangeStart && createdAtDate <= rangeEnd) {
+            const requestRow = worksheet.addRow([
+              data.id,
+              data.userName,
+              request.id,
+              request.advance,
+              request.status,
+              new Date(request.requestTime.seconds * 1000).toLocaleString(),
+            ]);
+            requestRow.eachCell({includeEmpty: true}, cell => {
+              cell.alignment = {horizontal: 'right', vertical: 'middle'};
+              cell.border = {
+                top: {style: 'thin'},
+                left: {style: 'thin'},
+                bottom: {style: 'thin'},
+                right: {style: 'thin'},
+              };
+            });
+          }
         });
       } else {
         // Add a placeholder row if no AdvanceRequests
@@ -387,27 +404,35 @@ export default function Admin({navigation}) {
         right: {style: 'thin'},
       };
     });
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const lastYear = currentYear - 1;
+    const rangeStart = new Date(lastYear, 3, 1);
+    const rangeEnd = new Date(currentYear, 2, 31, 23, 59, 59);
     employeeAllInfo.forEach(data => {
       if (data.HolidayRequests && data.HolidayRequests.length > 0) {
         data.HolidayRequests.forEach(request => {
-          const requestRow = worksheet.addRow([
-            data.id,
-            data.userName,
-            request.id,
-            request.status,
-            new Date(request.from.seconds * 1000).toLocaleString(),
-            new Date(request.To.seconds * 1000).toLocaleString(),
-            request.Hours,
-          ]);
-          requestRow.eachCell({includeEmpty: true}, cell => {
-            cell.alignment = {horizontal: 'right', vertical: 'middle'};
-            cell.border = {
-              top: {style: 'thin'},
-              left: {style: 'thin'},
-              bottom: {style: 'thin'},
-              right: {style: 'thin'},
-            };
-          });
+          const createdAtDate = new Date(request.CreatedTime.seconds * 1000);
+          if (createdAtDate >= rangeStart && createdAtDate <= rangeEnd) {
+            const requestRow = worksheet.addRow([
+              data.id,
+              data.userName,
+              request.id,
+              request.status,
+              new Date(request.from.seconds * 1000).toLocaleString(),
+              new Date(request.To.seconds * 1000).toLocaleString(),
+              request.Hours,
+            ]);
+            requestRow.eachCell({includeEmpty: true}, cell => {
+              cell.alignment = {horizontal: 'right', vertical: 'middle'};
+              cell.border = {
+                top: {style: 'thin'},
+                left: {style: 'thin'},
+                bottom: {style: 'thin'},
+                right: {style: 'thin'},
+              };
+            });
+          }
         });
       } else {
         const noRequestRow = worksheet.addRow([
@@ -498,26 +523,41 @@ export default function Admin({navigation}) {
         right: {style: 'thin'},
       };
     });
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
     employeeAllInfo.forEach(data => {
       if (data.LeaveRequests && data.LeaveRequests.length > 0) {
         data.LeaveRequests.forEach(request => {
-          const requestRow = worksheet.addRow([
-            data.id,
-            data.userName,
-            request.id,
-            request.status,
-            new Date(request.from.seconds * 1000).toLocaleString(),
-            new Date(request.To.seconds * 1000).toLocaleString(),
-          ]);
-          requestRow.eachCell({includeEmpty: true}, cell => {
-            cell.alignment = {horizontal: 'right', vertical: 'middle'};
-            cell.border = {
-              top: {style: 'thin'},
-              left: {style: 'thin'},
-              bottom: {style: 'thin'},
-              right: {style: 'thin'},
-            };
-          });
+          const createdAtDate = new Date(request.CreatedTime.seconds * 1000);
+          const createdMonth = createdAtDate.getMonth();
+          const createdYear = createdAtDate.getFullYear();
+          if (
+            (createdMonth === currentMonth && createdYear === currentYear) ||
+            (createdMonth === lastMonth && createdYear === lastMonthYear)
+          ) {
+            //none
+          } else {
+            const requestRow = worksheet.addRow([
+              data.id,
+              data.userName,
+              request.id,
+              request.status,
+              new Date(request.from.seconds * 1000).toLocaleString(),
+              new Date(request.To.seconds * 1000).toLocaleString(),
+            ]);
+            requestRow.eachCell({includeEmpty: true}, cell => {
+              cell.alignment = {horizontal: 'right', vertical: 'middle'};
+              cell.border = {
+                top: {style: 'thin'},
+                left: {style: 'thin'},
+                bottom: {style: 'thin'},
+                right: {style: 'thin'},
+              };
+            });
+          }
         });
       } else {
         const noRequestRow = worksheet.addRow([
@@ -606,26 +646,41 @@ export default function Admin({navigation}) {
         right: {style: 'thin'},
       };
     });
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
     employeeAllInfo.forEach(data => {
       if (data.shoplogin && data.shoplogin.length > 0) {
         data.shoplogin.forEach(request => {
-          const requestRow = worksheet.addRow([
-            data.id,
-            data.userName,
-            request.id,
-            request.shopName,
-            request.checkInDateTime,
-            request.checkOutDateTime,
-          ]);
-          requestRow.eachCell({includeEmpty: true}, cell => {
-            cell.alignment = {horizontal: 'right', vertical: 'middle'};
-            cell.border = {
-              top: {style: 'thin'},
-              left: {style: 'thin'},
-              bottom: {style: 'thin'},
-              right: {style: 'thin'},
-            };
-          });
+          const createdAtDate = new Date(request.createdAt.seconds * 1000);
+          const createdMonth = createdAtDate.getMonth();
+          const createdYear = createdAtDate.getFullYear();
+          if (
+            (createdMonth === currentMonth && createdYear === currentYear) ||
+            (createdMonth === lastMonth && createdYear === lastMonthYear)
+          ) {
+            //none
+          } else {
+            const requestRow = worksheet.addRow([
+              data.id,
+              data.userName,
+              request.id,
+              request.shopName,
+              request.checkInDateTime,
+              request.checkOutDateTime,
+            ]);
+            requestRow.eachCell({includeEmpty: true}, cell => {
+              cell.alignment = {horizontal: 'right', vertical: 'middle'};
+              cell.border = {
+                top: {style: 'thin'},
+                left: {style: 'thin'},
+                bottom: {style: 'thin'},
+                right: {style: 'thin'},
+              };
+            });
+          }
         });
       } else {
         const noRequestRow = worksheet.addRow([
@@ -714,26 +769,41 @@ export default function Admin({navigation}) {
         right: {style: 'thin'},
       };
     });
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
     employeeAllInfo.forEach(data => {
       if (data.shoplogin && data.shoplogin.length > 0) {
         data.shoplogin.forEach(request => {
-          const requestRow = worksheet.addRow([
-            data.id,
-            data.userName,
-            request.id,
-            Number(request.hoursOfWork) * Number(data.perHourSalary),
-            request.checkInDateTime,
-            request.checkOutDateTime,
-          ]);
-          requestRow.eachCell({includeEmpty: true}, cell => {
-            cell.alignment = {horizontal: 'right', vertical: 'middle'};
-            cell.border = {
-              top: {style: 'thin'},
-              left: {style: 'thin'},
-              bottom: {style: 'thin'},
-              right: {style: 'thin'},
-            };
-          });
+          const createdAtDate = new Date(request.createdAt.seconds * 1000);
+          const createdMonth = createdAtDate.getMonth();
+          const createdYear = createdAtDate.getFullYear();
+          if (
+            (createdMonth === currentMonth && createdYear === currentYear) ||
+            (createdMonth === lastMonth && createdYear === lastMonthYear)
+          ) {
+            //none
+          } else {
+            const requestRow = worksheet.addRow([
+              data.id,
+              data.userName,
+              request.id,
+              Number(request.hoursOfWork) * Number(data.perHourSalary),
+              request.checkInDateTime,
+              request.checkOutDateTime,
+            ]);
+            requestRow.eachCell({includeEmpty: true}, cell => {
+              cell.alignment = {horizontal: 'right', vertical: 'middle'};
+              cell.border = {
+                top: {style: 'thin'},
+                left: {style: 'thin'},
+                bottom: {style: 'thin'},
+                right: {style: 'thin'},
+              };
+            });
+          }
         });
       } else {
         const noRequestRow = worksheet.addRow([
@@ -792,18 +862,38 @@ export default function Admin({navigation}) {
         <View style={styles.detailsBody}>
           <View
             style={{...styles.inputContainer, justifyContent: 'space-between'}}>
-            <TouchableOpacity
-              onPress={() => {
-                handleExportPress();
-              }}
-              style={styles.button}>
-              <Text style={styles.buttonText}>Excel </Text>
-              <FontAwesome name="file-excel-o" color={Colors.white} size={13} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {}} style={styles.button}>
-              <Text style={styles.buttonText}>Excel(Year) </Text>
-              <FontAwesome name="file-excel-o" color={Colors.white} size={13} />
-            </TouchableOpacity>
+            {employeeAllInfo.length > 0 ? (
+              <TouchableOpacity
+                onPress={() => {
+                  handleExportPress();
+                }}
+                style={styles.button}>
+                <Text style={styles.buttonText}>Excel </Text>
+                <FontAwesome
+                  name="file-excel-o"
+                  color={Colors.white}
+                  size={13}
+                />
+              </TouchableOpacity>
+            ) : (
+              ''
+            )}
+            {employeeAllInfo.length > 0 ? (
+              <TouchableOpacity
+                onPress={() => {
+                  handleExportPress2();
+                }}
+                style={styles.button}>
+                <Text style={styles.buttonText}>Excel(Year) </Text>
+                <FontAwesome
+                  name="file-excel-o"
+                  color={Colors.white}
+                  size={13}
+                />
+              </TouchableOpacity>
+            ) : (
+              ''
+            )}
           </View>
           <View style={styles.inputContainer}>
             <TouchableOpacity
