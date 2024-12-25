@@ -26,6 +26,7 @@ import ReactNativeBlobUtil from 'react-native-blob-util';
 import {fetchEmployeesAllData} from '../../service/redux/actions';
 import RNFS from 'react-native-fs';
 import ExcelJS from 'exceljs';
+import firestoreRequestService from '../../handlers/firestoreEmployeeService';
 
 export default function Admin({navigation}) {
   const dispatch = useDispatch();
@@ -210,37 +211,7 @@ export default function Admin({navigation}) {
     console.log('Fetch dispatched');
   }, [dispatch]);
 
-  const handleExportPress = () => {
-    Alert.alert('Export Reports', 'Do you want to export the reports?', [
-      {
-        text: 'Cancel',
-        style: 'cancel',
-      },
-      {
-        text: 'Yes',
-        onPress: () => {
-          LeaveRequest_generateExcel();
-          WorkPlace_generateExcel();
-          Salary_generateExcel();
-        },
-      },
-    ]);
-  };
-  const handleExportPress2 = () => {
-    Alert.alert('Export Reports', 'Do you want to export the reports?', [
-      {
-        text: 'Cancel',
-        style: 'cancel',
-      },
-      {
-        text: 'Yes',
-        onPress: () => {
-          AdvanceRequest_generateExcel();
-          HolidayRequest_generateExcel();
-        },
-      },
-    ]);
-  };
+
   const AdvanceRequest_generateExcel = async () => {
     // Create a new workbook
     const workbook = new ExcelJS.Workbook();
@@ -854,6 +825,102 @@ export default function Admin({navigation}) {
       .catch(error => {
         Alert.alert('Export Failed', 'Error: ' + error.message);
       });
+  };
+
+  
+  const handleExportPress = () => {
+    Alert.alert('Export Reports', 'Do you want to export the reports?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Yes',
+        onPress: () => {
+          LeaveRequest_generateExcel();
+          WorkPlace_generateExcel();
+          Salary_generateExcel();
+          //handleDeleteShopLoginData();
+        },
+      },
+    ]);
+  };
+  const handleExportPress2 = () => {
+    Alert.alert('Export Reports', 'Do you want to export the reports?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Yes',
+        onPress: () => {
+          AdvanceRequest_generateExcel();
+          HolidayRequest_generateExcel();
+        },
+      },
+    ]);
+  };
+
+
+  const handleDeleteShopLoginData = async e => {
+    setIsLoading(true);
+    const status = await firestoreRequestService.deleteShopLoginData();
+    if (status == 'Success') {
+      setIsLoading(false);
+      ToastAlert.ShowToast(
+        'success',
+        'Alert',
+        'Sucessfully DeleteShopLoginData',
+      );
+    } else {
+      setIsLoading(false);
+      ToastAlert.ShowToast('error', 'Alert', 'Error DeleteShopLoginData..');
+    }
+  };
+  const handleDeleteLeaveRequestsData = async e => {
+    setIsLoading(true);
+    const status = await firestoreRequestService.deleteLeaveRequestsData();
+    if (status == 'Success') {
+      setIsLoading(false);
+      ToastAlert.ShowToast(
+        'success',
+        'Alert',
+        'Sucessfully DeleteLeaveRequestsData',
+      );
+    } else {
+      setIsLoading(false);
+      ToastAlert.ShowToast('error', 'Alert', 'Error DeleteLeaveRequestsData..');
+    }
+  };
+  const handleDeleteHolidayRequestsData = async e => {
+    setIsLoading(true);
+    const status = await firestoreRequestService.deleteHolidayRequestsData();
+    if (status == 'Success') {
+      setIsLoading(false);
+      ToastAlert.ShowToast(
+        'success',
+        'Alert',
+        'Sucessfully deleteHolidayRequestsData',
+      );
+    } else {
+      setIsLoading(false);
+      ToastAlert.ShowToast('error', 'Alert', 'Error deleteHolidayRequestsData..');
+    }
+  };
+  const handleDeleteAdvanceRequestsData = async e => {
+    setIsLoading(true);
+    const status = await firestoreRequestService.deleteAdvanceRequestsData();
+    if (status == 'Success') {
+      setIsLoading(false);
+      ToastAlert.ShowToast(
+        'success',
+        'Alert',
+        'Sucessfully DeleteAdvanceRequestsData',
+      );
+    } else {
+      setIsLoading(false);
+      ToastAlert.ShowToast('error', 'Alert', 'Error deleteAdvanceRequestsData..');
+    }
   };
   return (
     <SafeAreaView style={styles.container}>

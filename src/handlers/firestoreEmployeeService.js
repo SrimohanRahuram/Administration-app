@@ -488,6 +488,173 @@ const firestoreEmployeeService = {
       throw error;
     }
   },
+
+  deleteShopLoginData: async () => {
+    try {
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+      const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+      const employeeDocRef = firestore().collection('Employee');
+      const employeeDocs = await employeeDocRef.get();
+
+      for (const doc of employeeDocs.docs) {
+        const shoploginCollection = employeeDocRef
+          .doc(doc.id)
+          .collection('shoplogin');
+        const shoploginDocs = await shoploginCollection.get();
+
+        for (const shopDoc of shoploginDocs.docs) {
+          const createdTime = shopDoc.data().createdAt;
+
+          if (createdTime && createdTime.seconds) {
+            const createdDate = new Date(createdTime.seconds * 1000);
+            const createdMonth = createdDate.getMonth();
+            const createdYear = createdDate.getFullYear();
+            if (
+              !(
+                (createdMonth === currentMonth &&
+                  createdYear === currentYear) ||
+                (createdMonth === lastMonth && createdYear === lastMonthYear)
+              )
+            ) {
+              await shoploginCollection.doc(shopDoc.id).delete();
+              console.log(`Deleted shoplogin document: ${shopDoc.id}`);
+            }
+          } else {
+            console.warn(`Document ${shopDoc.id} has no valid createdTime.`);
+          }
+        }
+      }
+
+      console.log('Old shoplogin documents deleted successfully!');
+      return 'Success';
+    } catch (error) {
+      console.error('Error deleting Employee data: ', error);
+      throw error;
+    }
+  },
+
+  deleteLeaveRequestsData: async () => {
+    try {
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+      const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+      const employeeDocRef = firestore().collection('Employee');
+      const employeeDocs = await employeeDocRef.get();
+
+      for (const doc of employeeDocs.docs) {
+        const shoploginCollection = employeeDocRef
+          .doc(doc.id)
+          .collection('LeaveRequests');
+        const shoploginDocs = await shoploginCollection.get();
+
+        for (const shopDoc of shoploginDocs.docs) {
+          const createdTime = shopDoc.data().CreatedTime;
+          if (createdTime && createdTime.seconds) {
+            const createdDate = new Date(createdTime.seconds * 1000);
+            const createdMonth = createdDate.getMonth();
+            const createdYear = createdDate.getFullYear();
+            if (
+              !(
+                (createdMonth === currentMonth &&
+                  createdYear === currentYear) ||
+                (createdMonth === lastMonth && createdYear === lastMonthYear)
+              )
+            ) {
+              await shoploginCollection.doc(shopDoc.id).delete();
+              console.log(`Deleted LeaveRequests document: ${shopDoc.id}`);
+            }
+          } else {
+            console.warn(`Document ${shopDoc.id} has no valid createdTime.`);
+          }
+        }
+      }
+
+      console.log('Old shoplogin documents deleted successfully!');
+      return 'Success';
+    } catch (error) {
+      console.error('Error deleting Employee data: ', error);
+      throw error;
+    }
+  },
+
+  deleteHolidayRequestsData: async () => {
+    try {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const lastYear = currentYear - 1;
+      const startDate = new Date(lastYear, 3, 1); 
+      const endDate = new Date(currentYear, 2, 31, 23, 59, 59);
+      const employeeDocRef = firestore().collection('Employee');
+      const employeeDocs = await employeeDocRef.get();
+      for (const doc of employeeDocs.docs) {
+        const shoploginCollection = employeeDocRef
+          .doc(doc.id)
+          .collection('HolidayRequests');
+        const shoploginDocs = await shoploginCollection.get();
+        for (const shopDoc of shoploginDocs.docs) {
+          const createdTime = shopDoc.data().createdTime;
+          if (createdTime && createdTime.seconds) {
+            const createdDate = new Date(createdTime.seconds * 1000);
+            if (createdDate >= startDate && createdDate <= endDate) {
+              await shoploginCollection.doc(shopDoc.id).delete();
+              console.log(`Deleted HolidayRequests document: ${shopDoc.id}`);
+            }
+          } else {
+            console.warn(`Document ${shopDoc.id} has no valid createdTime.`);
+          }
+        }
+      }
+
+      console.log('Documents within the date range deleted successfully!');
+      return 'Success';
+    } catch (error) {
+      console.error('Error deleting Employee data: ', error);
+      throw error;
+    }
+  },
+
+  deleteAdvanceRequestsData: async () => {
+    try {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const lastYear = currentYear - 1;
+      const startDate = new Date(lastYear, 3, 1); 
+      const endDate = new Date(currentYear, 2, 31, 23, 59, 59);
+      const employeeDocRef = firestore().collection('Employee');
+      const employeeDocs = await employeeDocRef.get();
+
+      for (const doc of employeeDocs.docs) {
+        const shoploginCollection = employeeDocRef
+          .doc(doc.id)
+          .collection('AdvanceRequests');
+        const shoploginDocs = await shoploginCollection.get();
+        for (const shopDoc of shoploginDocs.docs) {
+          const createdTime = shopDoc.data().createdTime;
+          if (createdTime && createdTime.seconds) {
+            const createdDate = new Date(createdTime.seconds * 1000);
+            if (createdDate >= startDate && createdDate <= endDate) {
+              await shoploginCollection.doc(shopDoc.id).delete();
+              console.log(`Deleted AdvanceRequests document: ${shopDoc.id}`);
+            }
+          } else {
+            console.warn(`Document ${shopDoc.id} has no valid createdTime.`);
+          }
+        }
+      }
+      console.log('Documents within the date range deleted successfully!');
+      return 'Success';
+    } catch (error) {
+      console.error('Error deleting Employee data: ', error);
+      throw error;
+    }
+  },
 };
 
 export default firestoreEmployeeService;
