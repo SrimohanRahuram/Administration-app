@@ -301,7 +301,7 @@ export default function Requests({navigation}) {
               </View>
               <View style={styles.totalDetails}>
                 <Text style={{color: Colors.black, fontWeight: '500'}}>
-                  Total Advance amount = ${employeeTotalAdvance}
+                  Total Advance amount = {employeeTotalAdvance}
                 </Text>
               </View>
             </View>
